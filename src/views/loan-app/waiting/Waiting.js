@@ -108,13 +108,13 @@ const Waiting = () => {
 
   const fetchApplication = async () => {
     axios.get(process.env.REACT_APP_API_ENDPOINT + '/loan-app/waiting').then((res) => {
-      setTableData(res.data['msg'])
+      setTableData(res.data)
     })
   }
 
   useEffect(() => {
     fetchApplication()
-  })
+  }, [])
 
   const successToast = (msg) => (
     <CToast title="Success" color="success" className="d-flex">
