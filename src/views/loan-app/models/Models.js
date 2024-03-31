@@ -65,7 +65,7 @@ const Models = () => {
       {iframeUrl == '' ? (
         <></>
       ) : (
-        <iframe src={iframeUrl} frameBorder={0} width={1300} height={2550} allowTransparency />
+        <iframe src={iframeUrl} frameBorder={0} width={1250} height={2550} allowTransparency />
       )}
     </>
   )

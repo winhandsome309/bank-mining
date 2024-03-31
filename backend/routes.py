@@ -14,10 +14,10 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config["CORS_HEADERS"] = "Content-Type"
 
-postgre_host = "dpg-co2kmbsf7o1s73ckkrj0-a.singapore-postgres.render.com"
-postgre_user = "banking_db_4twh_user"
-postgre_password = "a9eVZXc6Bm8Qu5cGhdyJ4fm5p00fAuaC"
-postgre_db = "banking_db_4twh"
+postgre_host = "dpg-co4o7bcf7o1s738upj3g-a.singapore-postgres.render.com"
+postgre_user = "banking_db_4ebh_user"
+postgre_password = "h8cggpsHBl0E6KRdCuOxNnuL7OkX4BgV"
+postgre_db = "banking_db_4ebh"
 
 db = psycopg2.connect(
         host=postgre_host,
@@ -35,7 +35,7 @@ def index():
 def getToken():
     if request.method == "GET":
         payload = {
-        "resource": {"dashboard": 8},
+        "resource": {"dashboard": 9},
         "params": {
             
         },

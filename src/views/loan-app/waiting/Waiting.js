@@ -105,6 +105,8 @@ const Waiting = () => {
     delinq_2yrs: '',
     pub_rec: '',
   })
+  const [visibleRecheck, setVisibleRecheck] = useState(false)
+  const [msgRecheck, setMsgRecheck] = useState('')
 
   const fetchApplication = async () => {
     axios.get(process.env.REACT_APP_API_ENDPOINT + '/loan-app/waiting').then((res) => {
@@ -549,7 +551,8 @@ const Waiting = () => {
               className="me-2"
               onClick={() => {
                 setVisibleApp(false)
-                addToast(warningToast('Rejected successfully'))
+                setMsgRecheck('REJECT')
+                setVisibleRecheck(true)
               }}
             >
               Reject
@@ -558,7 +561,8 @@ const Waiting = () => {
               color="success"
               onClick={() => {
                 setVisibleApp(false)
-                addToast(successToast('Accepted successully'))
+                setMsgRecheck('ACCEPT')
+                setVisibleRecheck(true)
               }}
             >
               Accept
@@ -566,6 +570,34 @@ const Waiting = () => {
           </div>
         </CFooter>
       </COffcanvas>
+      <CModal
+        scrollable
+        visible={visibleRecheck}
+        backdrop="static"
+        onClose={() => setVisibleRecheck(false)}
+      >
+        <CModalHeader>
+          <CModalTitle>Create Application</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <div>Are you sure to want to {msgRecheck} ? </div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setVisibleRecheck(false)}>
+            No
+          </CButton>
+          <CButton
+            color="primary"
+            onClick={() => {
+              if (msgRecheck == 'ACCEPT') addToast(successToast('Accepted successully'))
+              else addToast(warningToast('Rejected successfully'))
+              setVisibleRecheck(false)
+            }}
+          >
+            Yes
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </>
   )
 }
