@@ -4,6 +4,15 @@ const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
+// Loan Application
+const LoanWaiting = React.lazy(() => import('./views/loan-app/waiting/Waiting'))
+const LoanProcessed = React.lazy(() => import('./views/loan-app/processed/processed'))
+const LoanModels = React.lazy(() => import('./views/loan-app/models/Models'))
+
+// Marketing
+
+// Fraud
+
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 const Breadcrumbs = React.lazy(() => import('./views/base/breadcrumbs/Breadcrumbs'))
@@ -52,6 +61,9 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
+  { path: '/loan-app/waiting', name: 'Waiting', element: LoanWaiting },
+  { path: '/loan-app/processed', name: 'Processed', element: LoanProcessed },
+  { path: '/loan-app/models', name: 'Models', element: LoanModels },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },

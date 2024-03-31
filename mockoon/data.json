@@ -1,0 +1,92 @@
+{
+  "uuid": "4c016f01-1bfe-4067-9d03-506be84accd8",
+  "lastMigration": 32,
+  "name": "Data",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "fbb2360d-8b3d-4465-9ee2-88809a645667",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "loan-app/waiting",
+      "responses": [
+        {
+          "uuid": "e562680d-3d15-4d99-bea0-55fa8cbd200c",
+          "body": "{\n  \"msg\": [\n    {\n      \"id\": \"1\",\n      \"credit_policy\": \"true\",\n      \"purpose\": \"debt_consolidation\",\n      \"int_rate\": \"0.1189\",\n      \"installment\": \"829.1\",\n      \"log_annual_inc\": \"11.35040654\",\n      \"dti\": \"19.48\",\n      \"fico\": \"737\",\n      \"days_with_cr_line\": \"5639.958333\",\n      \"revol_bal\": \"28854\",\n      \"revol_util\": \"52.1\",\n      \"inq_last_6mths\": \"0\",\n      \"delinq_2yrs\": \"0\",\n      \"pub_rec\": \"0\"\n    },\n    {\n      \"id\": \"2\",\n      \"credit_policy\": \"true\",\n      \"purpose\": \"debt_consolidation\",\n      \"int_rate\": \"0.1189\",\n      \"installment\": \"829.1\",\n      \"log_annual_inc\": \"11.35040654\",\n      \"dti\": \"19.48\",\n      \"fico\": \"737\",\n      \"days_with_cr_line\": \"5639.958333\",\n      \"revol_bal\": \"28854\",\n      \"revol_util\": \"52.1\",\n      \"inq_last_6mths\": \"0\",\n      \"delinq_2yrs\": \"0\",\n      \"pub_rec\": \"0\"\n    },\n    {\n      \"id\": \"3\",\n      \"credit_policy\": \"true\",\n      \"purpose\": \"debt_consolidation\",\n      \"int_rate\": \"0.1189\",\n      \"installment\": \"829.1\",\n      \"log_annual_inc\": \"11.35040654\",\n      \"dti\": \"19.48\",\n      \"fico\": \"737\",\n      \"days_with_cr_line\": \"5639.958333\",\n      \"revol_bal\": \"28854\",\n      \"revol_util\": \"52.1\",\n      \"inq_last_6mths\": \"0\",\n      \"delinq_2yrs\": \"0\",\n      \"pub_rec\": \"0\"\n    },\n    {\n      \"id\": \"4\",\n      \"credit_policy\": \"true\",\n      \"purpose\": \"debt_consolidation\",\n      \"int_rate\": \"0.1189\",\n      \"installment\": \"829.1\",\n      \"log_annual_inc\": \"11.35040654\",\n      \"dti\": \"19.48\",\n      \"fico\": \"737\",\n      \"days_with_cr_line\": \"5639.958333\",\n      \"revol_bal\": \"28854\",\n      \"revol_util\": \"52.1\",\n      \"inq_last_6mths\": \"0\",\n      \"delinq_2yrs\": \"0\",\n      \"pub_rec\": \"0\"\n    },\n    {\n      \"id\": \"5\",\n      \"credit_policy\": \"true\",\n      \"purpose\": \"debt_consolidation\",\n      \"int_rate\": \"0.1189\",\n      \"installment\": \"829.1\",\n      \"log_annual_inc\": \"11.35040654\",\n      \"dti\": \"19.48\",\n      \"fico\": \"737\",\n      \"days_with_cr_line\": \"5639.958333\",\n      \"revol_bal\": \"28854\",\n      \"revol_util\": \"52.1\",\n      \"inq_last_6mths\": \"0\",\n      \"delinq_2yrs\": \"0\",\n      \"pub_rec\": \"0\"\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "fbb2360d-8b3d-4465-9ee2-88809a645667"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}
