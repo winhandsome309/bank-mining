@@ -72,7 +72,8 @@ const Login = () => {
                   <div>
                     <h2>Sign up</h2>
                     <p></p>
-                    <p>If you don't have an account. Let create one !</p>
+                    <p>If you don't have an account</p>
+                    <p>Let create one !</p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>
                         Register Now!

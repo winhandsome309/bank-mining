@@ -209,7 +209,8 @@ const Waiting = () => {
                             className="text-success"
                             onClick={(e) => {
                               e.stopPropagation()
-                              addToast(successToast('Accepted successfully'))
+                              setMsgRecheck('ACCEPT')
+                              setVisibleRecheck(true)
                             }}
                           />
                           {'  '}
@@ -218,7 +219,8 @@ const Waiting = () => {
                             className="text-danger"
                             onClick={(e) => {
                               e.stopPropagation()
-                              addToast(warningToast('Rejected successully'))
+                              setMsgRecheck('REJECT')
+                              setVisibleRecheck(true)
                             }}
                           />
                         </CTableDataCell>
@@ -542,6 +544,10 @@ const Waiting = () => {
               <CCol>{appData['pub_rec']}</CCol>
             </CRow>
           </CCol>
+
+          <hr />
+
+          <div className="text-center">Result of Models</div>
         </COffcanvasBody>
         <CFooter>
           <div></div>
@@ -580,11 +586,13 @@ const Waiting = () => {
           <CModalTitle>Create Application</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <div>Are you sure to want to {msgRecheck} ? </div>
+          <span>Are you sure to want to </span>
+          <span style={{ color: msgRecheck === 'ACCEPT' ? 'green' : 'red' }}>{msgRecheck}</span>
+          <span>?</span>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setVisibleRecheck(false)}>
-            No
+            <div className="ms-1 me-1">No</div>
           </CButton>
           <CButton
             color="primary"
@@ -594,7 +602,7 @@ const Waiting = () => {
               setVisibleRecheck(false)
             }}
           >
-            Yes
+            <div className="ms-1 me-1">Yes</div>
           </CButton>
         </CModalFooter>
       </CModal>

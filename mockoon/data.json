@@ -36,12 +36,78 @@
         }
       ],
       "responseMode": null
+    },
+    {
+      "uuid": "bdaefef6-e3b2-404f-b118-b1ba5acb9d77",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "plot",
+      "responses": [
+        {
+          "uuid": "87f1e4f9-66f4-416e-9954-28e058949584",
+          "body": "",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "FILE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": true,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "7dd01296-8a96-47a2-b55e-e0d05a2444db",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "plot-simple",
+      "responses": [
+        {
+          "uuid": "fa097f80-ae26-4f91-b34a-bfbf2e9f94bd",
+          "body": "<!DOCTYPE html>\n      <html>\n      <head>\n          <title>Simple HTML Page</title>\n      </head>\n      <body>\n          <h1>Hello, World!</h1>\n          <p>This is a simple HTML page.</p>\n      </body>\n      </html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
     }
   ],
   "rootChildren": [
     {
       "type": "route",
       "uuid": "fbb2360d-8b3d-4465-9ee2-88809a645667"
+    },
+    {
+      "type": "route",
+      "uuid": "bdaefef6-e3b2-404f-b118-b1ba5acb9d77"
+    },
+    {
+      "type": "route",
+      "uuid": "7dd01296-8a96-47a2-b55e-e0d05a2444db"
     }
   ],
   "proxyMode": false,

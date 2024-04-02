@@ -8,6 +8,7 @@ const Typography = React.lazy(() => import('./views/theme/typography/Typography'
 const LoanWaiting = React.lazy(() => import('./views/loan-app/waiting/Waiting'))
 const LoanProcessed = React.lazy(() => import('./views/loan-app/processed/processed'))
 const LoanModels = React.lazy(() => import('./views/loan-app/models/Models'))
+const LoanAboutData = React.lazy(() => import('./views/loan-app/about-data/AboutData'))
 
 // Marketing
 
@@ -64,6 +65,7 @@ const routes = [
   { path: '/loan-app/waiting', name: 'Waiting', element: LoanWaiting },
   { path: '/loan-app/processed', name: 'Processed', element: LoanProcessed },
   { path: '/loan-app/models', name: 'Models', element: LoanModels },
+  { path: '/loan-app/about-data', name: 'AboutData', element: LoanAboutData },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },

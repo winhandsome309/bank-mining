@@ -59,6 +59,12 @@ const _nav = [
         to: '/loan-app/models',
         icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
       },
+      {
+        component: CNavItem,
+        name: 'About Data',
+        to: '/loan-app/about-data',
+        icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
+      },
     ],
   },
   {
