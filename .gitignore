@@ -23,6 +23,7 @@ yarn.lock
 # Python
 /venv
 *.pyc
+.vscode
 
 npm-debug.log*
 yarn-debug.log*
