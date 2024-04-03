@@ -1,29 +1,20 @@
-# Command run: flask --app routes run --debug
-
+# Command run: flask run
 import jwt
 import time
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS, cross_origin
-import psycopg2
-import ast
+from config import DevConfig
+from models import HistoryApps
+from session_scope import session_scope
+from sqlalchemy import select
+import utils
 
-METABASE_SITE_URL = "http://localhost:3002"
-METABASE_SECRET_KEY = "6d5bc8d158ffd9cd13c4cc4c503ce582f92eb7aa6b62ed08034c8f4b97b0b884"
 
+appconfig = DevConfig
 app = Flask(__name__)
+app.config.from_object(appconfig)
 cors = CORS(app)
-app.config["CORS_HEADERS"] = "Content-Type"
 
-postgre_host = "dpg-co4o7bcf7o1s738upj3g-a.singapore-postgres.render.com"
-postgre_user = "banking_db_4ebh_user"
-postgre_password = "h8cggpsHBl0E6KRdCuOxNnuL7OkX4BgV"
-postgre_db = "banking_db_4ebh"
-
-db = psycopg2.connect(
-        host=postgre_host,
-        database=postgre_db,
-        user=postgre_user,
-        password=postgre_password)
 
 @app.route("/")
 @cross_origin()
@@ -41,22 +32,15 @@ def getToken():
         },
         "exp": round(time.time()) + (60 * 10) # 10 minute expiration
         }
-        token = jwt.encode(payload, METABASE_SECRET_KEY, algorithm="HS256")
+        token = jwt.encode(payload, appconfig.METABASE_SECRET_KEY, algorithm="HS256")
 
-        iframeUrl = METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=true&titled=true"
+        iframeUrl = appconfig.METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=true&titled=true"
         return iframeUrl
 
-@app.route("/loan-app/waiting", methods=["GET", "POST"])
-def loanAppWaiting():
+@app.route("/loan-app/history", methods=["GET", "POST"])
+def loanAppHistory():
     if request.method == "GET":
-        cursor = db.cursor()
-        cursor.execute("SELECT * from history_loan_data LIMIT 10")
-        data = cursor.fetchall()
-        columns = [desc[0] for desc in cursor.description]
-        result = []
-        for row in data:
-            temp = {}
-            for i, val in enumerate(columns):
-                temp[val] = row[i]
-            result.append(temp)
-        return result
+        with session_scope() as session:
+            stmt = select(HistoryApps)
+            res = session.execute(stmt).all()
+            return utils.parse_output(res)
