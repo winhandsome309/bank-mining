@@ -2,9 +2,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from contextlib import contextmanager
 import os
+from flask_app import engine
 
 
-engine = create_engine(os.environ.get('SQLALCHEMY_DATABASE_URI'))
 Session = sessionmaker(bind=engine)
 @contextmanager
 def session_scope():
