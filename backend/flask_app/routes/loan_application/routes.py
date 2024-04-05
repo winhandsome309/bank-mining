@@ -1,7 +1,7 @@
 from flask_app.models import HistoryApps
 from flask_app.models import Application
 from flask_app.helper.session_scope import session_scope
-from sqlalchemy import select
+from sqlalchemy import select, null
 from flask_app import app
 from flask import request, jsonify, make_response
 import datetime
@@ -64,7 +64,7 @@ def waiting_list():
                         not_fully_paid=not_fuly_paid,
                         created=created,
                         processed=False,
-                        processed_at=None
+                        processed_at=null()
                     )
             try:
                 session.add(new_app)

@@ -49,23 +49,23 @@ class Application(Base):
     __tablename__ = 'loan_application'
 
     id:             Mapped[str] = mapped_column(primary_key=True)
-    credit_policy:  Mapped[int]
-    purpose:        Mapped[str]
-    int_rate:       Mapped[float]
-    installment:    Mapped[float]
-    log_annual_inc: Mapped[float]
-    dti:            Mapped[float]
-    fico:           Mapped[int]
-    days_with_cr_line: Mapped[float]
-    revol_bal:      Mapped[int]
-    revol_util:     Mapped[float]
-    inq_last_6mths: Mapped[int]
-    delinq_2yrs:    Mapped[int]
-    pub_rec:        Mapped[int]
-    not_fully_paid: Mapped[int]
+    credit_policy:  Mapped[int] = mapped_column(nullable=True)
+    purpose:        Mapped[str] = mapped_column(nullable=True)
+    int_rate:       Mapped[float] = mapped_column(nullable=True)
+    installment:    Mapped[float] = mapped_column(nullable=True)
+    log_annual_inc: Mapped[float] = mapped_column(nullable=True)
+    dti:            Mapped[float] = mapped_column(nullable=True)
+    fico:           Mapped[int] = mapped_column(nullable=True)
+    days_with_cr_line: Mapped[float] = mapped_column(nullable=True)
+    revol_bal:      Mapped[int] = mapped_column(nullable=True)
+    revol_util:     Mapped[float] = mapped_column(nullable=True)
+    inq_last_6mths: Mapped[int] = mapped_column(nullable=True)
+    delinq_2yrs:    Mapped[int] = mapped_column(nullable=True)
+    pub_rec:        Mapped[int] = mapped_column(nullable=True)
+    not_fully_paid: Mapped[int] = mapped_column(nullable=True)
     created:        Mapped[timestamp]
     processed:      Mapped[bool]
-    processed_at:   Mapped[timestamp]
+    processed_at:   Mapped[timestamp] = mapped_column(nullable=True, server_default=None)
 
     def as_dict(self): 
         return {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
