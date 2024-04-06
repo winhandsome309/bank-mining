@@ -3,7 +3,7 @@ from flask_app.models import Application
 from flask_app.helper.session_scope import session_scope
 from sqlalchemy import select, null
 from flask_app import app
-from flask import request, jsonify, make_response
+from flask import request, make_response
 import datetime
 import flask_app.helper.utils as utils
 
