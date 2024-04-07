@@ -81,7 +81,7 @@ const Models = () => {
             </CCardHeader>
             <CCardBody>
               <iframe
-                src="./src/assets/loan-app/plotly_graph.html"
+                src="./analysis/loan_app/eval_model_img/output.html"
                 height={1000}
                 width={800}
                 loading="lazy"

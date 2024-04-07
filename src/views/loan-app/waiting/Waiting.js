@@ -140,10 +140,9 @@ const Waiting = () => {
       .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', formData)
       .then((res) => {
         if (res.status === 201) {
-          addToast(successToast('Application is created successfully'))
-          setTableData(res.data)
           setVisibleCreate(false)
           fetchApplication()
+          addToast(successToast('Application is created successfully'))
         }
       })
   }
@@ -232,7 +231,7 @@ const Waiting = () => {
                         }}
                       >
                         <CTableDataCell className="text-center">
-                          <div className="fw-semibold">{item.id.substring(0, 5)}</div>
+                          <div className="fw-semibold">{item.id.substring(0, 5)}...</div>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>{item.purpose}</div>
@@ -267,6 +266,7 @@ const Waiting = () => {
                             icon={cilX}
                             className="text-danger"
                             onClick={(e) => {
+                              setAppData(item)
                               e.stopPropagation()
                               setMsgRecheck('REJECT')
                               setVisibleRecheck(true)
