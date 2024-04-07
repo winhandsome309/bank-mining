@@ -1,13 +1,23 @@
 from flask_app.models import HistoryApps
 from flask_app.models import Application
+from flask_app.models import ModelInfo
 from flask_app.helper.session_scope import session_scope
-from sqlalchemy import select, null
+from sqlalchemy import select, null, update
 from flask_app import app
 from flask import request, make_response
 import datetime
 import flask_app.helper.utils as utils
+from flask_app.helper.worker import LoanWorker
 
+MODEL_PKL = {
+    "logistic_regression_(feature_selected)": 'analysis/loan_app/workspace/logistic_regression_(feature_selected).pkl',
+    "logistic_regression_(improved)": "analysis/loan_app/workspace/logistic_regression_(improved).pkl",
+    "random_forest_(improved)": "analysis/loan_app/workspace/random_forest_(improved).pkl"
+}
 
+MODEL_INFO = "analysis/loan_app/workspace/model_info.json"
+
+# loan_worker = LoanWorker(model_pkl_path=MODEL_PKL, model_info_path=MODEL_INFO)
 
 @app.route("/api/loan_application/history_data", methods=["GET", "POST"])
 def history_data():
@@ -40,10 +50,12 @@ def waiting_list():
         inq_last =      form.get("inq_last_6mths")
         delinq_2yrs =   form.get("delinq_2yrs")
         pub_rec =       form.get("pub_rec")
-        not_fuly_paid = form.get("not_fully_paid")
 
         created =       datetime.datetime.now()
         id =            utils.get_new_applicaion_id(created.__str__())
+
+        # predict
+
 
         with session_scope() as session:
             new_app = Application(
@@ -61,7 +73,6 @@ def waiting_list():
                         inq_last_6mths=inq_last,
                         delinq_2yrs=delinq_2yrs,
                         pub_rec=pub_rec,
-                        not_fully_paid=not_fuly_paid,
                         created=created,
                         processed=False,
                         processed_at=null()
@@ -71,3 +82,49 @@ def waiting_list():
             except:
                 return make_response("ERROR", 401)
         return make_response("Created", 201)
+
+
+@app.route("/api/model-info", methods=["GET"])
+def get_model_info():
+    feature = request.args.get("feature")
+    from_feature_to_model = {
+        'loan_application': ModelInfo
+    }
+    with session_scope() as session:
+        model = from_feature_to_model[feature]
+        res = []
+        if model:
+            stmt = select(model)
+            res = session.execute(stmt).all()
+        return utils.parse_output(res)
+
+@app.route("/api/loan_application/model-info/update", methods=["POST"])
+def update_model_info(path=MODEL_INFO):
+    model_info_json = utils.load_from_json(path)
+    try:
+        with session_scope() as session:
+            for model_info in model_info_json:
+                new_model = ModelInfo(
+                    model=model_info['Model'],
+                    accuracy=model_info['Accuracy'],
+                    precision=model_info['Precision'],
+                    recall=model_info['Recall'],
+                    auc=model_info['AUC'],
+                    feature='loan_application'
+                )
+                stmt = select(ModelInfo).where(ModelInfo.model == new_model.model and ModelInfo.feature == new_model.feature)
+            
+                if session.execute(stmt).all():
+                    stmt = (
+                        update(ModelInfo)
+                        .where(ModelInfo.model == new_model.model)
+                        .where(ModelInfo.feature == new_model.feature)
+                        .values(new_model.as_dict())
+                    )
+                    session.execute(stmt)
+                else:
+                    session.add(new_model)
+            return make_response("Created", 201)
+    except Exception as e:
+        print(f">> ERROR: {e}")
+        return make_response("ERROR", 401)

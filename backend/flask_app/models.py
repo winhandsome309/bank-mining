@@ -62,7 +62,6 @@ class Application(Base):
     inq_last_6mths: Mapped[int] = mapped_column(nullable=True)
     delinq_2yrs:    Mapped[int] = mapped_column(nullable=True)
     pub_rec:        Mapped[int] = mapped_column(nullable=True)
-    not_fully_paid: Mapped[int] = mapped_column(nullable=True)
     created:        Mapped[timestamp]
     processed:      Mapped[bool]
     processed_at:   Mapped[timestamp] = mapped_column(nullable=True, server_default=None)
@@ -80,3 +79,15 @@ class PredictResult(Base):
     note:           Mapped[str]
 
 
+class ModelInfo(Base):
+    __tablename__ = 'model_info'
+
+    model:          Mapped[str] = mapped_column(primary_key=True) 
+    accuracy:       Mapped[float]
+    precision:      Mapped[float]
+    recall:         Mapped[float]
+    auc:            Mapped[float]
+    feature:        Mapped[str]
+
+    def as_dict(self): 
+        return {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}

@@ -1,0 +1,23 @@
+[
+   {
+      "Model": "Logistic regression (feature selected)",
+      "Accuracy": 0.84186,
+      "Precision": 0.42857,
+      "Recall": 0.01993,
+      "AUC": 0.50749
+   },
+   {
+      "Model": "Logistic Regression (improved)",
+      "Accuracy": 0.67053,
+      "Precision": 0.23172,
+      "Recall": 0.62126,
+      "AUC": 0.61868
+   },
+   {
+      "Model": "Random forest (improved)",
+      "Accuracy": 0.999999,
+      "Precision": 0.226,
+      "Recall": 0.61794,
+      "AUC": 0.61176
+   }
+]
