@@ -67,7 +67,7 @@ import {
   cilX,
   cilPlus,
 } from '@coreui/icons'
-import axios from 'axios'
+import axios, { formToJSON } from 'axios'
 
 const Waiting = () => {
   const [uploadFile, setUploadFile] = useState(true)
@@ -105,13 +105,62 @@ const Waiting = () => {
     delinq_2yrs: '',
     pub_rec: '',
   })
+  const [form, setForm] = useState({
+    credit_policy: '',
+    purpose: '',
+    int_rate: '',
+    installment: '',
+    log_annual_inc: '',
+    dti: '',
+    fico: '',
+    days_with_cr_line: '',
+    revol_bal: '',
+    revol_util: '',
+    inq_last_6mths: '',
+    delinq_2yrs: '',
+    pub_rec: '',
+  })
   const [visibleRecheck, setVisibleRecheck] = useState(false)
   const [msgRecheck, setMsgRecheck] = useState('')
 
   const fetchApplication = async () => {
-    axios.get(process.env.REACT_APP_API_ENDPOINT + '/loan-app/waiting').then((res) => {
-      setTableData(res.data)
+    axios
+      .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list')
+      .then((res) => {
+        setTableData(res.data)
+      })
+  }
+
+  const createApplication = async () => {
+    const formData = new FormData()
+    Object.keys(form).forEach((key) => {
+      formData.append(key, form[key])
     })
+    axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', formData)
+      .then((res) => {
+        if (res.status === 201) {
+          addToast(successToast('Application is created successfully'))
+          setTableData(res.data)
+          setVisibleCreate(false)
+          fetchApplication()
+        }
+      })
+  }
+
+  const deleteApplication = async (id) => {
+    const formData = new FormData()
+    formData.append('id', id)
+    axios
+      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', {
+        data: formData,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          addToast(warningToast('Rejected successfully'))
+          fetchApplication()
+        }
+      })
   }
 
   useEffect(() => {
@@ -183,7 +232,7 @@ const Waiting = () => {
                         }}
                       >
                         <CTableDataCell className="text-center">
-                          <div className="fw-semibold">{item.id}</div>
+                          <div className="fw-semibold">{item.id.substring(0, 5)}</div>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>{item.purpose}</div>
@@ -251,7 +300,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="creditPolicy"
                   onChange={(e) => {
-                    setCreditPolicy(e.target.value)
+                    // setCreditPolicy(e.target.value)
+                    setForm({ ...form, credit_policy: parseInt(e.target.value) })
                   }}
                 />
               </CCol>
@@ -260,7 +310,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="purpose"
                   onChange={(e) => {
-                    setPurpose(e.target.value)
+                    // setPurpose(e.target.value)
+                    setForm({ ...form, purpose: e.target.value })
                   }}
                 />
               </CCol>
@@ -271,7 +322,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="intRate"
                   onChange={(e) => {
-                    setIntRate(e.target.value)
+                    // setIntRate(e.target.value)
+                    setForm({ ...form, int_rate: parseFloat(e.target.value) })
                   }}
                 />
               </CCol>
@@ -280,7 +332,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="installment"
                   onChange={(e) => {
-                    setInstallment(e.target.value)
+                    // setInstallment(e.target.value)
+                    setForm({ ...form, installment: parseFloat(e.target.value) })
                   }}
                 />
               </CCol>
@@ -291,7 +344,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="logAnnualInc"
                   onChange={(e) => {
-                    setLogAnnualInc(e.target.value)
+                    // setLogAnnualInc(e.target.value)
+                    setForm({ ...form, log_annual_inc: parseFloat(e.target.value) })
                   }}
                 />
               </CCol>
@@ -300,7 +354,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="dti"
                   onChange={(e) => {
-                    setDti(e.target.value)
+                    // setDti(e.target.value)
+                    setForm({ ...form, dti: parseFloat(e.target.value) })
                   }}
                 />
               </CCol>
@@ -311,7 +366,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="fico"
                   onChange={(e) => {
-                    setFico(e.target.value)
+                    // setFico(e.target.value)
+                    setForm({ ...form, fico: parseInt(e.target.value) })
                   }}
                 />
               </CCol>
@@ -320,7 +376,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="daysWithCrLine"
                   onChange={(e) => {
-                    setDaysWithCrLine(e.target.value)
+                    // setDaysWithCrLine(e.target.value)
+                    setForm({ ...form, days_with_cr_line: parseFloat(e.target.value) })
                   }}
                 />
               </CCol>
@@ -331,7 +388,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="revolBal"
                   onChange={(e) => {
-                    setRevolBal(e.target.value)
+                    // setRevolBal(e.target.value)
+                    setForm({ ...form, revol_bal: parseInt(e.target.value) })
                   }}
                 />
               </CCol>
@@ -340,7 +398,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="revolUtil"
                   onChange={(e) => {
-                    setRevolUtil(e.target.value)
+                    // setRevolUtil(e.target.value)
+                    setForm({ ...form, revol_util: parseFloat(e.target.value) })
                   }}
                 />
               </CCol>
@@ -351,7 +410,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="inqLast6mths"
                   onChange={(e) => {
-                    setInqLast6mths(e.target.value)
+                    // setInqLast6mths(e.target.value)
+                    setForm({ ...form, inq_last_6mths: parseInt(e.target.value) })
                   }}
                 />
               </CCol>
@@ -360,7 +420,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="delinq2yrs"
                   onChange={(e) => {
-                    setDelinq2yrs(e.target.value)
+                    // setDelinq2yrs(e.target.value)
+                    setForm({ ...form, delinq_2yrs: parseInt(e.target.value) })
                   }}
                 />
               </CCol>
@@ -371,7 +432,8 @@ const Waiting = () => {
                   id="autoSizingInput"
                   placeholder="pubRec"
                   onChange={(e) => {
-                    setPubRec(e.target.value)
+                    // setPubRec(e.target.value)
+                    setForm({ ...form, pub_rec: parseInt(e.target.value) })
                   }}
                 />
               </CCol>
@@ -386,8 +448,9 @@ const Waiting = () => {
           <CButton
             color="primary"
             onClick={() => {
-              setVisibleCreate(false)
-              addToast(successToast('Application is created successfully'))
+              createApplication()
+              // setVisibleCreate(false)
+              // addToast(successToast('Application is created successfully'))
             }}
           >
             Create
@@ -411,7 +474,11 @@ const Waiting = () => {
                   </CTooltip>
                 </CContainer>
               </CCol>
-              <CCol>{appData['id']}</CCol>
+              {/* <CCol>{appData['id']}</CCol> */}
+              <CCol>
+                <CRow>{appData['id'].substring(0, 20)}</CRow>
+                <CRow>{appData['id'].substring(20)}</CRow>
+              </CCol>
             </CRow>
             <CRow className="mb-2">
               <CCol>
@@ -597,8 +664,11 @@ const Waiting = () => {
           <CButton
             color="primary"
             onClick={() => {
-              if (msgRecheck == 'ACCEPT') addToast(successToast('Accepted successully'))
-              else addToast(warningToast('Rejected successfully'))
+              if (msgRecheck == 'ACCEPT') {
+                addToast(successToast('Accepted successully'))
+              } else {
+                deleteApplication(appData.id)
+              }
               setVisibleRecheck(false)
             }}
           >

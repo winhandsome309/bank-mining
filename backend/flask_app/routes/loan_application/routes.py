@@ -3,7 +3,7 @@ from flask_app.models import Application
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
 from flask_app.helper.session_scope import session_scope
-from sqlalchemy import select, null, update
+from sqlalchemy import select, null, update, delete
 from flask_app import app
 from flask import request, make_response
 import datetime
@@ -29,7 +29,7 @@ def history_data():
             res = session.execute(stmt).all()
             return utils.parse_output(res)
 
-@app.route("/api/loan_application/waiting-list", methods=["GET", "POST"])
+@app.route("/api/loan_application/waiting-list", methods=["GET", "POST", "DELETE"])
 def waiting_list():
     if request.method == "GET":
         with session_scope() as session:
@@ -90,6 +90,20 @@ def waiting_list():
             except:
                 return make_response("ERROR", 401)
         return make_response(predict, 201)
+
+    if request.method == "DELETE":
+        form = request.form
+        id = form.get("id")
+        with session_scope() as session:
+            stmtFind = select(Application).where(Application.id == id)
+            resFind = session.execute(stmtFind).fetchall()
+            if resFind.count == 0:
+                return make_response("Record not found", 401)
+            stmtDeletePredict = delete(PredictResult).where(PredictResult.id == id)
+            stmtDeleteApp = delete(Application).where(Application.id == id)
+            resDeletePredict = session.execute(stmtDeletePredict)
+            resDeleteApp = session.execute(stmtDeleteApp)
+            return make_response("Deleted", 200)
 
 @app.route("/api/predict-result", methods=["POST"])
 def get_predict_result():
