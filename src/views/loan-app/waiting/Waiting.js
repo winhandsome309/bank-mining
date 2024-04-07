@@ -122,6 +122,8 @@ const Waiting = () => {
   })
   const [visibleRecheck, setVisibleRecheck] = useState(false)
   const [msgRecheck, setMsgRecheck] = useState('')
+  const [predictResult, setPredictResult] = useState({})
+  const [changeApp, setChangeApp] = useState(false)
 
   const fetchApplication = async () => {
     axios
@@ -162,9 +164,30 @@ const Waiting = () => {
       })
   }
 
+  const fetchPredictResult = async () => {
+    axios
+      .get(process.env.REACT_APP_API_ENDPOINT + '/api/predict-result', {
+        params: {
+          application_id: appData.id,
+        },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          var temp = JSON.parse(res.data['predict'].replace(/'/g, '"'))
+          setPredictResult(temp)
+
+          setVisibleApp(true)
+        }
+      })
+  }
+
   useEffect(() => {
     fetchApplication()
   }, [])
+
+  useEffect(() => {
+    fetchPredictResult()
+  }, [appData, changeApp])
 
   const successToast = (msg) => (
     <CToast title="Success" color="success" className="d-flex">
@@ -227,7 +250,8 @@ const Waiting = () => {
                         key={index}
                         onClick={() => {
                           setAppData(item)
-                          setVisibleApp(true)
+                          setChangeApp(!changeApp)
+                          // setVisibleApp(true)
                         }}
                       >
                         <CTableDataCell className="text-center">
@@ -614,7 +638,62 @@ const Waiting = () => {
 
           <hr />
 
-          <div className="text-center">Result of Models</div>
+          <h5 className="text-center mb-3 bold-text">Result of Models</h5>
+          <CCol className="ms-2">
+            <CRow className="mb-2">
+              <CCol
+                style={{
+                  color:
+                    predictResult['logistic_regression_(feature_selected)'] == 0 ? 'green' : 'red',
+                }}
+              >
+                logistic_regression_(feature_selected):
+              </CCol>
+              <CCol
+                className="text-end"
+                style={{
+                  color:
+                    predictResult['logistic_regression_(feature_selected)'] == 0 ? 'green' : 'red',
+                }}
+              >
+                {predictResult['logistic_regression_(feature_selected)']}
+              </CCol>
+            </CRow>
+            <CRow className="mb-2">
+              <CCol
+                style={{
+                  color: predictResult['logistic_regression_(improved)'] == 0 ? 'green' : 'red',
+                }}
+              >
+                logistic_regression_(improved):
+              </CCol>
+              <CCol
+                className="text-end"
+                style={{
+                  color: predictResult['logistic_regression_(improved)'] == 0 ? 'green' : 'red',
+                }}
+              >
+                {predictResult['logistic_regression_(improved)']}
+              </CCol>
+            </CRow>
+            <CRow className="mb-2">
+              <CCol
+                style={{
+                  color: predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
+                }}
+              >
+                random_forest_(improved):
+              </CCol>
+              <CCol
+                className="text-end"
+                style={{
+                  color: predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
+                }}
+              >
+                {predictResult['random_forest_(improved)']}
+              </CCol>
+            </CRow>
+          </CCol>
         </COffcanvasBody>
         <CFooter>
           <div></div>

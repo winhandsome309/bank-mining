@@ -105,14 +105,15 @@ def waiting_list():
             resDeleteApp = session.execute(stmtDeleteApp)
             return make_response("Deleted", 200)
 
-@app.route("/api/predict-result", methods=["POST"])
+@app.route("/api/predict-result", methods=["GET", "POST"])
 def get_predict_result():
-    application_id = request.args.get("application_id")
+    if request.method == "GET":
+        application_id = request.args.get("application_id")
 
-    with session_scope() as session:
-        stmt = select(PredictResult).where(PredictResult.id == application_id)
-        res = session.execute(stmt).all()
-        return utils.parse_output(res)
+        with session_scope() as session:
+            stmt = select(PredictResult).where(PredictResult.id == application_id)
+            res = session.execute(stmt).all()
+            return utils.parse_output(res)[0]
 
 @app.route("/api/model-info", methods=["GET"])
 def get_model_info():
