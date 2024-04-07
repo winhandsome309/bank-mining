@@ -26,7 +26,7 @@ Backend is located at **localhost:5000**. To run Backend server:
 
 ```
 FLASK_ENV='development'
-FLASK_APP='backend/routes.py'
+FLASK_APP='backend/flask_run.py'
 DEBUG='True'
 FLASK_DEBUG=1
 
