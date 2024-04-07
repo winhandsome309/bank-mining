@@ -42,8 +42,12 @@ class HistoryApps(Base):
     pub_rec:        Mapped[int]
     not_fully_paid: Mapped[int]
     
+    def check_type(self, attr):
+        print(type(attr))
     def as_dict(self): 
-        return {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
+        for c in self.__table__.columns:
+            self.check_type(getattr(self, c.name))
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class Application(Base):
     __tablename__ = 'loan_application'
@@ -67,16 +71,19 @@ class Application(Base):
     processed_at:   Mapped[timestamp] = mapped_column(nullable=True, server_default=None)
 
     def as_dict(self): 
-        return {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class PredictResult(Base):
     __tablename__ = 'loan_predict_result'
 
     id:             Mapped[str] = mapped_column(ForeignKey("loan_application.id"), primary_key=True)
-    predict:        Mapped[str]
-    reality:        Mapped[bool]
-    note:           Mapped[str]
+    predict:        Mapped[str] = mapped_column(nullable=True)
+    reality:        Mapped[bool] = mapped_column(nullable=True)
+    note:           Mapped[str] = mapped_column(nullable=True)
+    
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class ModelInfo(Base):

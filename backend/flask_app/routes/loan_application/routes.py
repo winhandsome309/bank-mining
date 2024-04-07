@@ -1,6 +1,7 @@
 from flask_app.models import HistoryApps
 from flask_app.models import Application
 from flask_app.models import ModelInfo
+from flask_app.models import PredictResult
 from flask_app.helper.session_scope import session_scope
 from sqlalchemy import select, null, update
 from flask_app import app
@@ -16,8 +17,9 @@ MODEL_PKL = {
 }
 
 MODEL_INFO = "analysis/loan_app/workspace/model_info.json"
+LOAN_SCALER = "analysis/loan_app/workspace/loan_scaler.gz"
 
-# loan_worker = LoanWorker(model_pkl_path=MODEL_PKL, model_info_path=MODEL_INFO)
+worker = LoanWorker(MODEL_PKL, MODEL_INFO, LOAN_SCALER)
 
 @app.route("/api/loan_application/history_data", methods=["GET", "POST"])
 def history_data():
@@ -77,12 +79,26 @@ def waiting_list():
                         processed=False,
                         processed_at=null()
                     )
+            predict = worker.predict(new_app.as_dict())
+            new_predict_result = PredictResult(
+                        id=id,
+                        predict=predict.__str__()
+            )
             try:
                 session.add(new_app)
+                session.add(new_predict_result)
             except:
                 return make_response("ERROR", 401)
-        return make_response("Created", 201)
+        return make_response(predict, 201)
 
+@app.route("/api/predict-result", methods=["POST"])
+def get_predict_result():
+    application_id = request.args.get("application_id")
+
+    with session_scope() as session:
+        stmt = select(PredictResult).where(PredictResult.id == application_id)
+        res = session.execute(stmt).all()
+        return utils.parse_output(res)
 
 @app.route("/api/model-info", methods=["GET"])
 def get_model_info():
