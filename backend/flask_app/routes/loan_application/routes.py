@@ -115,8 +115,8 @@ def get_model_info():
         return utils.parse_output(res)
 
 @app.route("/api/loan_application/model-info/update", methods=["POST"])
-def update_model_info(path=MODEL_INFO):
-    model_info_json = utils.load_from_json(path)
+def update_model_info():
+    model_info_json = worker.get_model_info()
     try:
         with session_scope() as session:
             for model_info in model_info_json:

@@ -1,4 +1,4 @@
-from hashlib import sha256
+from hashlib import sha1
 import json
 
 def parse_output(result: list[tuple]) -> list:
@@ -8,7 +8,7 @@ def parse_output(result: list[tuple]) -> list:
    return output
 
 def get_new_applicaion_id(datetime: str)-> str:
-   return sha256(datetime.encode()).hexdigest()
+   return sha1(datetime.encode()).hexdigest()
 
 def load_from_json(path):
    with open(path) as f:
