@@ -3,31 +3,66 @@ import numpy as np
 import pandas as pd
 import joblib
 from flask_app.helper import utils
+# import utils
+from typing import NamedTuple
 
-MODEL_PKL = {
-    "logistic_regression_(feature_selected)": 'analysis/loan_app/workspace/logistic_regression_(feature_selected).pkl',
-    "logistic_regression_(improved)": "analysis/loan_app/workspace/logistic_regression_(improved).pkl",
-    "random_forest_(improved)": "analysis/loan_app/workspace/random_forest_(improved).pkl"
-}
+class FeatureName():
+   Loan_Application        = 'Loan Application'
+   Marketing_Application   = 'Marketing Campagin'
+   Credit_Application      = 'Credit Fraud Detection'
 
-MODEL_INFO = "analysis/loan_app/workspace/model_info.json"
-LOAN_SCALER = "analysis/loan_app/workspace/loan_scaler.gz"
+class ModelInfo(NamedTuple):
+   feature:       FeatureName
+
+   FEATURE_NAME_TO_MODEL_PATH = {
+      FeatureName.Loan_Application : {
+         "logistic_regression_(feature_selected)": 'analysis/loan_app/workspace/logistic_regression_(feature_selected).pkl',
+         "logistic_regression_(improved)": "analysis/loan_app/workspace/logistic_regression_(improved).pkl",
+         "random_forest_(improved)": "analysis/loan_app/workspace/random_forest_(improved).pkl"
+      },
+      FeatureName.Marketing_Application : {
+         "gaussiannb": "analysis/marketing/gaussiannb.pkl",
+         "gradientboostingclassifier": "analysis/marketing/gradientboostingclassifier.pkl",
+         "mlpclassifier": "analysis/marketing/mlpclassifier.pkl",
+         "votingclassifier": "analysis/marketing/votingclassifier.pkl"
+      },
+      FeatureName.Credit_Application: {
+         
+      }
+   }
+
+   FEATURE_NAME_TO_MODEL_INFO_PATH = {
+      FeatureName.Loan_Application : "analysis/loan_app/workspace/model_info.json",
+      FeatureName.Marketing_Application: "analysis/marketing/model_info.json",
+      FeatureName.Credit_Application: "analysis/credit/model_info.json"
+   }
+
+   FEATURE_NAME_TO_SCALER_PATH = {
+      FeatureName.Loan_Application : "analysis/loan_app/workspace/loan_scaler.gz",
+      FeatureName.Marketing_Application: "",
+      FeatureName.Credit_Application: ""
+   }
+
+   @staticmethod
+   def create(feature_name):
+      return ModelInfo(feature=feature_name)
+   
+   def get_model_path(self):
+      return self.FEATURE_NAME_TO_MODEL_PATH.get(self.feature, {})
+
+   def get_scaler_path(self):
+      return self.FEATURE_NAME_TO_SCALER_PATH.get(self.feature, {})
+
+   def get_model_info_path(self):
+      return self.FEATURE_NAME_TO_MODEL_INFO_PATH.get(self.feature, {})
 
 class AppWorker():
-   pass
+   model_info: ModelInfo
 
-class LoanWorker(AppWorker):
-   model_pkl_path: dict
-   model_info_path: str
-   models: dict
-   scaler: object
-
-   def __init__(self, model_pkl_path: dict, model_info_path: str, scaler_path: str) -> None:
-      self.model_path = model_pkl_path
-      self.model_info_path = model_info_path
+   def __init__(self, model_info: ModelInfo):
+      self.model_info = model_info
       self.models = {}
-
-      for name, path in model_pkl_path.items():
+      for name, path in model_info.get_model_path().items():
          with open(path, 'rb') as f:
             try:
                clf = pickle.load(f)
@@ -35,10 +70,27 @@ class LoanWorker(AppWorker):
                print(f">> INFO: Load sklearn model - {name} successfully")
             except Exception as e:
                print(f">> WARNING: Failed to load model - {name} in {path} \n {e}")
-      self.scaler = joblib.load(scaler_path)
 
    def get_model_info(self) -> dict:
-      return utils.load_from_json(self.model_info_path)
+      return utils.load_from_json(self.model_info.get_model_info_path())
+   
+   def transform():
+      pass
+
+   def predict(self, test_df: dict) -> dict:
+      pass
+
+class LoanWorker(AppWorker):
+
+   def __init__(self, model_info: ModelInfo):
+
+      super().__init__(model_info)
+      try:
+         path = model_info.get_scaler_path()
+         self.scaler = joblib.load(path)
+         print(f">> INFO: Load scaler successfully")
+      except:
+         print(f">> WARNING: Failed to load scaler in {path}")
  
    def transform(self, test: dict) -> pd.DataFrame:
       def log_transform(data, to_log):
@@ -97,8 +149,18 @@ class LoanWorker(AppWorker):
          result[name] = model.predict(ordered_data).tolist()[0]
       return result
 
+class MarketingWorker(AppWorker):
+
+   def transform():
+      pass
+
+   def predict():
+      pass
+
+
 if __name__ == '__main__':
-   worker = LoanWorker(MODEL_PKL, MODEL_INFO, LOAN_SCALER)
+   model_info = ModelInfo.create('Loan Application')
+   worker = LoanWorker(model_info)
    #credit.policy,purpose,int.rate,installment,log.annual.inc,dti,fico,days.with.cr.line,revol.bal,revol.util,inq.last.6mths,delinq.2yrs,pub.rec,not.fully.paid
    # 1,credit_card,0.1122,164.23,10.30895266,18.64,702,5190,15840,47.1,0,0,0,0
    cols = ['credit_policy', 'purpose', 'int_rate', 'installment', 'log_annual_inc', 'dti', 'fico', 'days_with_cr_line', 'revol_bal', 'revol_util', 'inq_last_6mths', 'delinq_2yrs', 'pub_rec']
@@ -126,4 +188,7 @@ if __name__ == '__main__':
    print(worker.predict(test))
 
    
+class MarketingWorker(AppWorker):
 
+   def __init__(self) -> None:
+      super().__init__()
