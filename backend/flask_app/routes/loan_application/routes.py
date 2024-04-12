@@ -2,24 +2,17 @@ from flask_app.models import HistoryApps
 from flask_app.models import Application
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
+from flask_app.models import ClientID
 from flask_app.helper.session_scope import session_scope
 from sqlalchemy import select, null, update, delete
 from flask_app import app
 from flask import request, make_response
 import datetime
 import flask_app.helper.utils as utils
-from flask_app.helper.worker import LoanWorker
+from flask_app.helper import worker as wk
 
-MODEL_PKL = {
-    "logistic_regression_(feature_selected)": 'analysis/loan_app/workspace/logistic_regression_(feature_selected).pkl',
-    "logistic_regression_(improved)": "analysis/loan_app/workspace/logistic_regression_(improved).pkl",
-    "random_forest_(improved)": "analysis/loan_app/workspace/random_forest_(improved).pkl"
-}
-
-MODEL_INFO = "analysis/loan_app/workspace/model_info.json"
-LOAN_SCALER = "analysis/loan_app/workspace/loan_scaler.gz"
-
-worker = LoanWorker(MODEL_PKL, MODEL_INFO, LOAN_SCALER)
+model_info = wk.ModelInfo.create("Loan Application")
+worker = wk.LoanWorker(model_info)
 
 @app.route("/api/loan_application/history_data", methods=["GET", "POST"])
 def history_data():
@@ -60,6 +53,7 @@ def waiting_list():
 
 
         with session_scope() as session:
+            new_id = ClientID(id=id)
             new_app = Application(
                         id=id,
                         credit_policy=credit_policy, 
@@ -82,9 +76,11 @@ def waiting_list():
             predict = worker.predict(new_app.as_dict())
             new_predict_result = PredictResult(
                         id=id,
-                        predict=predict.__str__()
+                        predict=predict.__str__(),
+                        feature='loan'
             )
             try:
+                session.add(new_id)
                 session.add(new_app)
                 session.add(new_predict_result)
             except:
@@ -104,30 +100,6 @@ def waiting_list():
             resDeletePredict = session.execute(stmtDeletePredict)
             resDeleteApp = session.execute(stmtDeleteApp)
             return make_response("Deleted", 200)
-
-@app.route("/api/predict-result", methods=["GET", "POST"])
-def get_predict_result():
-    if request.method == "GET":
-        application_id = request.args.get("application_id")
-
-        with session_scope() as session:
-            stmt = select(PredictResult).where(PredictResult.id == application_id)
-            res = session.execute(stmt).all()
-            return utils.parse_output(res)[0]
-
-@app.route("/api/model-info", methods=["GET"])
-def get_model_info():
-    feature = request.args.get("feature")
-    from_feature_to_model = {
-        'loan_application': ModelInfo
-    }
-    with session_scope() as session:
-        model = from_feature_to_model[feature]
-        res = []
-        if model:
-            stmt = select(model)
-            res = session.execute(stmt).all()
-        return utils.parse_output(res)
 
 @app.route("/api/loan_application/model-info/update", methods=["POST"])
 def update_model_info():

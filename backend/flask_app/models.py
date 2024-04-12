@@ -7,6 +7,7 @@ from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.types import DateTime
+from sqlalchemy import DDL
 
 class utcnow(expression.FunctionElement):
     type = DateTime()
@@ -22,7 +23,8 @@ timestamp = Annotated[
 ]
 
 class Base(DeclarativeBase):
-    pass
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class HistoryApps(Base):
     __tablename__ = 'history_loan_data'
@@ -42,17 +44,15 @@ class HistoryApps(Base):
     pub_rec:        Mapped[int]
     not_fully_paid: Mapped[int]
     
-    def check_type(self, attr):
-        print(type(attr))
-    def as_dict(self): 
-        for c in self.__table__.columns:
-            self.check_type(getattr(self, c.name))
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+class ClientID(Base):
+    __tablename__ = 'clientid'
+
+    id: Mapped[str] = mapped_column(primary_key=True)
 
 class Application(Base):
     __tablename__ = 'loan_application'
 
-    id:             Mapped[str] = mapped_column(primary_key=True)
+    id:             Mapped[str] = mapped_column(ForeignKey("clientid.id"), primary_key=True)
     credit_policy:  Mapped[int] = mapped_column(nullable=True)
     purpose:        Mapped[str] = mapped_column(nullable=True)
     int_rate:       Mapped[float] = mapped_column(nullable=True)
@@ -70,22 +70,63 @@ class Application(Base):
     processed:      Mapped[bool]
     processed_at:   Mapped[timestamp] = mapped_column(nullable=True, server_default=None)
 
-    def as_dict(self): 
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+class HistoryMarketingClients(Base):
+    __tablename__ = 'history_marketing_clients'
+    
+    age: Mapped[int]        = mapped_column(nullable=True, primary_key=True)
+    job: Mapped[str]        = mapped_column(nullable=True)
+    marital: Mapped[str]    = mapped_column(nullable=True)
+    education: Mapped[str]  = mapped_column(nullable=True)
+    default: Mapped[str]    = mapped_column(nullable=True)
+    balance: Mapped[int]    = mapped_column(nullable=True)
+    housing: Mapped[str]    = mapped_column(nullable=True)
+    loan: Mapped[str]       = mapped_column(nullable=True)
+    contact: Mapped[str]    = mapped_column(nullable=True)
+    day: Mapped[int]        = mapped_column(nullable=True)
+    month: Mapped[str]      = mapped_column(nullable=True)
+    duration: Mapped[int]   = mapped_column(nullable=True)
+    campaign: Mapped[int]   = mapped_column(nullable=True)
+    pdays: Mapped[int]      = mapped_column(nullable=True)
+    previous: Mapped[int]   = mapped_column(nullable=True)
+    poutcome: Mapped[str]   = mapped_column(nullable=True)
+    deposit: Mapped[str]    = mapped_column(nullable=True)
+
+class MarketingClient(Base):
+    __tablename__ = 'marketing_client'
+
+    id: Mapped[str]         = mapped_column(ForeignKey("clientid.id"), primary_key=True)
+    age: Mapped[int]        = mapped_column(nullable=True)
+    job: Mapped[str]        = mapped_column(nullable=True)
+    marital: Mapped[str]    = mapped_column(nullable=True)
+    education: Mapped[str]  = mapped_column(nullable=True)
+    default: Mapped[str]    = mapped_column(nullable=True)
+    balance: Mapped[int]    = mapped_column(nullable=True)
+    housing: Mapped[str]    = mapped_column(nullable=True)
+    loan: Mapped[str]       = mapped_column(nullable=True)
+    contact: Mapped[str]    = mapped_column(nullable=True)
+    day: Mapped[int]        = mapped_column(nullable=True)
+    month: Mapped[str]      = mapped_column(nullable=True)
+    duration: Mapped[int]   = mapped_column(nullable=True)
+    campaign: Mapped[int]   = mapped_column(nullable=True)
+    pdays: Mapped[int]      = mapped_column(nullable=True)
+    previous: Mapped[int]   = mapped_column(nullable=True)
+    poutcome: Mapped[str]   = mapped_column(nullable=True)
+    created: Mapped[timestamp]
 
 
 class PredictResult(Base):
     __tablename__ = 'loan_predict_result'
 
-    id:             Mapped[str] = mapped_column(ForeignKey("loan_application.id"), primary_key=True)
+    id:             Mapped[str] = mapped_column(ForeignKey("clientid.id"), primary_key=True)
     predict:        Mapped[str] = mapped_column(nullable=True)
     reality:        Mapped[bool] = mapped_column(nullable=True)
+    feature:        Mapped[str] = mapped_column(ForeignKey("feature.name"))
     note:           Mapped[str] = mapped_column(nullable=True)
     
-    def as_dict(self): 
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-
+class Feature(Base):
+    __tablename__ = 'feature'
+    id:             Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name:           Mapped[str] = mapped_column(unique=True)
 class ModelInfo(Base):
     __tablename__ = 'model_info'
 
@@ -96,5 +137,20 @@ class ModelInfo(Base):
     auc:            Mapped[float]
     feature:        Mapped[str]
 
-    def as_dict(self): 
-        return {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
+create_id_func = DDL(
+    "CREATE FUNCTION trigger_function()"
+    "RETURNS TRIGGER"
+    "LANGUAGE PLPGSQL"
+    "AS $$"
+    "BEGIN"
+    # Trigger logic
+    "END;"
+    "$$"
+)
+
+create_id = DDL(
+    "CREATE TRIGGER insert_app_id"
+    "BEFORE INSERT"
+    "history_marketing_clients"
+    "EXECUTE PROCEDURE insert_client_id"
+)

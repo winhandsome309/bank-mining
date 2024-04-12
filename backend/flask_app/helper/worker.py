@@ -2,13 +2,14 @@ import pickle
 import numpy as np
 import pandas as pd
 import joblib
+import json
 from flask_app.helper import utils
 # import utils
 from typing import NamedTuple
 
 class FeatureName():
    Loan_Application        = 'Loan Application'
-   Marketing_Application   = 'Marketing Campagin'
+   Marketing_Application   = 'Marketing Campaign'
    Credit_Application      = 'Credit Fraud Detection'
 
 class ModelInfo(NamedTuple):
@@ -43,6 +44,11 @@ class ModelInfo(NamedTuple):
       FeatureName.Credit_Application: ""
    }
 
+   FEATURE_NAME_TO_MAPPING_PATH = {
+      FeatureName.Loan_Application : "",
+      FeatureName.Marketing_Application: "analysis/marketing/mapping_categorical_vars.json",
+      FeatureName.Credit_Application: ""
+   }
    @staticmethod
    def create(feature_name):
       return ModelInfo(feature=feature_name)
@@ -55,6 +61,9 @@ class ModelInfo(NamedTuple):
 
    def get_model_info_path(self):
       return self.FEATURE_NAME_TO_MODEL_INFO_PATH.get(self.feature, {})
+   
+   def get_mapping_vars_path(self):
+      return self.FEATURE_NAME_TO_MAPPING_PATH.get(self.feature, {})
 
 class AppWorker():
    model_info: ModelInfo
@@ -74,11 +83,18 @@ class AppWorker():
    def get_model_info(self) -> dict:
       return utils.load_from_json(self.model_info.get_model_info_path())
    
-   def transform():
+   def transform(self, test):
       pass
 
    def predict(self, test_df: dict) -> dict:
-      pass
+      result = dict()
+      data_transformed = self.transform(test_df)
+      for name, model in self.models.items():
+         # Reorder features to fit model
+         mask = model.feature_names_in_.tolist()
+         ordered_data = data_transformed[mask]
+         result[name] = model.predict(ordered_data).tolist()[0]
+      return result
 
 class LoanWorker(AppWorker):
 
@@ -139,28 +155,57 @@ class LoanWorker(AppWorker):
 
       return X_test_e_l_n
 
-   def predict(self, test_df: dict) -> dict:
-      result = dict()
-      data_transformed = self.transform(test_df)
-      for name, model in self.models.items():
-         # Reorder features to fit model
-         mask = model.feature_names_in_.tolist()
-         ordered_data = data_transformed[mask]
-         result[name] = model.predict(ordered_data).tolist()[0]
-      return result
-
 class MarketingWorker(AppWorker):
+   categorical_to_number: dict
 
-   def transform():
-      pass
+   def __init__(self, model_info: ModelInfo):
+      mapping_path = model_info.get_mapping_vars_path()
+      with open(mapping_path, 'r') as f:
+         self.categorical_to_number = json.load(f)
 
-   def predict():
-      pass
+      super().__init__(model_info)
 
+   def transform(self, test: dict):      
+      c = {
+         'age':         'int64',
+         'job':         'int8',
+         'marital':     'int8',
+         'education':   'int8',
+         'default':     'int8',
+         'balance':     'int64',
+         'housing':     'int8',
+         'loan':        'int8',
+         'contact':     'int8',
+         'day':         'int64',
+         'month':       'int8',
+         'duration':    'int64',
+         'campaign':    'int64',
+         'pdays':       'int64',
+         'previous':    'int64',
+         'poutcome':    'int8'
+      }
+      print(test)
+
+      for var_name in self.categorical_to_number.keys():
+         categorical_var = test[var_name]
+         try:
+            test[var_name] = self.categorical_to_number[var_name][categorical_var]
+         except Exception as e:
+            print(f"{var_name} - {self.categorical_to_number[var_name]}")
+
+      X_test = pd.DataFrame(test, [0])
+      for cols in X_test.columns:
+         if cols not in c.keys():
+            X_test.drop([cols], axis=1)
+      
+      X_test = X_test.astype(c)
+      X_test = X_test[c.keys()]
+
+      return X_test
 
 if __name__ == '__main__':
-   model_info = ModelInfo.create('Loan Application')
-   worker = LoanWorker(model_info)
+   model_info = ModelInfo.create('Marketing Campaign')
+   worker = MarketingWorker(model_info)
    #credit.policy,purpose,int.rate,installment,log.annual.inc,dti,fico,days.with.cr.line,revol.bal,revol.util,inq.last.6mths,delinq.2yrs,pub.rec,not.fully.paid
    # 1,credit_card,0.1122,164.23,10.30895266,18.64,702,5190,15840,47.1,0,0,0,0
    cols = ['credit_policy', 'purpose', 'int_rate', 'installment', 'log_annual_inc', 'dti', 'fico', 'days_with_cr_line', 'revol_bal', 'revol_util', 'inq_last_6mths', 'delinq_2yrs', 'pub_rec']
@@ -184,11 +229,66 @@ if __name__ == '__main__':
          "revol_util": 34.3,
       }
 
+   data = [
+      {
+         'age': 59,
+         'job': 'admin.',
+         'marital': 'married',
+         'education': 'secondary',
+         'default': 'no',
+         'balance': 2343,
+         'housing': 'yes',
+         'loan': 'no',
+         'contact': 'unknown',
+         'day': 5,
+         'month': 'may',
+         'duration': 1042,
+         'campaign': 1,
+         'pdays': -1,
+         'previous': 0,
+         'poutcome': 'unknown',
+         'deposit': 'yes'
+      },
+      {
+         'age': 56,
+         'job': 'admin.',
+         'marital': 'married',
+         'education': 'secondary',
+         'default': 'no',
+         'balance': 45,
+         'housing': 'no',
+         'loan': 'no',
+         'contact': 'unknown',
+         'day': 5,
+         'month': 'may',
+         'duration': 1467,
+         'campaign': 1,
+         'pdays': -1,
+         'previous': 0,
+         'poutcome': 'unknown',
+         'deposit': 'no'
+      },
+      {
+         'age': 19,
+         'job': 'technician',
+         'marital': 'married',
+         'education': 'secondary',
+         'default': 'no',
+         'balance': 1000,
+         'housing': 'yes',
+         'loan': 'no',
+         'contact': 'unknown',
+         'day': 1,
+         'month': 'may',
+         'duration': 139,
+         'campaign': 1,
+         'pdays': -1,
+         'previous': 0,
+         'poutcome': 'unknown',
+         'deposit': 'yes'
+      }
+   ]
 
-   print(worker.predict(test))
-
-   
-class MarketingWorker(AppWorker):
-
-   def __init__(self) -> None:
-      super().__init__()
+   for test in data:
+      print(">> RESULT #1: ")
+      print(worker.predict(test))
