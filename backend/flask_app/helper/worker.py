@@ -49,6 +49,44 @@ class ModelInfo(NamedTuple):
       FeatureName.Marketing_Application: "analysis/marketing/mapping_categorical_vars.json",
       FeatureName.Credit_Application: ""
    }
+
+   FEATURE_NAME_TO_TEST_COLUMNS = {
+      FeatureName.Loan_Application : {
+         'credit_policy': 'int64',
+         'days_with_cr_line': 'float64',
+         'delinq_2yrs': 'int64',
+         'dti': 'float64',
+         'fico': 'int64',
+         'inq_last_6mths': 'int64',
+         'installment': 'float64',
+         'int_rate': 'float64',
+         'log_annual_inc': 'float64',
+         'pub_rec': 'int64',
+         'purpose': 'object',
+         'revol_bal': 'int64',
+         'revol_util': 'float64'
+      },
+      FeatureName.Marketing_Application: {
+         'age':         'int64',
+         'job':         'int8',
+         'marital':     'int8',
+         'education':   'int8',
+         'default':     'int8',
+         'balance':     'int64',
+         'housing':     'int8',
+         'loan':        'int8',
+         'contact':     'int8',
+         'day':         'int64',
+         'month':       'int8',
+         'duration':    'int64',
+         'campaign':    'int64',
+         'pdays':       'int64',
+         'previous':    'int64',
+         'poutcome':    'int8'
+      },
+      FeatureName.Credit_Application: ""
+   }
+
    @staticmethod
    def create(feature_name):
       return ModelInfo(feature=feature_name)
@@ -64,6 +102,9 @@ class ModelInfo(NamedTuple):
    
    def get_mapping_vars_path(self):
       return self.FEATURE_NAME_TO_MAPPING_PATH.get(self.feature, {})
+
+   def get_test_columns(self):
+      return self.FEATURE_NAME_TO_TEST_COLUMNS.get(self.feature, {})
 
 class AppWorker():
    model_info: ModelInfo
@@ -123,21 +164,7 @@ class LoanWorker(AppWorker):
          if c not in cols:
             X_test.drop([c], axis=1)
 
-      cols_types = {
-         'credit_policy': 'int64',
-         'days_with_cr_line': 'float64',
-         'delinq_2yrs': 'int64',
-         'dti': 'float64',
-         'fico': 'int64',
-         'inq_last_6mths': 'int64',
-         'installment': 'float64',
-         'int_rate': 'float64',
-         'log_annual_inc': 'float64',
-         'pub_rec': 'int64',
-         'purpose': 'object',
-         'revol_bal': 'int64',
-         'revol_util': 'float64'
-      }
+      cols_types = self.model_info.get_test_columns()
       X_test = X_test.astype(cols_types)
       X_test = X_test[cols]
       # create_dummies
@@ -166,26 +193,7 @@ class MarketingWorker(AppWorker):
       super().__init__(model_info)
 
    def transform(self, test: dict):      
-      c = {
-         'age':         'int64',
-         'job':         'int8',
-         'marital':     'int8',
-         'education':   'int8',
-         'default':     'int8',
-         'balance':     'int64',
-         'housing':     'int8',
-         'loan':        'int8',
-         'contact':     'int8',
-         'day':         'int64',
-         'month':       'int8',
-         'duration':    'int64',
-         'campaign':    'int64',
-         'pdays':       'int64',
-         'previous':    'int64',
-         'poutcome':    'int8'
-      }
-      print(test)
-
+      c = self.model_info.get_test_columns()
       for var_name in self.categorical_to_number.keys():
          categorical_var = test[var_name]
          try:
@@ -203,15 +211,8 @@ class MarketingWorker(AppWorker):
 
       return X_test
 
-if __name__ == '__main__':
-   model_info = ModelInfo.create('Marketing Campaign')
-   worker = MarketingWorker(model_info)
-   #credit.policy,purpose,int.rate,installment,log.annual.inc,dti,fico,days.with.cr.line,revol.bal,revol.util,inq.last.6mths,delinq.2yrs,pub.rec,not.fully.paid
-   # 1,credit_card,0.1122,164.23,10.30895266,18.64,702,5190,15840,47.1,0,0,0,0
-   cols = ['credit_policy', 'purpose', 'int_rate', 'installment', 'log_annual_inc', 'dti', 'fico', 'days_with_cr_line', 'revol_bal', 'revol_util', 'inq_last_6mths', 'delinq_2yrs', 'pub_rec']
-   test_1 = [1,"debt_consolidation",0.1122,507.46,10.59663473,13.5,712,5368.958333,6513,34.3,3,0,1]
-   # worker.
-   test = {
+class TestData():
+   loan = [{
         "id": "b2532f84ba5c7dc72dc968d5e039919e9da690c9bd6b145ddcc5d5f2263f49f8",
          "created": "Sat, 06 Apr 2024 01:19:39 GMT",
          "credit_policy": 1,
@@ -227,9 +228,9 @@ if __name__ == '__main__':
          "purpose": "debt_consolidation",
          "revol_bal": 6513,
          "revol_util": 34.3,
-      }
-
-   data = [
+   }]
+    
+   marketing = [
       {
          'age': 59,
          'job': 'admin.',
@@ -288,7 +289,10 @@ if __name__ == '__main__':
          'deposit': 'yes'
       }
    ]
-
-   for test in data:
-      print(">> RESULT #1: ")
+if __name__ == '__main__':
+   model_info = ModelInfo.create('Marketing Campaign')
+   worker = MarketingWorker(model_info)
+   test_data = TestData()
+   for idx, test in enumerate(test_data.marketing):
+      print(f">> RESULT #{idx + 1}: ")
       print(worker.predict(test))
