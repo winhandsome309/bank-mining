@@ -11,6 +11,14 @@ const LoanModels = React.lazy(() => import('./views/loan-app/models/Models'))
 const LoanAboutData = React.lazy(() => import('./views/loan-app/about-data/AboutData'))
 
 // Marketing
+const PotentialCustomer = React.lazy(
+  () => import('./views/marketing/potential-customer/PotentailCustomer'),
+)
+const OldCustomer = React.lazy(() => import('./views/marketing/old-customer/OldCustomer'))
+const MarketingModels = React.lazy(() => import('./views/marketing/models/Models'))
+const MarketingAboutData = React.lazy(() => import('./views/marketing/about-data/AboutData'))
+
+// Marketing
 
 // Fraud
 
@@ -62,10 +70,17 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
+  // Loan Application
   { path: '/loan-app/waiting', name: 'Waiting', element: LoanWaiting },
   { path: '/loan-app/processed', name: 'Processed', element: LoanProcessed },
   { path: '/loan-app/models', name: 'Models', element: LoanModels },
   { path: '/loan-app/about-data', name: 'AboutData', element: LoanAboutData },
+  // Marketing
+  { path: '/marketing/potential-customer', name: 'PotentialCustomer', element: PotentialCustomer },
+  { path: '/marketing/old-customer', name: 'OldCustomer', element: OldCustomer },
+  { path: '/marketing/models', name: 'Models', element: MarketingModels },
+  { path: '/marketing/about-data', name: 'AboutData', element: MarketingAboutData },
+  //
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },

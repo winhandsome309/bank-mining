@@ -1,4 +1,5 @@
 from flask_app.models import HistoryApps
+from flask_app.models import ProcessedApps
 from flask_app.models import Application
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
@@ -107,16 +108,17 @@ def waiting_list():
 def processed_list():
     if request.method == "GET":
         with session_scope() as session:
-                stmt = select(HistoryApps)
+                stmt = select(ProcessedApps)
                 res = session.execute(stmt).all()
                 return utils.parse_output(res)
+        
     elif request.method == "POST":
         with session_scope() as session:
             idWaitingApp = request.args.get("application_id")
             stmtAcceptWaitingApp = select(Application).where(Application.id == idWaitingApp)
             waitingAppRes = session.execute(stmtAcceptWaitingApp).all()
             waitingApp = utils.parse_output(waitingAppRes)[0]
-            processedApp = HistoryApps(
+            processedApp = ProcessedApps(
                 id=waitingApp["id"],
                 credit_policy=waitingApp["credit_policy"], 
                 purpose=waitingApp["purpose"],
@@ -131,7 +133,7 @@ def processed_list():
                 inq_last_6mths=waitingApp["inq_last_6mths"],
                 delinq_2yrs=waitingApp["delinq_2yrs"],
                 pub_rec=waitingApp["pub_rec"],
-                not_fully_paid=-1,
+                # not_fully_paid=-1,
             )
             session.add(processedApp)
             stmtDeleteApp = delete(Application).where(Application.id == idWaitingApp)

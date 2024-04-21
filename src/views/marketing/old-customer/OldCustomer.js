@@ -72,7 +72,27 @@ import {
 } from '@coreui/icons'
 import axios from 'axios'
 
-const Processed = () => {
+const listMarketingParams = [
+  ['id', 'abc'],
+  ['age', 'abc'],
+  ['job', 'abc'],
+  ['marital', 'abc'],
+  ['education', 'abc'],
+  ['default', 'abc'],
+  ['balance', 'abc'],
+  ['housing', 'abc'],
+  ['loan', 'abc'],
+  ['contact', 'abc'],
+  ['day', 'abc'],
+  ['month', 'abc'],
+  ['duration', 'abc'],
+  ['campaign', 'abc'],
+  ['pdays', 'abc'],
+  ['previous', 'abc'],
+  ['poutcome', 'abc'],
+]
+
+const OldCustomer = () => {
   const [uploadFile, setUploadFile] = useState(true)
   const [visibleApp, setVisibleApp] = useState(false)
   const [creditPolicy, setCreditPolicy] = useState()
@@ -113,11 +133,9 @@ const Processed = () => {
   const [searched, setSearched] = useState('')
 
   const fetchApplication = async () => {
-    axios
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/processed-list')
-      .then((res) => {
-        setTableData(res.data)
-      })
+    axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/old_client').then((res) => {
+      setTableData(res.data)
+    })
   }
 
   const sendIdSearch = async () => {
@@ -195,15 +213,12 @@ const Processed = () => {
                       <CTableHeaderCell className="bg-body-tertiary text-center">
                         ID
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Purpose</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary ">
-                        Credit Policy
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Int Rate</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Installment</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">
-                        Log Annual Inc
-                      </CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">Age</CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">Job</CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary ">Marital</CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">Education</CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">Default</CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">Balance</CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">...</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -218,23 +233,25 @@ const Processed = () => {
                         }}
                       >
                         <CTableDataCell className="text-center">
-                          {/* <div className="fw-semibold">{item.id.substring(0, 5)}...</div> */}
                           <div>{item.id}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.purpose}</div>
+                          <div>{item.age}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.credit_policy}</div>
+                          <div>{item.job}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.int_rate}</div>
+                          <div>{item.marital}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.installment}</div>
+                          <div>{item.education}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.log_annual_inc}</div>
+                          <div>{item.default}</div>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          <div>{item.balance}</div>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>...</div>
@@ -258,150 +275,18 @@ const Processed = () => {
         </COffcanvasHeader>
         <COffcanvasBody>
           <CCol>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Id </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>
-                {/* <CRow>{appData['id'].substring(0, 20)}</CRow>
-                <CRow>{appData['id'].substring(20)}</CRow> */}
-                {appData['id']}
-              </CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Credit Policy </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['credit_policy']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Purpose </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['purpose']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Int Rate </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['int_rate']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Installment </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['installment']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Log Annual Inc </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['log_annual_inc']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Dti </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['dti']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Fico </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['fico']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Days With Cr Line </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['days_with_cr_line']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Revol Bal </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['revol_bal']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Revol Util </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['revol_util']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Inq Last 6mths </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['inq_last_6mths']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Delinq 2yrs </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['delinq_2yrs']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Pub Rec </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['pub_rec']}</CCol>
-            </CRow>
+            {listMarketingParams.map((params, index) => (
+              <CRow className="mb-2">
+                <CCol>
+                  <CContainer>
+                    <CTooltip placement="left" content={params[1]}>
+                      <div> {params[0]} </div>
+                    </CTooltip>
+                  </CContainer>
+                </CCol>
+                <CCol>{appData[params[0]]}</CCol>
+              </CRow>
+            ))}
           </CCol>
 
           <hr />
@@ -416,21 +301,21 @@ const Processed = () => {
               className="me-2"
               onClick={() => {
                 setVisibleApp(false)
-                setMsgRecheck('INSOLVENT')
+                setMsgRecheck('CHURNED')
                 setVisibleRecheck(true)
               }}
             >
-              Insolvent
+              Churned
             </CButton>
             <CButton
               color="success"
               onClick={() => {
                 setVisibleApp(false)
-                setMsgRecheck('SOLVENT')
+                setMsgRecheck('LOYAL')
                 setVisibleRecheck(true)
               }}
             >
-              Solvent
+              Loyal
             </CButton>
           </div>
         </CFooter>
@@ -471,4 +356,4 @@ const Processed = () => {
   )
 }
 
-export default Processed
+export default OldCustomer

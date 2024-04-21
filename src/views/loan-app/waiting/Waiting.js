@@ -359,6 +359,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="creditPolicy">
                   <CFormInput
+                    floatingLabel="creditPolicy"
                     id="autoSizingInput"
                     placeholder="creditPolicy"
                     onChange={(e) => {
@@ -371,6 +372,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="purpose">
                   <CFormInput
+                    floatingLabel="purpose"
                     id="autoSizingInput"
                     placeholder="purpose"
                     onChange={(e) => {
@@ -385,6 +387,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="intRate">
                   <CFormInput
+                    floatingLabel="intRate"
                     id="autoSizingInput"
                     placeholder="intRate"
                     onChange={(e) => {
@@ -397,6 +400,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="installment">
                   <CFormInput
+                    floatingLabel="installment"
                     id="autoSizingInput"
                     placeholder="installment"
                     onChange={(e) => {
@@ -411,6 +415,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="logAnnualInc">
                   <CFormInput
+                    floatingLabel="logAnnualInc"
                     id="autoSizingInput"
                     placeholder="logAnnualInc"
                     onChange={(e) => {
@@ -423,6 +428,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="dti">
                   <CFormInput
+                    floatingLabel="dti"
                     id="autoSizingInput"
                     placeholder="dti"
                     onChange={(e) => {
@@ -437,6 +443,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="fico">
                   <CFormInput
+                    floatingLabel="fico"
                     id="autoSizingInput"
                     placeholder="fico"
                     onChange={(e) => {
@@ -449,6 +456,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="daysWithCrLine">
                   <CFormInput
+                    floatingLabel="daysWithCrLine"
                     id="autoSizingInput"
                     placeholder="daysWithCrLine"
                     onChange={(e) => {
@@ -463,6 +471,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="revolBal">
                   <CFormInput
+                    floatingLabel="revolBal"
                     id="autoSizingInput"
                     placeholder="revolBal"
                     onChange={(e) => {
@@ -475,6 +484,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="revolUtil">
                   <CFormInput
+                    floatingLabel="revolUtil"
                     id="autoSizingInput"
                     placeholder="revolUtil"
                     onChange={(e) => {
@@ -489,6 +499,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="inqLast6mths">
                   <CFormInput
+                    floatingLabel="inqLast6mths"
                     id="autoSizingInput"
                     placeholder="inqLast6mths"
                     onChange={(e) => {
@@ -501,6 +512,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="delinq2yrs">
                   <CFormInput
+                    floatingLabel="delinq2yrs"
                     id="autoSizingInput"
                     placeholder="delinq2yrs"
                     onChange={(e) => {
@@ -515,6 +527,7 @@ const Waiting = () => {
               <CCol>
                 <CTooltip placement="left" content="pubRec">
                   <CFormInput
+                    floatingLabel="pubRec"
                     id="autoSizingInput"
                     placeholder="pubRec"
                     onChange={(e) => {

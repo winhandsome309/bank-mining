@@ -19,6 +19,9 @@ import {
   cilGraph,
   cilTask,
   cilFindInPage,
+  cilPeople,
+  cilUserPlus,
+  cilUser,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -79,21 +82,27 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Target',
-        to: '/marketing/target',
-        icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+        name: 'Potential Customer',
+        to: '/marketing/potential-customer',
+        icon: <CIcon icon={cilUserPlus} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
-        name: 'Past',
-        to: '/marketing/past',
-        icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
+        name: 'Old Customer',
+        to: '/marketing/old-customer',
+        icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
         name: 'Model Info.',
-        to: '/marketing/model',
+        to: '/marketing/models',
         icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'About Data',
+        to: '/marketing/about-data',
+        icon: <CIcon icon={cilFindInPage} customClassName="nav-icon" />,
       },
     ],
   },
@@ -115,7 +124,7 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Model Info.',
-        to: '/fraud/model',
+        to: '/fraud/models',
         icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
       },
     ],

@@ -17,8 +17,9 @@ def index():
 @cross_origin()
 def getToken():
     if request.method == "GET":
+        idDashboard = int(request.args.get("id"))
         payload = {
-        "resource": {"dashboard": 9},
+        "resource": {"dashboard": idDashboard},
         "params": {
             
         },

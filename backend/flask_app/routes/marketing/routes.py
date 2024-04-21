@@ -2,6 +2,7 @@
 from flask_app.models import PredictResult
 from flask_app.models import HistoryMarketingClients
 from flask_app.models import MarketingClient
+from flask_app.models import MarketingOldClient
 from flask_app.models import ClientID
 from flask_app.helper.session_scope import session_scope
 from sqlalchemy import select, null, update, delete
@@ -103,3 +104,41 @@ def client():
          resDeletePredict = session.execute(stmtDeletePredict)
          resDeleteApp = session.execute(stmtDeleteApp)
          return make_response("Deleted", 200)
+      
+@app.route("/api/marketing/old_client", methods=["GET", "POST"])
+def oldClient():
+    if request.method == "GET":
+        with session_scope() as session:
+                stmt = select(MarketingOldClient)
+                res = session.execute(stmt).all()
+                return utils.parse_output(res)
+        
+    elif request.method == "POST":
+        with session_scope() as session:
+            idCustomer = request.args.get("customer_id")
+            stmtAcceptCustomer = select(MarketingClient).where(MarketingClient.id == idCustomer)
+            customerRes = session.execute(stmtAcceptCustomer).all()
+            customer = utils.parse_output(customerRes)[0]
+            oldCustomer = MarketingOldClient(
+               id=customer["id"],
+               age=customer["age"],
+               job=customer["job"],
+               marital=customer["marital"],
+               education=customer["education"],
+               default=customer["default"],
+               balance=customer["balance"],
+               housing=customer["housing"],
+               loan=customer["loan"],
+               contact=customer["contact"],
+               day=customer["day"],
+               month=customer["month"],
+               duration=customer["duration"],
+               campaign=customer["campaign"],
+               pdays=customer["pdays"],
+               previous=customer["previous"],
+               poutcome=customer["poutcome"],
+            )
+            session.add(oldCustomer)
+            stmtDeleteCustomer = delete(MarketingClient).where(MarketingClient.id == idCustomer)
+            _ = session.execute(stmtDeleteCustomer)
+            return make_response("success", 200)

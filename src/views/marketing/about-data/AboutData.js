@@ -61,22 +61,16 @@ const AboutData = () => {
         },
       })
       .then((res) => {
+        console.log(res.data)
         setIframeUrl(res.data)
       })
   }
 
   useEffect(() => {
-    getToken(process.env.REACT_APP_LOAN_DASHBOARD)
+    getToken(process.env.REACT_APP_MARKETING_DASHBOARD)
   }, [])
 
   return (
-    // <>
-    //   {iframeUrl == '' ? (
-    //     <></>
-    //   ) : (
-    //     <iframe src={iframeUrl} frameBorder={0} width={1250} height={2550} allowTransparency />
-    //   )}
-    // </>
     <>
       <CRow>
         <CCol xs>
@@ -89,7 +83,7 @@ const AboutData = () => {
                   src={iframeUrl}
                   frameBorder={0}
                   width={1250}
-                  height={2550}
+                  height={2800}
                   allowTransparency
                 />
               )}
