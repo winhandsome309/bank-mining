@@ -110,15 +110,34 @@ const Processed = () => {
   const [visibleRecheck, setVisibleRecheck] = useState(false)
   const [msgRecheck, setMsgRecheck] = useState('')
   const [idSearch, setIdSearch] = useState('')
+  const [searched, setSearched] = useState('')
 
   const fetchApplication = async () => {
-    axios.get(process.env.REACT_APP_API_ENDPOINT + '/loan-app/waiting').then((res) => {
-      setTableData(res.data)
-    })
+    axios
+      .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/history_data')
+      .then((res) => {
+        setTableData(res.data)
+      })
   }
 
   const sendIdSearch = async () => {
-    console.log(idSearch)
+    for (let item of tableData) {
+      if (item['id'] == idSearch) {
+        setSearched([item])
+        return
+      }
+    }
+    // tableData.forEach((item) => {
+    //   if (item['id'] == idSearch) {
+    //     setSearched([item])
+    //     return
+    //   }
+    // })
+    if (idSearch == '') {
+      setSearched('')
+    } else {
+      setSearched('NF')
+    }
   }
 
   useEffect(() => {
@@ -167,6 +186,8 @@ const Processed = () => {
             <CCardBody>
               {tableData.length == 0 ? (
                 <div>There is nothing to show</div>
+              ) : searched == 'NF' ? (
+                <div>Not found</div>
               ) : (
                 <CTable align="middle" className="mb-0 border" hover responsive>
                   <CTableHead className="text-nowrap">
@@ -187,7 +208,7 @@ const Processed = () => {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {tableData.map((item, index) => (
+                    {(searched == '' ? tableData : searched).map((item, index) => (
                       <CTableRow
                         v-for="item in tableItems"
                         key={index}
@@ -197,7 +218,8 @@ const Processed = () => {
                         }}
                       >
                         <CTableDataCell className="text-center">
-                          <div className="fw-semibold">{item.id}</div>
+                          {/* <div className="fw-semibold">{item.id.substring(0, 5)}...</div> */}
+                          <div>{item.id}</div>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>{item.purpose}</div>
@@ -244,7 +266,11 @@ const Processed = () => {
                   </CTooltip>
                 </CContainer>
               </CCol>
-              <CCol>{appData['id']}</CCol>
+              <CCol>
+                {/* <CRow>{appData['id'].substring(0, 20)}</CRow>
+                <CRow>{appData['id'].substring(20)}</CRow> */}
+                {appData['id']}
+              </CCol>
             </CRow>
             <CRow className="mb-2">
               <CCol>
@@ -380,7 +406,7 @@ const Processed = () => {
 
           <hr />
 
-          <div className="text-center">Result of Models</div>
+          {/* <div className="text-center">Result of Models</div> */}
         </COffcanvasBody>
         <CFooter>
           <div></div>

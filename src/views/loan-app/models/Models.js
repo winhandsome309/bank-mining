@@ -66,13 +66,22 @@ const Models = () => {
                     {model}
                   </CDropdownToggle>
                   <CDropdownMenu>
-                    <CDropdownItem onClick={() => setModel('Linear Regression')}>
+                    <CDropdownItem
+                      href="#/loan-app/models"
+                      onClick={() => setModel('Linear Regression')}
+                    >
                       Linear Regression
                     </CDropdownItem>
-                    <CDropdownItem onClick={() => setModel('Logistic Regression')}>
+                    <CDropdownItem
+                      href="#/loan-app/models"
+                      onClick={() => setModel('Logistic Regression')}
+                    >
                       Logistic Regression
                     </CDropdownItem>
-                    <CDropdownItem onClick={() => setModel('Random Forest')}>
+                    <CDropdownItem
+                      href="#/loan-app/models"
+                      onClick={() => setModel('Random Forest')}
+                    >
                       Random Forest
                     </CDropdownItem>
                   </CDropdownMenu>
@@ -81,7 +90,7 @@ const Models = () => {
             </CCardHeader>
             <CCardBody>
               <iframe
-                src="./analysis/loan_app/eval_model_img/output.html"
+                src="./analysis/loan_app/eval_model_img/plotly_graph.html"
                 height={1000}
                 width={800}
                 loading="lazy"

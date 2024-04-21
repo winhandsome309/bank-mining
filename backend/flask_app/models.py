@@ -29,6 +29,7 @@ class Base(DeclarativeBase):
 class HistoryApps(Base):
     __tablename__ = 'history_loan_data'
 
+    id:             Mapped[str] = mapped_column(primary_key=True)
     credit_policy:  Mapped[int] = mapped_column(primary_key=True)
     purpose:        Mapped[str]
     int_rate:       Mapped[float]

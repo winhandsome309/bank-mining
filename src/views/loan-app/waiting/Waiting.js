@@ -122,8 +122,9 @@ const Waiting = () => {
   })
   const [visibleRecheck, setVisibleRecheck] = useState(false)
   const [msgRecheck, setMsgRecheck] = useState('')
-  const [predictResult, setPredictResult] = useState({})
+  const [predictResult, setPredictResult] = useState(false)
   const [changeApp, setChangeApp] = useState(false)
+  const isMounted = useRef(false)
 
   const fetchApplication = async () => {
     axios
@@ -173,10 +174,27 @@ const Waiting = () => {
       })
       .then((res) => {
         if (res.status === 200) {
-          var temp = JSON.parse(res.data['predict'].replace(/'/g, '"'))
+          var temp = JSON.parse(res.data[0]['predict'].replace(/'/g, '"'))
           setPredictResult(temp)
+        }
+      })
+  }
 
-          setVisibleApp(true)
+  const acceptApplication = async (id) => {
+    axios
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/processed-list',
+        {},
+        {
+          params: {
+            application_id: id,
+          },
+        },
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          addToast(successToast('Accepted successully'))
+          fetchApplication()
         }
       })
   }
@@ -186,8 +204,25 @@ const Waiting = () => {
   }, [])
 
   useEffect(() => {
-    fetchPredictResult()
+    if (changeApp == true) {
+      fetchPredictResult()
+    }
   }, [appData, changeApp])
+
+  useEffect(() => {
+    if (predictResult != false) {
+      setVisibleApp(true)
+    }
+  }, [appData, predictResult])
+
+  useEffect(() => {
+    if (visibleApp == false && isMounted.current) {
+      setChangeApp(!changeApp)
+      // setPredictResult(false)
+    } else {
+      isMounted.current = true
+    }
+  }, [visibleApp])
 
   const successToast = (msg) => (
     <CToast title="Success" color="success" className="d-flex">
@@ -255,7 +290,8 @@ const Waiting = () => {
                         }}
                       >
                         <CTableDataCell className="text-center">
-                          <div className="fw-semibold">{item.id.substring(0, 5)}...</div>
+                          {/* <div className="fw-semibold">{item.id.substring(0, 5)}...</div> */}
+                          <div>{item.id}</div>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>{item.purpose}</div>
@@ -280,6 +316,7 @@ const Waiting = () => {
                             icon={cilCheck}
                             className="text-success"
                             onClick={(e) => {
+                              setAppData(item)
                               e.stopPropagation()
                               setMsgRecheck('ACCEPT')
                               setVisibleRecheck(true)
@@ -320,146 +357,172 @@ const Waiting = () => {
           <CCol>
             <CRow className="mb-3">
               <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="creditPolicy"
-                  onChange={(e) => {
-                    // setCreditPolicy(e.target.value)
-                    setForm({ ...form, credit_policy: parseInt(e.target.value) })
-                  }}
-                />
+                <CTooltip placement="left" content="creditPolicy">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="creditPolicy"
+                    onChange={(e) => {
+                      // setCreditPolicy(e.target.value)
+                      setForm({ ...form, credit_policy: parseInt(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
               </CCol>
               <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="purpose"
-                  onChange={(e) => {
-                    // setPurpose(e.target.value)
-                    setForm({ ...form, purpose: e.target.value })
-                  }}
-                />
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="intRate"
-                  onChange={(e) => {
-                    // setIntRate(e.target.value)
-                    setForm({ ...form, int_rate: parseFloat(e.target.value) })
-                  }}
-                />
-              </CCol>
-              <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="installment"
-                  onChange={(e) => {
-                    // setInstallment(e.target.value)
-                    setForm({ ...form, installment: parseFloat(e.target.value) })
-                  }}
-                />
+                <CTooltip placement="left" content="purpose">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="purpose"
+                    onChange={(e) => {
+                      // setPurpose(e.target.value)
+                      setForm({ ...form, purpose: e.target.value })
+                    }}
+                  />
+                </CTooltip>
               </CCol>
             </CRow>
             <CRow className="mb-3">
               <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="logAnnualInc"
-                  onChange={(e) => {
-                    // setLogAnnualInc(e.target.value)
-                    setForm({ ...form, log_annual_inc: parseFloat(e.target.value) })
-                  }}
-                />
+                <CTooltip placement="left" content="intRate">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="intRate"
+                    onChange={(e) => {
+                      // setIntRate(e.target.value)
+                      setForm({ ...form, int_rate: parseFloat(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
               </CCol>
               <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="dti"
-                  onChange={(e) => {
-                    // setDti(e.target.value)
-                    setForm({ ...form, dti: parseFloat(e.target.value) })
-                  }}
-                />
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="fico"
-                  onChange={(e) => {
-                    // setFico(e.target.value)
-                    setForm({ ...form, fico: parseInt(e.target.value) })
-                  }}
-                />
-              </CCol>
-              <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="daysWithCrLine"
-                  onChange={(e) => {
-                    // setDaysWithCrLine(e.target.value)
-                    setForm({ ...form, days_with_cr_line: parseFloat(e.target.value) })
-                  }}
-                />
+                <CTooltip placement="left" content="installment">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="installment"
+                    onChange={(e) => {
+                      // setInstallment(e.target.value)
+                      setForm({ ...form, installment: parseFloat(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
               </CCol>
             </CRow>
             <CRow className="mb-3">
               <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="revolBal"
-                  onChange={(e) => {
-                    // setRevolBal(e.target.value)
-                    setForm({ ...form, revol_bal: parseInt(e.target.value) })
-                  }}
-                />
+                <CTooltip placement="left" content="logAnnualInc">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="logAnnualInc"
+                    onChange={(e) => {
+                      // setLogAnnualInc(e.target.value)
+                      setForm({ ...form, log_annual_inc: parseFloat(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
               </CCol>
               <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="revolUtil"
-                  onChange={(e) => {
-                    // setRevolUtil(e.target.value)
-                    setForm({ ...form, revol_util: parseFloat(e.target.value) })
-                  }}
-                />
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="inqLast6mths"
-                  onChange={(e) => {
-                    // setInqLast6mths(e.target.value)
-                    setForm({ ...form, inq_last_6mths: parseInt(e.target.value) })
-                  }}
-                />
-              </CCol>
-              <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="delinq2yrs"
-                  onChange={(e) => {
-                    // setDelinq2yrs(e.target.value)
-                    setForm({ ...form, delinq_2yrs: parseInt(e.target.value) })
-                  }}
-                />
+                <CTooltip placement="left" content="dti">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="dti"
+                    onChange={(e) => {
+                      // setDti(e.target.value)
+                      setForm({ ...form, dti: parseFloat(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
               </CCol>
             </CRow>
             <CRow className="mb-3">
               <CCol>
-                <CFormInput
-                  id="autoSizingInput"
-                  placeholder="pubRec"
-                  onChange={(e) => {
-                    // setPubRec(e.target.value)
-                    setForm({ ...form, pub_rec: parseInt(e.target.value) })
-                  }}
-                />
+                <CTooltip placement="left" content="fico">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="fico"
+                    onChange={(e) => {
+                      // setFico(e.target.value)
+                      setForm({ ...form, fico: parseInt(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
+              </CCol>
+              <CCol>
+                <CTooltip placement="left" content="daysWithCrLine">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="daysWithCrLine"
+                    onChange={(e) => {
+                      // setDaysWithCrLine(e.target.value)
+                      setForm({ ...form, days_with_cr_line: parseFloat(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
+              </CCol>
+            </CRow>
+            <CRow className="mb-3">
+              <CCol>
+                <CTooltip placement="left" content="revolBal">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="revolBal"
+                    onChange={(e) => {
+                      // setRevolBal(e.target.value)
+                      setForm({ ...form, revol_bal: parseInt(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
+              </CCol>
+              <CCol>
+                <CTooltip placement="left" content="revolUtil">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="revolUtil"
+                    onChange={(e) => {
+                      // setRevolUtil(e.target.value)
+                      setForm({ ...form, revol_util: parseFloat(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
+              </CCol>
+            </CRow>
+            <CRow className="mb-3">
+              <CCol>
+                <CTooltip placement="left" content="inqLast6mths">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="inqLast6mths"
+                    onChange={(e) => {
+                      // setInqLast6mths(e.target.value)
+                      setForm({ ...form, inq_last_6mths: parseInt(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
+              </CCol>
+              <CCol>
+                <CTooltip placement="left" content="delinq2yrs">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="delinq2yrs"
+                    onChange={(e) => {
+                      // setDelinq2yrs(e.target.value)
+                      setForm({ ...form, delinq_2yrs: parseInt(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
+              </CCol>
+            </CRow>
+            <CRow className="mb-3">
+              <CCol>
+                <CTooltip placement="left" content="pubRec">
+                  <CFormInput
+                    id="autoSizingInput"
+                    placeholder="pubRec"
+                    onChange={(e) => {
+                      // setPubRec(e.target.value)
+                      setForm({ ...form, pub_rec: parseInt(e.target.value) })
+                    }}
+                  />
+                </CTooltip>
               </CCol>
               <CCol></CCol>
             </CRow>
@@ -483,7 +546,12 @@ const Waiting = () => {
       </CModal>
       <CToaster ref={toaster} push={toast} placement="top-end" />
 
-      <COffcanvas placement="end" visible={visibleApp} onHide={() => setVisibleApp(false)}>
+      <COffcanvas
+        className="w-25"
+        placement="end"
+        visible={visibleApp}
+        onHide={() => setVisibleApp(false)}
+      >
         <COffcanvasHeader>
           <COffcanvasTitle>Application Detail</COffcanvasTitle>
           <CCloseButton className="text-reset ms-auto" onClick={() => setVisibleApp(false)} />
@@ -498,10 +566,10 @@ const Waiting = () => {
                   </CTooltip>
                 </CContainer>
               </CCol>
-              {/* <CCol>{appData['id']}</CCol> */}
               <CCol>
-                <CRow>{appData['id'].substring(0, 20)}</CRow>
-                <CRow>{appData['id'].substring(20)}</CRow>
+                {/* <CRow>{appData['id'].substring(0, 20)}</CRow>
+                <CRow>{appData['id'].substring(20)}</CRow> */}
+                {appData['id']}
               </CCol>
             </CRow>
             <CRow className="mb-2">
@@ -638,7 +706,7 @@ const Waiting = () => {
 
           <hr />
 
-          <h5 className="text-center mb-3 bold-text">Result of Models</h5>
+          <h5 className="text-center mb-4 bold-text">Result of Models</h5>
           <CCol className="ms-2">
             <CRow className="mb-2">
               <CCol
@@ -656,7 +724,7 @@ const Waiting = () => {
                     predictResult['logistic_regression_(feature_selected)'] == 0 ? 'green' : 'red',
                 }}
               >
-                {predictResult['logistic_regression_(feature_selected)']}
+                {predictResult['logistic_regression_(feature_selected)'] == 0 ? 'Safe' : 'Unsafe'}
               </CCol>
             </CRow>
             <CRow className="mb-2">
@@ -673,7 +741,7 @@ const Waiting = () => {
                   color: predictResult['logistic_regression_(improved)'] == 0 ? 'green' : 'red',
                 }}
               >
-                {predictResult['logistic_regression_(improved)']}
+                {predictResult['logistic_regression_(improved)'] == 0 ? 'Safe' : 'Unsafe'}
               </CCol>
             </CRow>
             <CRow className="mb-2">
@@ -690,7 +758,7 @@ const Waiting = () => {
                   color: predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
                 }}
               >
-                {predictResult['random_forest_(improved)']}
+                {predictResult['random_forest_(improved)'] == 0 ? 'Safe' : 'Unsafe'}
               </CCol>
             </CRow>
           </CCol>
@@ -744,7 +812,7 @@ const Waiting = () => {
             color="primary"
             onClick={() => {
               if (msgRecheck == 'ACCEPT') {
-                addToast(successToast('Accepted successully'))
+                acceptApplication(appData.id)
               } else {
                 deleteApplication(appData.id)
               }

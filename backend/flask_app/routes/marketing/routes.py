@@ -10,6 +10,7 @@ from flask import request, make_response
 import datetime
 import flask_app.helper.utils as utils
 from flask_app.helper import worker as wk
+import time
 
 model_info = wk.ModelInfo.create('Marketing Campaign')
 worker = wk.MarketingWorker(model_info)
@@ -49,7 +50,8 @@ def client():
       poutcome    = form.get('poutcome')
 
       created     = datetime.datetime.now()
-      id          = utils.get_new_applicaion_id(str(created))
+      # id          = utils.get_new_applicaion_id(str(created))
+      id = str(int(time.time()))
 
       with session_scope() as session:
          new_id = ClientID(id=id)

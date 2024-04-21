@@ -10,6 +10,7 @@ from flask import request, make_response
 import datetime
 import flask_app.helper.utils as utils
 from flask_app.helper import worker as wk
+import time
 
 model_info = wk.ModelInfo.create("Loan Application")
 worker = wk.LoanWorker(model_info)
@@ -47,7 +48,8 @@ def waiting_list():
         pub_rec =       form.get("pub_rec")
 
         created =       datetime.datetime.now()
-        id =            utils.get_new_applicaion_id(created.__str__())
+        # id =            utils.get_new_applicaion_id(created.__str__())
+        id = str(int(time.time()))
 
         # predict
 
@@ -97,9 +99,44 @@ def waiting_list():
                 return make_response("Record not found", 401)
             stmtDeletePredict = delete(PredictResult).where(PredictResult.id == id)
             stmtDeleteApp = delete(Application).where(Application.id == id)
-            resDeletePredict = session.execute(stmtDeletePredict)
-            resDeleteApp = session.execute(stmtDeleteApp)
+            _ = session.execute(stmtDeletePredict)
+            _ = session.execute(stmtDeleteApp)
             return make_response("Deleted", 200)
+
+@app.route("/api/loan_application/processed-list", methods=["GET", "POST"])
+def processed_list():
+    if request.method == "GET":
+        with session_scope() as session:
+                stmt = select(HistoryApps)
+                res = session.execute(stmt).all()
+                return utils.parse_output(res)
+    elif request.method == "POST":
+        with session_scope() as session:
+            idWaitingApp = request.args.get("application_id")
+            stmtAcceptWaitingApp = select(Application).where(Application.id == idWaitingApp)
+            waitingAppRes = session.execute(stmtAcceptWaitingApp).all()
+            waitingApp = utils.parse_output(waitingAppRes)[0]
+            processedApp = HistoryApps(
+                id=waitingApp["id"],
+                credit_policy=waitingApp["credit_policy"], 
+                purpose=waitingApp["purpose"],
+                int_rate=waitingApp["int_rate"],
+                installment=waitingApp["installment"],
+                log_annual_inc=waitingApp["log_annual_inc"],
+                dti=waitingApp["dti"],
+                fico=waitingApp["fico"],
+                days_with_cr_line=waitingApp["days_with_cr_line"],
+                revol_bal=waitingApp["revol_bal"],
+                revol_util=waitingApp["revol_util"],
+                inq_last_6mths=waitingApp["inq_last_6mths"],
+                delinq_2yrs=waitingApp["delinq_2yrs"],
+                pub_rec=waitingApp["pub_rec"],
+                not_fully_paid=-1,
+            )
+            session.add(processedApp)
+            stmtDeleteApp = delete(Application).where(Application.id == idWaitingApp)
+            _ = session.execute(stmtDeleteApp)
+            return make_response("success", 200)
 
 @app.route("/api/loan_application/model-info/update", methods=["POST"])
 def update_model_info():
