@@ -22,13 +22,10 @@ def get_predict_result():
 @app.route("/api/model-info", methods=["GET"])
 def get_model_info():
     feature = request.args.get("feature")
-    from_feature_to_model = {
-        'loan_application': ModelInfo
-    }
     with session_scope() as session:
-        model = from_feature_to_model[feature]
+        model = ModelInfo
         res = []
         if model:
-            stmt = select(model)
+            stmt = select(model).where(model.feature == feature)
             res = session.execute(stmt).all()
         return utils.parse_output(res)
