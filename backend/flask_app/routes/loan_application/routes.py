@@ -15,6 +15,7 @@ import time
 
 model_info = wk.ModelInfo.create("Loan Application")
 worker = wk.LoanWorker(model_info)
+worker.load_model_info(session_scope)
 
 @app.route("/api/loan_application/history_data", methods=["GET", "POST"])
 def history_data():
@@ -139,34 +140,3 @@ def processed_list():
             stmtDeleteApp = delete(Application).where(Application.id == idWaitingApp)
             _ = session.execute(stmtDeleteApp)
             return make_response("success", 200)
-
-@app.route("/api/loan_application/model-info/update", methods=["POST"])
-def update_model_info():
-    model_info_json = worker.get_model_info()
-    try:
-        with session_scope() as session:
-            for model_info in model_info_json:
-                new_model = ModelInfo(
-                    model=model_info['Model'],
-                    accuracy=model_info['Accuracy'],
-                    precision=model_info['Precision'],
-                    recall=model_info['Recall'],
-                    auc=model_info['AUC'],
-                    feature='loan_application'
-                )
-                stmt = select(ModelInfo).where(ModelInfo.model == new_model.model and ModelInfo.feature == new_model.feature)
-            
-                if session.execute(stmt).all():
-                    stmt = (
-                        update(ModelInfo)
-                        .where(ModelInfo.model == new_model.model)
-                        .where(ModelInfo.feature == new_model.feature)
-                        .values(new_model.as_dict())
-                    )
-                    session.execute(stmt)
-                else:
-                    session.add(new_model)
-            return make_response("Created", 201)
-    except Exception as e:
-        print(f">> ERROR: {e}")
-        return make_response("ERROR", 401)

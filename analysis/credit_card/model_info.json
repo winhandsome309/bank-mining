@@ -1,0 +1,26 @@
+[
+   {
+      "Model": "KNeighborsClassifier",
+      "Accuracy": 0.9972,
+      "Precision": 0.99989,
+      "Recall": 1.0,
+      "F1_Score": 0.99994,
+      "AUC": 0.99994
+   },
+   {
+      "Model": "DecisionTreeClassifier",
+      "Accuracy": 0.99994,
+      "Precision": 0.99989,
+      "Recall": 1.0,
+      "F1_Score": 0.99994,
+      "AUC": 0.99994
+   },
+   {
+      "Model": "RandomForestClassifier",
+      "Accuracy": 0.99994,
+      "Precision": 0.99989,
+      "Recall": 1.0,
+      "F1_Score": 0.99994,
+      "AUC": 0.99994
+   }
+]

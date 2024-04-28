@@ -152,6 +152,33 @@ class MarketingOldClient(Base):
     previous: Mapped[int]   = mapped_column(nullable=True)
     poutcome: Mapped[str]   = mapped_column(nullable=True)
 
+class HistoryCreditCardTransaction(Base):
+    __tablename__ = 'history_credit_card_transaction'
+
+    # id: Mapped[int]                                 = mapped_column(autoincrement=True, primary_key=True) #Drop after initialation
+    distance_from_home: Mapped[float]               = mapped_column(nullable=True, primary_key=True)
+    distance_from_last_transaction: Mapped[float]   = mapped_column(nullable=True)
+    ratio_to_median_purchase_price: Mapped[float]   = mapped_column(nullable=True)
+    repeat_retailer: Mapped[float]                   = mapped_column(nullable=True)
+    used_chip: Mapped[float]                         = mapped_column(nullable=True)
+    used_pin_number: Mapped[float]                   = mapped_column(nullable=True)
+    online_order: Mapped[float]                      = mapped_column(nullable=True)
+    fraud: Mapped[float]                             = mapped_column(nullable=True)
+
+class CreditCardTransaction(Base):
+    __tablename__ = 'credit_card_transaction'
+    
+    id: Mapped[str]                                 = mapped_column(ForeignKey("clientid.id"), primary_key=True)
+    distance_from_home: Mapped[float]               = mapped_column(nullable=True)
+    distance_from_last_transaction: Mapped[float]   = mapped_column(nullable=True)
+    ratio_to_median_purchase_price: Mapped[float]   = mapped_column(nullable=True)
+    repeat_retailer: Mapped[float]                   = mapped_column(nullable=True)
+    used_chip: Mapped[float]                         = mapped_column(nullable=True)
+    used_pin_number: Mapped[float]                   = mapped_column(nullable=True)
+    online_order: Mapped[float]                      = mapped_column(nullable=True)
+    created:        Mapped[timestamp]
+    processed:      Mapped[bool]
+    processed_at:   Mapped[timestamp]               = mapped_column(nullable=True, server_default=None)
 
 class PredictResult(Base):
     __tablename__ = 'loan_predict_result'
@@ -170,11 +197,12 @@ class ModelInfo(Base):
     __tablename__ = 'model_info'
 
     model:          Mapped[str] = mapped_column(primary_key=True) 
-    accuracy:       Mapped[float]
-    precision:      Mapped[float]
-    recall:         Mapped[float]
-    auc:            Mapped[float]
-    feature:        Mapped[str]
+    accuracy:       Mapped[float] = mapped_column(nullable=True)
+    precision:      Mapped[float] = mapped_column(nullable=True)
+    recall:         Mapped[float] = mapped_column(nullable=True)
+    auc:            Mapped[float] = mapped_column(nullable=True)
+    f1_score:       Mapped[float] = mapped_column(nullable=True)
+    feature:        Mapped[str] = mapped_column(ForeignKey("feature.name"))
 
 create_id_func = DDL(
     "CREATE FUNCTION trigger_function()"
