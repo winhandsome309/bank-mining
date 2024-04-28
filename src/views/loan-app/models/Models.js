@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import classNames from 'classnames'
-
+import { getStyle } from '@coreui/utils'
+import { CChart, CChartRadar, CChartDoughnut } from '@coreui/react-chartjs'
 import {
   CAvatar,
   CButton,
@@ -22,7 +23,10 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CWidgetStatsD,
+  CContainer,
 } from '@coreui/react'
+import { Doughnut } from 'react-chartjs-2'
 import CIcon from '@coreui/icons-react'
 import {
   cibCcAmex,
@@ -51,8 +55,37 @@ import {
 } from '@coreui/icons'
 import axios from 'axios'
 
+const colorModel = {
+  accuracy: '#FF6384',
+  precision: '#4BC0C0',
+  recall: '#FFCE56',
+  auc: '#c9a0dc',
+  'f1-score': '#36A2EB',
+}
+const nameMetricModel = ['accuracy', 'precision', 'recall', 'auc', 'f1-score']
+
 const Models = () => {
-  const [model, setModel] = useState('Linear Regression')
+  const [model, setModel] = useState('Logistic regression')
+  const [modelInfo, setModelInfo] = useState([])
+  const [indexModel, setIndexModel] = useState(0)
+
+  const fetchModelInfo = async () => {
+    axios
+      .get(process.env.REACT_APP_API_ENDPOINT + '/api/model-info', {
+        params: {
+          feature: 'loan_application',
+        },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          setModelInfo(res.data)
+        }
+      })
+  }
+
+  useEffect(() => {
+    fetchModelInfo()
+  }, [])
 
   return (
     <>
@@ -67,20 +100,29 @@ const Models = () => {
                   </CDropdownToggle>
                   <CDropdownMenu>
                     <CDropdownItem
-                      href="#/loan-app/models"
-                      onClick={() => setModel('Linear Regression')}
+                      // href="#/loan-app/models"
+                      onClick={() => {
+                        setModel('Logistic Regression')
+                        setIndexModel(0)
+                      }}
                     >
                       Linear Regression
                     </CDropdownItem>
                     <CDropdownItem
-                      href="#/loan-app/models"
-                      onClick={() => setModel('Logistic Regression')}
+                      // href="#/loan-app/models"
+                      onClick={() => {
+                        setModel('Logistic Regression - Improve')
+                        setIndexModel(1)
+                      }}
                     >
-                      Logistic Regression
+                      Logistic Regression - Improve
                     </CDropdownItem>
                     <CDropdownItem
-                      href="#/loan-app/models"
-                      onClick={() => setModel('Random Forest')}
+                      // href="#/loan-app/models"
+                      onClick={() => {
+                        setModel('Random Forest')
+                        setIndexModel(2)
+                      }}
                     >
                       Random Forest
                     </CDropdownItem>
@@ -89,12 +131,51 @@ const Models = () => {
               </div>
             </CCardHeader>
             <CCardBody>
-              <iframe
-                src="./analysis/loan_app/eval_model_img/plotly_graph.html"
-                height={1000}
-                width={800}
-                loading="lazy"
-              ></iframe>
+              <CCol>
+                {modelInfo.length > 0 &&
+                  Object.entries(modelInfo[indexModel]).map(
+                    (item, index) =>
+                      nameMetricModel.includes(item[0]) && (
+                        <CCard style={{ height: '23rem' }} className="mb-4">
+                          <CCardHeader>{item[0]}</CCardHeader>
+                          <CCardBody>
+                            <CRow>
+                              <CCol xs={1}></CCol>
+                              {index % 2 != 0 && (
+                                <CCol xs={7}>
+                                  <div className="align-items-center justify-content-center">
+                                    abc
+                                  </div>
+                                </CCol>
+                              )}
+                              <CCol xs={3}>
+                                <CChartDoughnut
+                                  data={{
+                                    // labels: [item[0]],
+                                    datasets: [
+                                      {
+                                        backgroundColor: [colorModel[item[0]], '#E7E9ED'],
+                                        data: [item[1] * 100, (1 - item[1]) * 100],
+                                      },
+                                    ],
+                                  }}
+                                  wrapper={true}
+                                />
+                              </CCol>
+                              {index % 2 == 0 && (
+                                <CCol xs={7}>
+                                  <div className="align-items-center justify-content-center">
+                                    abc
+                                  </div>
+                                </CCol>
+                              )}
+                              <CCol xs={1}></CCol>
+                            </CRow>
+                          </CCardBody>
+                        </CCard>
+                      ),
+                  )}
+              </CCol>
             </CCardBody>
           </CCard>
         </CCol>

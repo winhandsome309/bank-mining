@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import {
   CButton,
   CCard,
@@ -10,11 +10,65 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CToaster,
+  CToast,
+  CToastBody,
+  CToastClose,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import axios, { formToJSON } from 'axios'
 
 const Register = () => {
+  const [userName, setUserName] = useState('')
+  const [email, setEmail] = useState('')
+  const [isValidEmail, setIsValidEmail] = useState(true)
+  const [password, setPassWord] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [toast, addToast] = useState(0)
+  const toaster = useRef()
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return regex.test(email)
+  }
+
+  const handleEmailChange = (event) => {
+    const { value } = event.target
+    setEmail(value)
+    setIsValidEmail(validateEmail(value))
+  }
+
+  const successToast = (msg) => (
+    <CToast title="Success" color="success" className="d-flex">
+      <CToastBody>{msg} !</CToastBody>
+      <CToastClose className="me-2 m-auto" white />
+    </CToast>
+  )
+
+  function sleep(time) {
+    return new Promise((resolve) => setTimeout(resolve, time))
+  }
+
+  const successCreate = async () => {
+    addToast(successToast('Account is created successfully'))
+    await sleep(1000)
+    window.location.href = '/#/login'
+  }
+
+  const createAccount = async () => {
+    const formData = new FormData()
+    formData.append('username', userName)
+    formData.append('email', email)
+    formData.append('password', password)
+
+    axios.post(process.env.REACT_APP_API_ENDPOINT + '/api/create-account', formData).then((res) => {
+      if (res.status === 201) {
+        successCreate()
+      }
+    })
+  }
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -29,11 +83,21 @@ const Register = () => {
                     <CInputGroupText>
                       <CIcon icon={cilUser} />
                     </CInputGroupText>
-                    <CFormInput placeholder="Username" autoComplete="username" />
+                    <CFormInput
+                      placeholder="Username"
+                      autoComplete="username"
+                      onChange={(e) => setUserName(e.target.value)}
+                    />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupText>@</CInputGroupText>
-                    <CFormInput placeholder="Email" autoComplete="email" />
+                    <CFormInput
+                      style={{ color: !isValidEmail && 'red' }}
+                      placeholder="Email"
+                      autoComplete="email"
+                      onChange={handleEmailChange}
+                      value={email}
+                    />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
@@ -43,6 +107,10 @@ const Register = () => {
                       type="password"
                       placeholder="Password"
                       autoComplete="new-password"
+                      onChange={(e) => {
+                        setPassWord(e.target.value)
+                      }}
+                      value={password}
                     />
                   </CInputGroup>
                   <CInputGroup className="mb-4">
@@ -50,13 +118,30 @@ const Register = () => {
                       <CIcon icon={cilLockLocked} />
                     </CInputGroupText>
                     <CFormInput
+                      style={{ color: confirmPassword != password && 'red' }}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value)
+                      }}
                       type="password"
                       placeholder="Repeat password"
                       autoComplete="new-password"
+                      value={confirmPassword}
                     />
                   </CInputGroup>
                   <div className="d-grid">
-                    <CButton color="success">Create Account</CButton>
+                    <CButton
+                      color="success"
+                      disabled={
+                        userName == '' ||
+                        email == '' ||
+                        password == '' ||
+                        !isValidEmail ||
+                        password != confirmPassword
+                      }
+                      onClick={createAccount}
+                    >
+                      Create Account
+                    </CButton>
                   </div>
                 </CForm>
               </CCardBody>
@@ -64,6 +149,7 @@ const Register = () => {
           </CCol>
         </CRow>
       </CContainer>
+      <CToaster ref={toaster} push={toast} placement="top-end" />
     </div>
   )
 }

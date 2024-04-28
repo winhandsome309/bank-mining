@@ -39,6 +39,7 @@ import {
   COffcanvasBody,
   CContainer,
   CFooter,
+  CFormSelect,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -68,6 +69,44 @@ import {
   cilPlus,
 } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
+
+const listLoanParams = [
+  ['credit_policy', 'abc', 'select', ['yes', 'no'], [1, 0]],
+  [
+    'purpose',
+    'abc',
+    'select',
+    [
+      'debt_consolidation',
+      'educational',
+      'credit_card',
+      'major_purchase',
+      'home_improvement',
+      'small_business',
+      'all_other',
+    ],
+    [
+      'debt_consolidation',
+      'educational',
+      'credit_card',
+      'major_purchase',
+      'home_improvement',
+      'small_business',
+      'all_other',
+    ],
+  ],
+  ['int_rate', 'abc', 'normal'],
+  ['installment', 'abc', 'normal'],
+  ['log_annual_inc', 'abc', 'normal'],
+  ['dti', 'abc', 'normal'],
+  ['fico', 'abc', 'normal'],
+  ['days_with_cr_line', 'abc', 'normal'],
+  ['revol_bal', 'abc', 'normal'],
+  ['revol_util', 'abc', 'normal'],
+  ['inq_last_6mths', 'abc', 'select', ['yes', 'no'], [1, 0]],
+  ['delinq_2yrs', 'abc', 'select', ['yes', 'no'], [1, 0]],
+  ['pub_rec', 'abc', 'select', ['yes', 'no'], [1, 0]],
+]
 
 const Waiting = () => {
   const [uploadFile, setUploadFile] = useState(true)
@@ -355,190 +394,77 @@ const Waiting = () => {
         </CModalHeader>
         <CModalBody>
           <CCol>
-            <CRow className="mb-3">
-              <CCol>
-                <CTooltip placement="left" content="creditPolicy">
-                  <CFormInput
-                    floatingLabel="creditPolicy"
-                    id="autoSizingInput"
-                    placeholder="creditPolicy"
-                    onChange={(e) => {
-                      // setCreditPolicy(e.target.value)
-                      setForm({ ...form, credit_policy: parseInt(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-              <CCol>
-                <CTooltip placement="left" content="purpose">
-                  <CFormInput
-                    floatingLabel="purpose"
-                    id="autoSizingInput"
-                    placeholder="purpose"
-                    onChange={(e) => {
-                      // setPurpose(e.target.value)
-                      setForm({ ...form, purpose: e.target.value })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CTooltip placement="left" content="intRate">
-                  <CFormInput
-                    floatingLabel="intRate"
-                    id="autoSizingInput"
-                    placeholder="intRate"
-                    onChange={(e) => {
-                      // setIntRate(e.target.value)
-                      setForm({ ...form, int_rate: parseFloat(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-              <CCol>
-                <CTooltip placement="left" content="installment">
-                  <CFormInput
-                    floatingLabel="installment"
-                    id="autoSizingInput"
-                    placeholder="installment"
-                    onChange={(e) => {
-                      // setInstallment(e.target.value)
-                      setForm({ ...form, installment: parseFloat(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CTooltip placement="left" content="logAnnualInc">
-                  <CFormInput
-                    floatingLabel="logAnnualInc"
-                    id="autoSizingInput"
-                    placeholder="logAnnualInc"
-                    onChange={(e) => {
-                      // setLogAnnualInc(e.target.value)
-                      setForm({ ...form, log_annual_inc: parseFloat(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-              <CCol>
-                <CTooltip placement="left" content="dti">
-                  <CFormInput
-                    floatingLabel="dti"
-                    id="autoSizingInput"
-                    placeholder="dti"
-                    onChange={(e) => {
-                      // setDti(e.target.value)
-                      setForm({ ...form, dti: parseFloat(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CTooltip placement="left" content="fico">
-                  <CFormInput
-                    floatingLabel="fico"
-                    id="autoSizingInput"
-                    placeholder="fico"
-                    onChange={(e) => {
-                      // setFico(e.target.value)
-                      setForm({ ...form, fico: parseInt(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-              <CCol>
-                <CTooltip placement="left" content="daysWithCrLine">
-                  <CFormInput
-                    floatingLabel="daysWithCrLine"
-                    id="autoSizingInput"
-                    placeholder="daysWithCrLine"
-                    onChange={(e) => {
-                      // setDaysWithCrLine(e.target.value)
-                      setForm({ ...form, days_with_cr_line: parseFloat(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CTooltip placement="left" content="revolBal">
-                  <CFormInput
-                    floatingLabel="revolBal"
-                    id="autoSizingInput"
-                    placeholder="revolBal"
-                    onChange={(e) => {
-                      // setRevolBal(e.target.value)
-                      setForm({ ...form, revol_bal: parseInt(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-              <CCol>
-                <CTooltip placement="left" content="revolUtil">
-                  <CFormInput
-                    floatingLabel="revolUtil"
-                    id="autoSizingInput"
-                    placeholder="revolUtil"
-                    onChange={(e) => {
-                      // setRevolUtil(e.target.value)
-                      setForm({ ...form, revol_util: parseFloat(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CTooltip placement="left" content="inqLast6mths">
-                  <CFormInput
-                    floatingLabel="inqLast6mths"
-                    id="autoSizingInput"
-                    placeholder="inqLast6mths"
-                    onChange={(e) => {
-                      // setInqLast6mths(e.target.value)
-                      setForm({ ...form, inq_last_6mths: parseInt(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-              <CCol>
-                <CTooltip placement="left" content="delinq2yrs">
-                  <CFormInput
-                    floatingLabel="delinq2yrs"
-                    id="autoSizingInput"
-                    placeholder="delinq2yrs"
-                    onChange={(e) => {
-                      // setDelinq2yrs(e.target.value)
-                      setForm({ ...form, delinq_2yrs: parseInt(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol>
-                <CTooltip placement="left" content="pubRec">
-                  <CFormInput
-                    floatingLabel="pubRec"
-                    id="autoSizingInput"
-                    placeholder="pubRec"
-                    onChange={(e) => {
-                      // setPubRec(e.target.value)
-                      setForm({ ...form, pub_rec: parseInt(e.target.value) })
-                    }}
-                  />
-                </CTooltip>
-              </CCol>
-              <CCol></CCol>
-            </CRow>
+            {listLoanParams.map(
+              (params, index) =>
+                index % 2 == 0 && (
+                  <CRow className="mb-3">
+                    <CCol>
+                      <CTooltip placement="left" content={listLoanParams[index][0]}>
+                        {params[2] == 'normal' ? (
+                          <CFormInput
+                            floatingLabel={listLoanParams[index][0]}
+                            id={listLoanParams[index][0]}
+                            placeholder={listLoanParams[index][0]}
+                            onChange={(e) => {
+                              setForm({ ...form, [listLoanParams[index][0]]: e.target.value })
+                            }}
+                          />
+                        ) : (
+                          <CFormSelect
+                            floatingLabel={listLoanParams[index][0]}
+                            aria-label="Default"
+                            onChange={(e) => {
+                              setForm({ ...form, [listLoanParams[index][0]]: e.target.value })
+                            }}
+                          >
+                            <option>Select</option>
+                            {listLoanParams[index][3].map((value, i) => (
+                              <option value={listLoanParams[index][4][i]}>{value}</option>
+                            ))}
+                          </CFormSelect>
+                        )}
+                      </CTooltip>
+                    </CCol>
+                    {index + 1 < listLoanParams.length ? (
+                      <CCol>
+                        <CTooltip placement="left" content={listLoanParams[index + 1][0]}>
+                          {listLoanParams[index + 1][2] == 'normal' ? (
+                            <CFormInput
+                              floatingLabel={listLoanParams[index + 1][0]}
+                              id={listLoanParams[index + 1][0]}
+                              placeholder={listLoanParams[index + 1][0]}
+                              onChange={(e) => {
+                                setForm({
+                                  ...form,
+                                  [listLoanParams[index + 1][0]]: e.target.value,
+                                })
+                              }}
+                            />
+                          ) : (
+                            <CFormSelect
+                              floatingLabel={listLoanParams[index + 1][0]}
+                              aria-label="Default"
+                              onChange={(e) => {
+                                setForm({
+                                  ...form,
+                                  [listLoanParams[index + 1][0]]: e.target.value,
+                                })
+                              }}
+                            >
+                              <option>Select</option>
+                              {listLoanParams[index + 1][3].map((value, i) => (
+                                <option value={listLoanParams[index + 1][4][i]}>{value}</option>
+                              ))}
+                            </CFormSelect>
+                          )}
+                        </CTooltip>
+                      </CCol>
+                    ) : (
+                      <CCol></CCol>
+                    )}
+                  </CRow>
+                ),
+            )}
           </CCol>
         </CModalBody>
         <CModalFooter>
@@ -560,7 +486,7 @@ const Waiting = () => {
       <CToaster ref={toaster} push={toast} placement="top-end" />
 
       <COffcanvas
-        className="w-25"
+        className="w-50"
         placement="end"
         visible={visibleApp}
         onHide={() => setVisibleApp(false)}
