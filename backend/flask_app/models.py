@@ -181,7 +181,7 @@ class CreditCardTransaction(Base):
     processed_at:   Mapped[timestamp]               = mapped_column(nullable=True, server_default=None)
 
 class PredictResult(Base):
-    __tablename__ = 'loan_predict_result'
+    __tablename__ = 'predict_result'
 
     id:             Mapped[str] = mapped_column(ForeignKey("clientid.id"), primary_key=True)
     predict:        Mapped[str] = mapped_column(nullable=True)
