@@ -40,10 +40,12 @@ import {
   CContainer,
   CFooter,
   CFormSelect,
+  CDropdown,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCheck, cilX, cilPlus, cilUserPlus } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
+import CommunicateFunction from '../../../components/CommunicateFunction'
 
 const listMarketingParams = [
   ['id', 'abc', 'normal'],
@@ -119,13 +121,13 @@ const PotentialCustomer = () => {
   const [changeApp, setChangeApp] = useState(false)
   const isMounted = useRef(false)
 
-  const fetchApplication = async () => {
+  const fetchCustomer = async () => {
     axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client').then((res) => {
       setTableData(res.data)
     })
   }
 
-  const createApplication = async () => {
+  const createCustomer = async () => {
     const formData = new FormData()
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key])
@@ -135,13 +137,13 @@ const PotentialCustomer = () => {
       .then((res) => {
         if (res.status === 201) {
           setVisibleCreate(false)
-          fetchApplication()
-          addToast(successToast('Application is created successfully'))
+          fetchCustomer()
+          addToast(successToast('Customer is created successfully'))
         }
       })
   }
 
-  const deleteApplication = async (id) => {
+  const deleteCustomer = async (id) => {
     const formData = new FormData()
     formData.append('id', id)
     axios
@@ -151,7 +153,7 @@ const PotentialCustomer = () => {
       .then((res) => {
         if (res.status === 200) {
           addToast(warningToast('Rejected successfully'))
-          fetchApplication()
+          fetchCustomer()
         }
       })
   }
@@ -166,14 +168,12 @@ const PotentialCustomer = () => {
       .then((res) => {
         if (res.status === 200) {
           var temp = JSON.parse(res.data[0]['predict'].replace(/'/g, '"'))
-          console.log(temp)
           setPredictResult(temp)
         }
       })
   }
 
-  const acceptApplication = async (id) => {
-    console.log(id)
+  const acceptCustomer = async (id) => {
     axios
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/api/marketing/old_client',
@@ -187,13 +187,13 @@ const PotentialCustomer = () => {
       .then((res) => {
         if (res.status === 200) {
           addToast(successToast('Accepted successully'))
-          fetchApplication()
+          fetchCustomer()
         }
       })
   }
 
   useEffect(() => {
-    fetchApplication()
+    fetchCustomer()
   }, [])
 
   useEffect(() => {
@@ -237,7 +237,7 @@ const PotentialCustomer = () => {
           <CCard className="mb-4">
             <CCardHeader>
               <div className="d-none d-md-flex">
-                {'Application'}
+                {'Customer'}
                 <CIcon
                   icon={cilUserPlus}
                   size="lg"
@@ -342,7 +342,7 @@ const PotentialCustomer = () => {
         onClose={() => setVisibleCreate(false)}
       >
         <CModalHeader>
-          <CModalTitle>Create Application</CModalTitle>
+          <CModalTitle>Add Customer</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CCol>
@@ -422,7 +422,7 @@ const PotentialCustomer = () => {
           <CButton
             color="primary"
             onClick={() => {
-              createApplication()
+              createCustomer()
             }}
           >
             Create
@@ -432,87 +432,107 @@ const PotentialCustomer = () => {
       <CToaster ref={toaster} push={toast} placement="top-end" />
 
       <COffcanvas
-        className="w-25"
+        className="w-50"
         placement="end"
         visible={visibleApp}
         onHide={() => setVisibleApp(false)}
       >
         <COffcanvasHeader>
-          <COffcanvasTitle>Application Detail</COffcanvasTitle>
+          <COffcanvasTitle>Customer Detail</COffcanvasTitle>
           <CCloseButton className="text-reset ms-auto" onClick={() => setVisibleApp(false)} />
         </COffcanvasHeader>
         <COffcanvasBody>
-          <CCol>
-            {listMarketingParams.map((params, index) => (
-              <CRow className="mb-2">
-                <CCol>
-                  <CContainer>
-                    <CTooltip placement="left" content={params[1]}>
-                      <div> {params[0]} </div>
-                    </CTooltip>
-                  </CContainer>
-                </CCol>
-                <CCol>{appData[params[0]]}</CCol>
-              </CRow>
-            ))}
-          </CCol>
+          <CRow>
+            <CCol>
+              <CCard>
+                <CCardHeader>
+                  <div className="mt-1 mb-1 ms-2">
+                    {/* <strong>Detail</strong> */}
+                    <h5>Detail</h5>
+                  </div>
+                </CCardHeader>
+                <CCardBody>
+                  <CCol>
+                    {listMarketingParams.map((params, index) => (
+                      <CRow className="mb-1">
+                        <CCol>
+                          <CContainer>
+                            <CTooltip placement="left" content={params[1]}>
+                              <div> {params[0]} </div>
+                            </CTooltip>
+                          </CContainer>
+                        </CCol>
+                        <CCol>{appData[params[0]]}</CCol>
+                      </CRow>
+                    ))}
+                  </CCol>
 
-          <hr />
+                  <hr />
 
-          <h5 className="text-center mb-4 bold-text">Result of Models</h5>
-          <CCol className="ms-2">
-            <CRow className="mb-2">
-              <CCol
-                style={{
-                  color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
-                }}
-              >
-                gaussiannb:
-              </CCol>
-              <CCol
-                className="text-end"
-                style={{
-                  color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
-                }}
-              >
-                {predictResult['gaussiannb'] == 'yes' ? 'Safe' : 'Unsafe'}
-              </CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol
-                style={{
-                  color: predictResult['gradientboostingclassifier'] == 'yes' ? 'green' : 'red',
-                }}
-              >
-                gradientboostingclassifier:
-              </CCol>
-              <CCol
-                className="text-end"
-                style={{
-                  color: predictResult['gradientboostingclassifier'] == 'yes' ? 'green' : 'red',
-                }}
-              >
-                {predictResult['gradientboostingclassifier'] == 'yes' ? 'Safe' : 'Unsafe'}
-              </CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol
-                style={{
-                  color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
-                }}
-              >
-                mlpclassifier:
-              </CCol>
-              <CCol
-                className="text-end"
-                style={{
-                  color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
-                }}
-              >
-                {predictResult['mlpclassifier'] == 'yes' ? 'Safe' : 'Unsafe'}
-              </CCol>
-            </CRow>
-          </CCol>
+                  <h5 className="text-center mb-4 bold-text">Result of Models</h5>
+                  <CCol className="ms-2">
+                    <CRow className="mb-2">
+                      <CCol
+                        style={{
+                          color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
+                        }}
+                      >
+                        gaussiannb:
+                      </CCol>
+                      <CCol
+                        className="text-end"
+                        style={{
+                          color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
+                        }}
+                      >
+                        {predictResult['gaussiannb'] == 'yes' ? 'Safe' : 'Unsafe'}
+                      </CCol>
+                    </CRow>
+                    <CRow className="mb-2">
+                      <CCol
+                        style={{
+                          color:
+                            predictResult['gradientboostingclassifier'] == 'yes' ? 'green' : 'red',
+                        }}
+                      >
+                        gradientboostingclassifier:
+                      </CCol>
+                      <CCol
+                        className="text-end"
+                        style={{
+                          color:
+                            predictResult['gradientboostingclassifier'] == 'yes' ? 'green' : 'red',
+                        }}
+                      >
+                        {predictResult['gradientboostingclassifier'] == 'yes' ? 'Safe' : 'Unsafe'}
+                      </CCol>
+                    </CRow>
+                    <CRow className="mb-2">
+                      <CCol
+                        style={{
+                          color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
+                        }}
+                      >
+                        mlpclassifier:
+                      </CCol>
+                      <CCol
+                        className="text-end"
+                        style={{
+                          color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
+                        }}
+                      >
+                        {predictResult['mlpclassifier'] == 'yes' ? 'Safe' : 'Unsafe'}
+                      </CCol>
+                    </CRow>
+                  </CCol>
+                </CCardBody>
+              </CCard>
+            </CCol>
+
+            <CCol>
+              <CommunicateFunction />
+            </CCol>
+          </CRow>
         </COffcanvasBody>
         <CFooter>
           <div></div>
@@ -548,7 +568,7 @@ const PotentialCustomer = () => {
         onClose={() => setVisibleRecheck(false)}
       >
         <CModalHeader>
-          <CModalTitle>Create Application</CModalTitle>
+          <CModalTitle>Add Customer</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <span>Are you sure to want to </span>
@@ -563,9 +583,9 @@ const PotentialCustomer = () => {
             color="primary"
             onClick={() => {
               if (msgRecheck == 'ACCEPT') {
-                acceptApplication(appData.id)
+                acceptCustomer(appData.id)
               } else {
-                deleteApplication(appData.id)
+                deleteCustomer(appData.id)
               }
               setVisibleRecheck(false)
             }}

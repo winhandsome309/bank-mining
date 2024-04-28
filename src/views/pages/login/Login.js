@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   CButton,
@@ -17,6 +17,23 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
+  const [userName, setUserName] = useState('')
+  const [password, setPassword] = useState('')
+
+  const login = () => {
+    const formData = new FormData()
+    formData.append('username', userName)
+    formData.append('password', password)
+
+    axios.post(process.env.REACT_APP_API_ENDPOINT + '/api/login', formData).then((res) => {
+      if (res.status === 201) {
+        document.cookie =
+          'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+        window.location.replace('')
+      }
+    })
+  }
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -32,16 +49,23 @@ const Login = () => {
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Username" autoComplete="username" />
+                      <CFormInput
+                        value={userName}
+                        placeholder="Username"
+                        autoComplete="username"
+                        onChange={(e) => setUserName(e.target.value)}
+                      />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
+                        value={password}
                         type="password"
                         placeholder="Password"
                         autoComplete="current-password"
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </CInputGroup>
                     <CRow>
@@ -50,10 +74,9 @@ const Login = () => {
                           color="primary"
                           className="px-4"
                           onClick={() => {
-                            document.cookie =
-                              'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-                            window.location.replace('')
+                            login()
                           }}
+                          disabled={userName == '' || password == ''}
                         >
                           Login
                         </CButton>

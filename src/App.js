@@ -20,22 +20,21 @@ const App = () => {
   const hostName = window.location.hostname
 
   function checkCookieExists(cookieName) {
-    var cookies = document.cookie.split(';');
+    var cookies = document.cookie.split(';')
 
     for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i].trim();
-  
+      var cookie = cookies[i].trim()
+
       if (cookie.indexOf(cookieName + '=') === 0) {
-        return true;
+        return true
       }
     }
-  
-    return false;
+
+    return false
   }
 
   function redirect() {
-    console.log(window.location.href);
-    window.location.href = "/#/login";
+    window.location.href = '/#/login'
   }
 
   useEffect(() => {
@@ -62,11 +61,25 @@ const App = () => {
         }
       >
         <Routes>
-          <Route exact path="/login" name="Login Page" element={(!checkCookieExists("authorization")) ? <Login /> : <DefaultLayout /> } />
-          <Route exact path="/register" name="Register Page" element={(!checkCookieExists("authorization")) ? <Register /> : <DefaultLayout /> } />
+          <Route
+            exact
+            path="/login"
+            name="Login Page"
+            element={!checkCookieExists('authorization') ? <Login /> : <DefaultLayout />}
+          />
+          <Route
+            exact
+            path="/register"
+            name="Register Page"
+            element={!checkCookieExists('authorization') ? <Register /> : <DefaultLayout />}
+          />
           <Route exact path="/404" name="Page 404" element={<Page404 />} />
           <Route exact path="/500" name="Page 500" element={<Page500 />} />
-          <Route path="*" name="Home" element={(checkCookieExists("authorization")) ? <DefaultLayout /> : redirect()} />
+          <Route
+            path="*"
+            name="Home"
+            element={checkCookieExists('authorization') ? <DefaultLayout /> : redirect()}
+          />
         </Routes>
       </Suspense>
     </HashRouter>
