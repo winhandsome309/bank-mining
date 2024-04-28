@@ -1,4 +1,3 @@
-
 from flask_app.models import PredictResult
 from flask_app.models import HistoryMarketingClients
 from flask_app.models import MarketingClient
@@ -15,6 +14,7 @@ import time
 
 model_info = wk.ModelInfo.create('Marketing Campaign')
 worker = wk.MarketingWorker(model_info)
+worker.load_model_info(session_scope)
 
 @app.route("/api/marketing/history_data", methods=["GET", "POST"])
 def marketing_history_data():

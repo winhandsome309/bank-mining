@@ -6,6 +6,8 @@ import json
 from flask_app.helper import utils
 # import utils
 from typing import NamedTuple
+from sqlalchemy import select, null, update, delete
+from flask_app import models
 
 class FeatureName():
    Loan_Application        = 'Loan Application'
@@ -28,20 +30,22 @@ class ModelInfo(NamedTuple):
          "votingclassifier": "analysis/marketing/votingclassifier.pkl"
       },
       FeatureName.Credit_Application: {
-         
+         "decisiontreeclassifier": "analysis/credit_card/decisiontreeclassifier.pkl",
+         "kneighborsclassifier": "analysis/credit_card/kneighborsclassifier.pkl",
+         "randomforestclassifier": "analysis/credit_card/randomforestclassifier.pkl" 
       }
    }
 
    FEATURE_NAME_TO_MODEL_INFO_PATH = {
       FeatureName.Loan_Application : "analysis/loan_app/workspace/model_info.json",
       FeatureName.Marketing_Application: "analysis/marketing/model_info.json",
-      FeatureName.Credit_Application: "analysis/credit/model_info.json"
+      FeatureName.Credit_Application: "analysis/credit_card/model_info.json"
    }
 
    FEATURE_NAME_TO_SCALER_PATH = {
       FeatureName.Loan_Application : "analysis/loan_app/workspace/loan_scaler.gz",
       FeatureName.Marketing_Application: "",
-      FeatureName.Credit_Application: ""
+      FeatureName.Credit_Application: "analysis/credit_card/credit_scaler.gz"
    }
 
    FEATURE_NAME_TO_MAPPING_PATH = {
@@ -50,21 +54,22 @@ class ModelInfo(NamedTuple):
       FeatureName.Credit_Application: ""
    }
 
+   # Test columns with right order and its type
    FEATURE_NAME_TO_TEST_COLUMNS = {
       FeatureName.Loan_Application : {
-         'credit_policy': 'int64',
-         'days_with_cr_line': 'float64',
-         'delinq_2yrs': 'int64',
-         'dti': 'float64',
-         'fico': 'int64',
-         'inq_last_6mths': 'int64',
-         'installment': 'float64',
-         'int_rate': 'float64',
-         'log_annual_inc': 'float64',
-         'pub_rec': 'int64',
-         'purpose': 'object',
-         'revol_bal': 'int64',
-         'revol_util': 'float64'
+         'credit_policy':        'int64',
+         'days_with_cr_line':    'float64',
+         'delinq_2yrs':          'int64',
+         'dti':                  'float64',
+         'fico':                 'int64',
+         'inq_last_6mths':       'int64',
+         'installment':          'float64',
+         'int_rate':             'float64',
+         'log_annual_inc':       'float64',
+         'pub_rec':              'int64',
+         'purpose':              'object',
+         'revol_bal':            'int64',
+         'revol_util':           'float64'
       },
       FeatureName.Marketing_Application: {
          'age':         'int64',
@@ -84,7 +89,15 @@ class ModelInfo(NamedTuple):
          'previous':    'int64',
          'poutcome':    'int8'
       },
-      FeatureName.Credit_Application: ""
+      FeatureName.Credit_Application: {
+         'distance_from_home':               'float64',
+         'distance_from_last_transaction':   'float64',
+         'ratio_to_median_purchase_price':   'float64',
+         'repeat_retailer':                  'float64',
+         'used_chip':                        'float64',
+         'used_pin_number':                  'float64',
+         'online_order':                     'float64',
+      }
    }
 
    @staticmethod
@@ -117,14 +130,43 @@ class AppWorker():
             try:
                clf = pickle.load(f)
                self.models[name] = clf
-               print(f">> INFO: Load sklearn model - {name} successfully")
+               print(f">> {self.__class__.__name__} - INFO: Load {name} successfully")
             except Exception as e:
-               print(f">> WARNING: Failed to load model - {name} in {path} \n {e}")
+               print(f">> {self.__class__.__name__} - WARNING: Failed to load - {name} in {path} \n {e}")
 
    def get_model_info(self) -> dict:
       return utils.load_from_json(self.model_info.get_model_info_path())
    
-   def transform(self, test):
+   def load_model_info(self, db_session: object, feature):
+      model_info_json = self.get_model_info()
+      try:
+         with db_session() as session:
+               for model_info in model_info_json:
+                  new_model = models.ModelInfo(
+                     model=model_info.get('Model'),
+                     accuracy=model_info.get('Accuracy'),
+                     precision=model_info.get('Precision'),
+                     recall=model_info.get('Recall'),
+                     f1_score=model_info.get('F1_Score'),
+                     auc=model_info.get('AUC'),
+                     feature=feature
+                  )
+                  stmt = select(models.ModelInfo).where(models.ModelInfo.model == new_model.model and models.ModelInfo.feature == new_model.feature)
+            
+                  if session.execute(stmt).all():
+                     stmt = (
+                           update(models.ModelInfo)
+                           .where(models.ModelInfo.model == new_model.model)
+                           .where(models.ModelInfo.feature == new_model.feature)
+                           .values(new_model.as_dict())
+                     )
+                     session.execute(stmt)
+                  else:
+                     session.add(new_model)
+      except Exception as e:
+         print(f">> ERROR: {e}")
+
+   def transform(self, test: dict) -> pd.DataFrame:
       pass
 
    def predict(self, test_df: dict) -> dict:
@@ -132,9 +174,12 @@ class AppWorker():
       data_transformed = self.transform(test_df)
       for name, model in self.models.items():
          # Reorder features to fit model
-         mask = model.feature_names_in_.tolist()
-         ordered_data = data_transformed[mask]
-         result[name] = model.predict(ordered_data).tolist()[0]
+         if hasattr(model, 'feature_names_in_'):
+            mask = model.feature_names_in_.tolist()
+            ordered_data = data_transformed[mask]
+            result[name] = model.predict(ordered_data).tolist()[0]
+         else:
+            result[name] = model.predict(data_transformed).tolist()[0]
       return result
 
 class LoanWorker(AppWorker):
@@ -145,10 +190,13 @@ class LoanWorker(AppWorker):
       try:
          path = model_info.get_scaler_path()
          self.scaler = joblib.load(path)
-         print(f">> INFO: Load scaler successfully")
+         print(f">> LOAN: Load scaler successfully")
       except:
-         print(f">> WARNING: Failed to load scaler in {path}")
+         print(f">> LOAN: Failed to load scaler in {path}")
  
+   def load_model_info(self, db_session: object):
+      return super().load_model_info(db_session, feature='loan')
+
    def transform(self, test: dict) -> pd.DataFrame:
       def log_transform(data, to_log):
          X = data.copy()
@@ -162,7 +210,7 @@ class LoanWorker(AppWorker):
       cols = ['credit_policy', 'purpose', 'int_rate', 'installment', 'log_annual_inc', 'dti', 'fico', 'days_with_cr_line', 'revol_bal', 'revol_util', 'inq_last_6mths', 'delinq_2yrs', 'pub_rec']
       for c in X_test.columns:
          if c not in cols:
-            X_test.drop([c], axis=1)
+            X_test = X_test.drop([c], axis=1)
 
       cols_types = self.model_info.get_test_columns()
       X_test = X_test.astype(cols_types)
@@ -192,8 +240,11 @@ class MarketingWorker(AppWorker):
 
       super().__init__(model_info)
 
-   def transform(self, test: dict):      
-      c = self.model_info.get_test_columns()
+   def load_model_info(self, db_session: object):
+      return super().load_model_info(db_session, feature='marketing')
+   
+   def transform(self, test: dict) -> pd.DataFrame:      
+      right_order_colums_with_types = self.model_info.get_test_columns()
       for var_name in self.categorical_to_number.keys():
          categorical_var = test[var_name]
          try:
@@ -202,97 +253,46 @@ class MarketingWorker(AppWorker):
             print(f"{var_name} - {self.categorical_to_number[var_name]}")
 
       X_test = pd.DataFrame(test, [0])
-      for cols in X_test.columns:
-         if cols not in c.keys():
-            X_test.drop([cols], axis=1)
+      for column in X_test.columns:
+         if column not in right_order_colums_with_types.keys():
+            X_test = X_test.drop([column], axis=1)
       
-      X_test = X_test.astype(c)
-      X_test = X_test[c.keys()]
+      X_test = X_test.astype(right_order_colums_with_types)
+
+      # Rearrange columns order
+      X_test = X_test[right_order_colums_with_types.keys()]
 
       return X_test
 
-class TestData():
-   loan = [{
-        "id": "b2532f84ba5c7dc72dc968d5e039919e9da690c9bd6b145ddcc5d5f2263f49f8",
-         "created": "Sat, 06 Apr 2024 01:19:39 GMT",
-         "credit_policy": 1,
-         "days_with_cr_line": 5368.958333,
-         "delinq_2yrs": 0,
-         "dti": 13.5,
-         "fico": 712,
-         "inq_last_6mths": 3,
-         "installment": 507.46,
-         "int_rate": 0.1122,
-         "log_annual_inc": 10.59663473,
-         "pub_rec": 1,
-         "purpose": "debt_consolidation",
-         "revol_bal": 6513,
-         "revol_util": 34.3,
-   }]
-    
-   marketing = [
-      {
-         'age': 59,
-         'job': 'admin.',
-         'marital': 'married',
-         'education': 'secondary',
-         'default': 'no',
-         'balance': 2343,
-         'housing': 'yes',
-         'loan': 'no',
-         'contact': 'unknown',
-         'day': 5,
-         'month': 'may',
-         'duration': 1042,
-         'campaign': 1,
-         'pdays': -1,
-         'previous': 0,
-         'poutcome': 'unknown',
-         'deposit': 'yes'
-      },
-      {
-         'age': 56,
-         'job': 'admin.',
-         'marital': 'married',
-         'education': 'secondary',
-         'default': 'no',
-         'balance': 45,
-         'housing': 'no',
-         'loan': 'no',
-         'contact': 'unknown',
-         'day': 5,
-         'month': 'may',
-         'duration': 1467,
-         'campaign': 1,
-         'pdays': -1,
-         'previous': 0,
-         'poutcome': 'unknown',
-         'deposit': 'no'
-      },
-      {
-         'age': 19,
-         'job': 'technician',
-         'marital': 'married',
-         'education': 'secondary',
-         'default': 'no',
-         'balance': 1000,
-         'housing': 'yes',
-         'loan': 'no',
-         'contact': 'unknown',
-         'day': 1,
-         'month': 'may',
-         'duration': 139,
-         'campaign': 1,
-         'pdays': -1,
-         'previous': 0,
-         'poutcome': 'unknown',
-         'deposit': 'yes'
-      }
-   ]
-if __name__ == '__main__':
-   model_info = ModelInfo.create('Marketing Campaign')
-   worker = MarketingWorker(model_info)
-   test_data = TestData()
-   for idx, test in enumerate(test_data.marketing):
-      print(f">> RESULT #{idx + 1}: ")
-      print(worker.predict(test))
+class CreditCardWorker(AppWorker):
+   def __init__(self, model_info: ModelInfo):
+      super().__init__(model_info)
+
+      try:
+         path = model_info.get_scaler_path()
+         self.scaler = joblib.load(path)
+         print(f">> CREDIT: Load scaler successfully")
+      except:
+         print(f">> CREDIT: Failed to load scaler in {path}")
+
+   def load_model_info(self, db_session: object):
+      return super().load_model_info(db_session, feature='credit_card')
+   
+   def transform(self, test: dict) -> pd.DataFrame:
+      right_order_colums_with_types = self.model_info.get_test_columns()
+
+      X_test = pd.DataFrame(test, [0])
+
+      for column in X_test.columns:
+         print(f"column: {column}")
+         if column not in right_order_colums_with_types.keys():
+            print(f"drop {column}")
+            X_test = X_test.drop([column], axis=1)
+
+      print(X_test)
+      X_test = X_test.astype(right_order_colums_with_types)
+
+      X_test = np.array(X_test)
+      X_test = self.scaler.transform(X_test) 
+
+      return X_test
