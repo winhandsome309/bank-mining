@@ -93,22 +93,22 @@ const Voting = () => {
               </CRow>
             </CCol>
             <CCol xs={6}>
-              <CRow>
+              <CRow className="mt-2 mb-3">
                 <div
                   style={{
                     color: 'green',
                   }}
                 >
-                  Approve
+                  <CProgress value={50} color="success" height={10} />
                 </div>
               </CRow>
-              <CRow>
+              <CRow className="mt-1 mb-1">
                 <div
                   style={{
                     color: 'red',
                   }}
                 >
-                  Deny
+                  <CProgress value={50} color="danger" height={10} />
                 </div>
               </CRow>
             </CCol>
@@ -119,7 +119,7 @@ const Voting = () => {
                     color: 'green',
                   }}
                 >
-                  1
+                  50%
                 </div>
               </CRow>
               <CRow>
@@ -128,7 +128,7 @@ const Voting = () => {
                     color: 'red',
                   }}
                 >
-                  1
+                  50%
                 </div>
               </CRow>
             </CCol>
