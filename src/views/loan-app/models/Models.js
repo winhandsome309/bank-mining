@@ -62,6 +62,17 @@ const colorModel = {
   auc: '#c9a0dc',
   f1_score: '#36A2EB',
 }
+const infoAttr = {
+  accuracy:
+    'Accuracy is one metric for evaluating classification models. Informally, accuracy is the fraction of predictions our model got righ',
+  precision:
+    'Precision refers to the number of true positives divided by the total number of positive predictions (i.e., the number of true positives plus the number of false positives).',
+  recall:
+    'The ability of a model to find all the relevant cases within a data set. Mathematically, we define recall as the number of true positives divided by the number of true positives plus the number of false negatives',
+  auc: 'AUC stands for "Area under the ROC Curve." That is, AUC measures the entire two-dimensional area underneath the entire ROC curve (think integral calculus) from (0,0) to (1,1). AUC (Area under the ROC Curve). AUC provides an aggregate measure of performance across all possible classification thresholds',
+  f1_score:
+    'F1 score is a measure of the harmonic mean of precision and recall. Commonly used as an evaluation metric in binary and multi-class classification and LLM evaluation, the F1 score integrates precision and recall into a single metric to gain a better understanding of model performance. F-score can be modified into F0',
+}
 const nameMetricModel = ['accuracy', 'precision', 'recall', 'auc', 'f1_score']
 
 const Models = () => {
@@ -150,7 +161,7 @@ const Models = () => {
                               {index % 2 != 0 && (
                                 <CCol xs={7}>
                                   <div className="align-items-center justify-content-center">
-                                    abc
+                                    {infoAttr[item[0]]}
                                   </div>
                                 </CCol>
                               )}
@@ -170,7 +181,7 @@ const Models = () => {
                               {index % 2 == 0 && (
                                 <CCol xs={7}>
                                   <div className="align-items-center justify-content-center">
-                                    abc
+                                    {infoAttr[item[0]]}
                                   </div>
                                 </CCol>
                               )}

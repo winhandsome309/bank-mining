@@ -15,19 +15,28 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import axios from 'axios'
 
 const Login = () => {
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
 
   const login = () => {
-    // document.cookie = 'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-    // window.location.replace('')
+    document.cookie = 'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+    document.cookie = 'role=customer; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+    window.location.replace('')
+    return
     const formData = new FormData()
-    formData.append('username', userName)
+    formData.append('email', userName)
     formData.append('password', password)
+    formData.append(
+      'csrf_token',
+      'ImNhYmNiMWQ5OGEzMmVmMzViNzE1YjFmZGE5YjJlOGU1YjdmNzA3Y2Ui.Zi-Fwg.PoWfWJTCNZuc_inGVBmJShCUlXc',
+    )
+    formData.append('submit', 'Login')
+    formData.append('next', '')
 
-    axios.post(process.env.REACT_APP_API_ENDPOINT + '/api/login', formData).then((res) => {
+    axios.post(process.env.REACT_APP_API_ENDPOINT + '/login', formData).then((res) => {
       if (res.status === 201) {
         document.cookie =
           'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
@@ -104,6 +113,7 @@ const Login = () => {
                         Register Now!
                       </CButton>
                     </Link>
+                    <p className="mt-3">(Just for customer)</p>
                   </div>
                 </CCardBody>
               </CCard>
