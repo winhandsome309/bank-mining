@@ -46,6 +46,7 @@ import CIcon from '@coreui/icons-react'
 import { cilCheck, cilX, cilPlus, cilUserPlus } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
 import CommunicateFunction from '../../../components/CommunicateFunction'
+import Voting from '../../../components/Voting'
 
 const listMarketingParams = [
   ['id', 'abc', 'normal'],
@@ -444,89 +445,103 @@ const PotentialCustomer = () => {
         <COffcanvasBody>
           <CRow>
             <CCol>
-              <CCard>
-                <CCardHeader>
-                  <div className="mt-1 mb-1 ms-2">
-                    {/* <strong>Detail</strong> */}
-                    <h5>Detail</h5>
-                  </div>
-                </CCardHeader>
-                <CCardBody>
-                  <CCol>
-                    {listMarketingParams.map((params, index) => (
-                      <CRow className="mb-1">
-                        <CCol>
-                          <CContainer>
-                            <CTooltip placement="left" content={params[1]}>
-                              <div> {params[0]} </div>
-                            </CTooltip>
-                          </CContainer>
-                        </CCol>
-                        <CCol>{appData[params[0]]}</CCol>
-                      </CRow>
-                    ))}
-                  </CCol>
+              <CRow className="mb-3">
+                <div>
+                  <CCard>
+                    <CCardHeader>
+                      <div>
+                        <strong>Detail</strong>
+                      </div>
+                    </CCardHeader>
+                    <CCardBody>
+                      <CCol>
+                        {listMarketingParams.map((params, index) => (
+                          <CRow className="mb-1">
+                            <CCol>
+                              <CContainer>
+                                <CTooltip placement="left" content={params[1]}>
+                                  <div> {params[0]} </div>
+                                </CTooltip>
+                              </CContainer>
+                            </CCol>
+                            <CCol>{appData[params[0]]}</CCol>
+                          </CRow>
+                        ))}
+                      </CCol>
 
-                  <hr />
+                      <hr />
 
-                  <h5 className="text-center mb-4 bold-text">Result of Models</h5>
-                  <CCol className="ms-2">
-                    <CRow className="mb-2">
-                      <CCol
-                        style={{
-                          color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
-                        }}
-                      >
-                        gaussiannb:
+                      <h5 className="text-center mb-4 bold-text">Result of Models</h5>
+                      <CCol className="ms-2">
+                        <CRow className="mb-2">
+                          <CCol
+                            style={{
+                              color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
+                            }}
+                          >
+                            gaussiannb:
+                          </CCol>
+                          <CCol
+                            className="text-end"
+                            style={{
+                              color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
+                            }}
+                          >
+                            {predictResult['gaussiannb'] == 'yes' ? 'Safe' : 'Unsafe'}
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-2">
+                          <CCol
+                            style={{
+                              color:
+                                predictResult['gradientboostingclassifier'] == 'yes'
+                                  ? 'green'
+                                  : 'red',
+                            }}
+                          >
+                            gradientboostingclassifier:
+                          </CCol>
+                          <CCol
+                            className="text-end"
+                            style={{
+                              color:
+                                predictResult['gradientboostingclassifier'] == 'yes'
+                                  ? 'green'
+                                  : 'red',
+                            }}
+                          >
+                            {predictResult['gradientboostingclassifier'] == 'yes'
+                              ? 'Safe'
+                              : 'Unsafe'}
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-2">
+                          <CCol
+                            style={{
+                              color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
+                            }}
+                          >
+                            mlpclassifier:
+                          </CCol>
+                          <CCol
+                            className="text-end"
+                            style={{
+                              color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
+                            }}
+                          >
+                            {predictResult['mlpclassifier'] == 'yes' ? 'Safe' : 'Unsafe'}
+                          </CCol>
+                        </CRow>
                       </CCol>
-                      <CCol
-                        className="text-end"
-                        style={{
-                          color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
-                        }}
-                      >
-                        {predictResult['gaussiannb'] == 'yes' ? 'Safe' : 'Unsafe'}
-                      </CCol>
-                    </CRow>
-                    <CRow className="mb-2">
-                      <CCol
-                        style={{
-                          color:
-                            predictResult['gradientboostingclassifier'] == 'yes' ? 'green' : 'red',
-                        }}
-                      >
-                        gradientboostingclassifier:
-                      </CCol>
-                      <CCol
-                        className="text-end"
-                        style={{
-                          color:
-                            predictResult['gradientboostingclassifier'] == 'yes' ? 'green' : 'red',
-                        }}
-                      >
-                        {predictResult['gradientboostingclassifier'] == 'yes' ? 'Safe' : 'Unsafe'}
-                      </CCol>
-                    </CRow>
-                    <CRow className="mb-2">
-                      <CCol
-                        style={{
-                          color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
-                        }}
-                      >
-                        mlpclassifier:
-                      </CCol>
-                      <CCol
-                        className="text-end"
-                        style={{
-                          color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
-                        }}
-                      >
-                        {predictResult['mlpclassifier'] == 'yes' ? 'Safe' : 'Unsafe'}
-                      </CCol>
-                    </CRow>
-                  </CCol>
-                </CCardBody>
-              </CCard>
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </CRow>
+              <CRow>
+                <div>
+                  <Voting />
+                </div>
+              </CRow>
             </CCol>
 
             <CCol>

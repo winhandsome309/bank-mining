@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+// import React, { useEffect, useState } from 'react'
+import * as React from 'react'
 import classNames from 'classnames'
 import { getStyle } from '@coreui/utils'
 import { CChart, CChartRadar, CChartDoughnut } from '@coreui/react-chartjs'
@@ -56,12 +57,86 @@ import {
 import axios from 'axios'
 
 const CommunicateFunction = () => {
-  const [comFunction, setComFunction] = useState('Vote')
+  const [comFunction, setComFunction] = React.useState('Comment')
+
+  var remark_config = {
+    host: 'http://localhost:8080',
+    site_id: 'remark',
+    components: ['embed', 'last-comments', 'counter'],
+    max_shown_comments: 100,
+    theme: 'light',
+    no_footer: true,
+  }
+
+  !(function (e, n) {
+    for (var o = 0; o < e.length; o++) {
+      var r = n.createElement('script'),
+        c = '.js',
+        d = n.head || n.body
+      'noModule' in r ? ((r.type = 'module'), (c = '.mjs')) : (r.async = !0),
+        (r.defer = !0),
+        (r.src = remark_config.host + '/web/' + e[o] + c),
+        d.appendChild(r)
+    }
+  })(remark_config.components || ['embed'], document)
+
+  const insertScript = (id, parentElement) => {
+    const script = window.document.createElement('script')
+    script.type = 'text/javascript'
+    script.async = true
+    script.id = id
+    let url = window.location.origin + window.location.pathname
+    if (url.endsWith('/')) {
+      url = url.slice(0, -1)
+    }
+    script.innerHTML = `
+      var remark_config = {
+        host: "http://localhost:8080",
+        site_id: "remark",
+        theme: "light",
+        components: ['embed', 'last-comments', 'counter'],
+        no_footer: true,
+        max_shown_comments: 10,
+      };
+      !function(e,n){for(var o=0;o<e.length;o++){var r=n.createElement("script"),c=".js",d=n.head||n.body;"noModule"in r?(r.type="module",c=".mjs"):r.async=!0,r.defer=!0,r.src=remark_config.host+"/web/"+e[o]+c,d.appendChild(r)}}(remark_config.components||["embed"],document);`
+    parentElement.appendChild(script)
+  }
+
+  const removeScript = (id, parentElement) => {
+    const script = window.document.getElementById(id)
+    if (script) {
+      parentElement.removeChild(script)
+    }
+  }
+
+  const manageScript = () => {
+    if (!window) {
+      return
+    }
+    const document = window.document
+    if (document.getElementById('remark42')) {
+      insertScript('comments-script', document.body)
+    }
+    return () => removeScript('comments-script', document.body)
+  }
+  const recreateRemark42Instance = () => {
+    if (!window) {
+      return
+    }
+    const remark42 = window.REMARK42
+    if (remark42) {
+      remark42.destroy()
+      remark42.createInstance(window.remark_config)
+    }
+  }
+  React.useEffect(manageScript, [location])
+  React.useEffect(recreateRemark42Instance, [location])
+
   return (
     <>
       <CCard>
         <CCardHeader>
-          <CDropdown>
+          {/* <CDropdown>
             <CDropdownToggle split={false} color="light">
               <strong>{comFunction}</strong>
             </CDropdownToggle>
@@ -69,9 +144,14 @@ const CommunicateFunction = () => {
               <CDropdownItem onClick={() => setComFunction('Vote')}>Vote</CDropdownItem>
               <CDropdownItem onClick={() => setComFunction('Comment')}>Comment</CDropdownItem>
             </CDropdownMenu>
-          </CDropdown>
+          </CDropdown> */}
+          <div>
+            <strong>Comment</strong>
+          </div>
         </CCardHeader>
-        <CCardBody></CCardBody>
+        <CCardBody>
+          <div id="remark42"></div>
+        </CCardBody>
       </CCard>
     </>
   )
