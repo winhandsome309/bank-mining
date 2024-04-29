@@ -73,7 +73,7 @@ const listMarketingParams = [
   ['poutcome', 'abc', 'select', ['success', 'failure', 'other', 'unknown']],
 ]
 
-const PotentialCustomer = () => {
+const PotentialCustomer = (props) => {
   const [visibleCreate, setVisibleCreate] = useState(false)
   const [visibleApp, setVisibleApp] = useState(false)
   const [toast, addToast] = useState(0)
@@ -471,7 +471,7 @@ const PotentialCustomer = () => {
 
                       <hr />
 
-                      <h5 className="text-center mb-4 bold-text">Result of Models</h5>
+                      <h5 className="text-center mb-2 bold-text">Result of Models</h5>
                       <CCol className="ms-2">
                         <CRow className="mb-2">
                           <CCol
@@ -515,7 +515,7 @@ const PotentialCustomer = () => {
                               : 'Unsafe'}
                           </CCol>
                         </CRow>
-                        <CRow className="mb-2">
+                        <CRow>
                           <CCol
                             style={{
                               color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
@@ -561,7 +561,7 @@ const PotentialCustomer = () => {
                 setVisibleRecheck(true)
               }}
             >
-              Reject
+              {props.role == 'admin' ? 'Reject' : 'Dislike'}
             </CButton>
             <CButton
               color="success"
@@ -571,7 +571,7 @@ const PotentialCustomer = () => {
                 setVisibleRecheck(true)
               }}
             >
-              Accept
+              {props.role == 'admin' ? 'Accept' : 'Like'}
             </CButton>
           </div>
         </CFooter>
@@ -587,7 +587,9 @@ const PotentialCustomer = () => {
         </CModalHeader>
         <CModalBody>
           <span>Are you sure to want to </span>
-          <span style={{ color: msgRecheck === 'ACCEPT' ? 'green' : 'red' }}>{msgRecheck}</span>
+          <span style={{ color: msgRecheck === 'ACCEPT' ? 'green' : 'red' }}>
+            {props.role == 'admin' ? msgRecheck : msgRecheck == 'ACCEPT' ? 'LIKE' : 'DISLIKE'}
+          </span>
           <span>?</span>
         </CModalBody>
         <CModalFooter>
@@ -598,9 +600,13 @@ const PotentialCustomer = () => {
             color="primary"
             onClick={() => {
               if (msgRecheck == 'ACCEPT') {
-                acceptCustomer(appData.id)
+                if (props.role == 'admin') {
+                  acceptCustomer(appData.id)
+                }
               } else {
-                deleteCustomer(appData.id)
+                if (props.role == 'admin') {
+                  deleteCustomer(appData.id)
+                }
               }
               setVisibleRecheck(false)
             }}
