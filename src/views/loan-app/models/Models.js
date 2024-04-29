@@ -60,9 +60,9 @@ const colorModel = {
   precision: '#4BC0C0',
   recall: '#FFCE56',
   auc: '#c9a0dc',
-  'f1-score': '#36A2EB',
+  f1_score: '#36A2EB',
 }
-const nameMetricModel = ['accuracy', 'precision', 'recall', 'auc', 'f1-score']
+const nameMetricModel = ['accuracy', 'precision', 'recall', 'auc', 'f1_score']
 
 const Models = () => {
   const [model, setModel] = useState('Logistic regression')
@@ -73,12 +73,18 @@ const Models = () => {
     axios
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/model-info', {
         params: {
-          feature: 'loan_application',
+          feature: 'loan',
         },
       })
       .then((res) => {
         if (res.status === 200) {
-          setModelInfo(res.data)
+          var temp = res.data
+          for (var i = 0; i < temp.length; i++) {
+            delete temp[i]['feature']
+            delete temp[i]['model']
+            temp['f1_score'] = 1
+          }
+          setModelInfo(temp)
         }
       })
   }
@@ -151,7 +157,6 @@ const Models = () => {
                               <CCol xs={3}>
                                 <CChartDoughnut
                                   data={{
-                                    // labels: [item[0]],
                                     datasets: [
                                       {
                                         backgroundColor: [colorModel[item[0]], '#E7E9ED'],

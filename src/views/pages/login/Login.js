@@ -21,6 +21,8 @@ const Login = () => {
   const [password, setPassword] = useState('')
 
   const login = () => {
+    // document.cookie = 'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+    // window.location.replace('')
     const formData = new FormData()
     formData.append('username', userName)
     formData.append('password', password)
