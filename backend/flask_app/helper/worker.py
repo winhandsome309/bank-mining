@@ -150,9 +150,11 @@ class AppWorker():
                auc=model_info.get('AUC'),
                feature=feature
             )
+
             stmt = select(models.ModelInfo).where(models.ModelInfo.model == new_model.model and models.ModelInfo.feature == new_model.feature)
-            
-            if db_session.execute(stmt).all():
+            model_info_in_db = db_session.execute(stmt).all()
+            db_session.commit()
+            if model_info_in_db:
                stmt = (
                      update(models.ModelInfo)
                      .where(models.ModelInfo.model == new_model.model)
@@ -160,8 +162,10 @@ class AppWorker():
                      .values(new_model.as_dict())
                )
                db_session.execute(stmt)
+               db_session.commit()
             else:
                db_session.add(new_model)
+               db_session.commit()
       except Exception as e:
          print(f">> ERROR: {e}")
 
