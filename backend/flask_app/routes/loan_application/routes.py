@@ -4,34 +4,44 @@ from flask_app.models import Application
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
 from flask_app.models import ClientID
-from flask_app.helper.session_scope import session_scope
+from flask_app.database import db_session
 from sqlalchemy import select, null, update, delete
 from flask_app import app
-from flask import request, make_response
+from flask import request, make_response, render_template_string
 import datetime
 import flask_app.helper.utils as utils
 from flask_app.helper import worker as wk
 import time
+from flask_security import roles_accepted, auth_required, current_user, login_required
 
 model_info = wk.ModelInfo.create("Loan Application")
 worker = wk.LoanWorker(model_info)
-worker.load_model_info(session_scope)
+worker.load_model_info(db_session)
 
 @app.route("/api/loan_application/history_data", methods=["GET", "POST"])
 def history_data():
     if request.method == "GET":
-        with session_scope() as session:
-            stmt = select(HistoryApps)
-            res = session.execute(stmt).all()
-            return utils.parse_output(res)
+        stmt = select(HistoryApps).fetch(100)
+        res = db_session.execute(stmt).all()
+        db_session.commit()
+
+        return utils.parse_output(res)
+
+@app.route("/api/haha", methods=['GET'])
+@auth_required
+def home():
+    return render_template_string('Hello {{current_user.email}}!')
 
 @app.route("/api/loan_application/waiting-list", methods=["GET", "POST", "DELETE"])
+@login_required
+@roles_accepted('Customer')
 def waiting_list():
     if request.method == "GET":
-        with session_scope() as session:
-            stmt = select(Application)
-            res = session.execute(stmt).all()
-            return utils.parse_output(res)
+        stmt = select(Application)
+        res = db_session.execute(stmt).all()
+        db_session.commit()
+
+        return utils.parse_output(res)
 
     if request.method == "POST":
         form = request.form
@@ -56,87 +66,98 @@ def waiting_list():
         # predict
 
 
-        with session_scope() as session:
-            new_id = ClientID(id=id)
-            new_app = Application(
-                        id=id,
-                        credit_policy=credit_policy, 
-                        purpose=purpose,
-                        int_rate=int_rate,
-                        installment=installment,
-                        log_annual_inc=log_annual,
-                        dti=dti,
-                        fico=fico,
-                        days_with_cr_line=days_with,
-                        revol_bal=revol_bal,
-                        revol_util=revol_util,
-                        inq_last_6mths=inq_last,
-                        delinq_2yrs=delinq_2yrs,
-                        pub_rec=pub_rec,
-                        created=created,
-                        processed=False,
-                        processed_at=null()
-                    )
-            predict = worker.predict(new_app.as_dict())
-            new_predict_result = PredictResult(
-                        id=id,
-                        predict=predict.__str__(),
-                        feature='loan'
-            )
-            try:
-                session.add(new_id)
-                session.add(new_app)
-                session.add(new_predict_result)
-            except:
-                return make_response("ERROR", 401)
+        new_id = ClientID(id=id)
+        new_app = Application(
+                    id=id,
+                    credit_policy=credit_policy, 
+                    purpose=purpose,
+                    int_rate=int_rate,
+                    installment=installment,
+                    log_annual_inc=log_annual,
+                    dti=dti,
+                    fico=fico,
+                    days_with_cr_line=days_with,
+                    revol_bal=revol_bal,
+                    revol_util=revol_util,
+                    inq_last_6mths=inq_last,
+                    delinq_2yrs=delinq_2yrs,
+                    pub_rec=pub_rec,
+                    created=created,
+                    processed=False,
+                    processed_at=null()
+                )
+        predict = worker.predict(new_app.as_dict())
+        new_predict_result = PredictResult(
+                    id=id,
+                    predict=predict.__str__(),
+                    feature='loan'
+        )
+        try:
+            db_session.add(new_id)
+            db_session.commit()
+
+            db_session.add(new_app)
+            db_session.commit()
+
+            db_session.add(new_predict_result)
+            db_session.commit()
+        except:
+            return make_response("ERROR", 401)
         return make_response(predict, 201)
 
     if request.method == "DELETE":
         form = request.form
         id = form.get("id")
-        with session_scope() as session:
-            stmtFind = select(Application).where(Application.id == id)
-            resFind = session.execute(stmtFind).fetchall()
-            if resFind.count == 0:
-                return make_response("Record not found", 401)
-            stmtDeletePredict = delete(PredictResult).where(PredictResult.id == id)
-            stmtDeleteApp = delete(Application).where(Application.id == id)
-            _ = session.execute(stmtDeletePredict)
-            _ = session.execute(stmtDeleteApp)
-            return make_response("Deleted", 200)
+        stmtFind = select(Application).where(Application.id == id)
+        resFind = db_session.execute(stmtFind).fetchall()
+        if resFind.count == 0:
+            return make_response("Record not found", 401)
+        stmtDeletePredict = delete(PredictResult).where(PredictResult.id == id)
+        stmtDeleteApp = delete(Application).where(Application.id == id)
+        _ = db_session.execute(stmtDeletePredict)
+        db_session.commit()
+
+        _ = db_session.execute(stmtDeleteApp)
+        db_session.commit()
+
+        return make_response("Deleted", 200)
 
 @app.route("/api/loan_application/processed-list", methods=["GET", "POST"])
 def processed_list():
     if request.method == "GET":
-        with session_scope() as session:
-                stmt = select(ProcessedApps)
-                res = session.execute(stmt).all()
-                return utils.parse_output(res)
+            stmt = select(ProcessedApps)
+            res = db_session.execute(stmt).all()
+            db_session.commit()
+            return utils.parse_output(res)
         
     elif request.method == "POST":
-        with session_scope() as session:
-            idWaitingApp = request.args.get("application_id")
-            stmtAcceptWaitingApp = select(Application).where(Application.id == idWaitingApp)
-            waitingAppRes = session.execute(stmtAcceptWaitingApp).all()
-            waitingApp = utils.parse_output(waitingAppRes)[0]
-            processedApp = ProcessedApps(
-                id=waitingApp["id"],
-                credit_policy=waitingApp["credit_policy"], 
-                purpose=waitingApp["purpose"],
-                int_rate=waitingApp["int_rate"],
-                installment=waitingApp["installment"],
-                log_annual_inc=waitingApp["log_annual_inc"],
-                dti=waitingApp["dti"],
-                fico=waitingApp["fico"],
-                days_with_cr_line=waitingApp["days_with_cr_line"],
-                revol_bal=waitingApp["revol_bal"],
-                revol_util=waitingApp["revol_util"],
-                inq_last_6mths=waitingApp["inq_last_6mths"],
-                delinq_2yrs=waitingApp["delinq_2yrs"],
-                pub_rec=waitingApp["pub_rec"],
-                # not_fully_paid=-1,
-            )
-            session.add(processedApp)
-            stmtDeleteApp = delete(Application).where(Application.id == idWaitingApp)
-            _ = session.execute(stmtDeleteApp)
-            return make_response("success", 200)
+        idWaitingApp = request.args.get("application_id")
+        stmtAcceptWaitingApp = select(Application).where(Application.id == idWaitingApp)
+        waitingAppRes = db_session.execute(stmtAcceptWaitingApp).all()
+        db_session.commit()
+
+        waitingApp = utils.parse_output(waitingAppRes)[0]
+        processedApp = ProcessedApps(
+            id=waitingApp["id"],
+            credit_policy=waitingApp["credit_policy"], 
+            purpose=waitingApp["purpose"],
+            int_rate=waitingApp["int_rate"],
+            installment=waitingApp["installment"],
+            log_annual_inc=waitingApp["log_annual_inc"],
+            dti=waitingApp["dti"],
+            fico=waitingApp["fico"],
+            days_with_cr_line=waitingApp["days_with_cr_line"],
+            revol_bal=waitingApp["revol_bal"],
+            revol_util=waitingApp["revol_util"],
+            inq_last_6mths=waitingApp["inq_last_6mths"],
+            delinq_2yrs=waitingApp["delinq_2yrs"],
+            pub_rec=waitingApp["pub_rec"],
+            # not_fully_paid=-1,
+        )
+        db_session.add(processedApp)
+        db_session.commit()
+
+        stmtDeleteApp = delete(Application).where(Application.id == idWaitingApp)
+        _ = db_session.execute(stmtDeleteApp)
+        db_session.commit()
+        return make_response("success", 200)
