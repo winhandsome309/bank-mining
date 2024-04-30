@@ -27,14 +27,7 @@ def history_data():
 
         return utils.parse_output(res)
 
-@app.route("/api/haha", methods=['GET'])
-@auth_required
-def home():
-    return render_template_string('Hello {{current_user.email}}!')
-
 @app.route("/api/loan_application/waiting-list", methods=["GET", "POST", "DELETE"])
-@login_required
-@roles_accepted('Customer')
 def waiting_list():
     if request.method == "GET":
         stmt = select(Application)
