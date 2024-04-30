@@ -140,29 +140,32 @@ class AppWorker():
    def load_model_info(self, db_session: object, feature):
       model_info_json = self.get_model_info()
       try:
-         with db_session() as session:
-               for model_info in model_info_json:
-                  new_model = models.ModelInfo(
-                     model=model_info.get('Model'),
-                     accuracy=model_info.get('Accuracy'),
-                     precision=model_info.get('Precision'),
-                     recall=model_info.get('Recall'),
-                     f1_score=model_info.get('F1_Score'),
-                     auc=model_info.get('AUC'),
-                     feature=feature
-                  )
-                  stmt = select(models.ModelInfo).where(models.ModelInfo.model == new_model.model and models.ModelInfo.feature == new_model.feature)
-            
-                  if session.execute(stmt).all():
-                     stmt = (
-                           update(models.ModelInfo)
-                           .where(models.ModelInfo.model == new_model.model)
-                           .where(models.ModelInfo.feature == new_model.feature)
-                           .values(new_model.as_dict())
-                     )
-                     session.execute(stmt)
-                  else:
-                     session.add(new_model)
+         for model_info in model_info_json:
+            new_model = models.ModelInfo(
+               model=model_info.get('Model'),
+               accuracy=model_info.get('Accuracy'),
+               precision=model_info.get('Precision'),
+               recall=model_info.get('Recall'),
+               f1_score=model_info.get('F1_Score'),
+               auc=model_info.get('AUC'),
+               feature=feature
+            )
+
+            stmt = select(models.ModelInfo).where(models.ModelInfo.model == new_model.model and models.ModelInfo.feature == new_model.feature)
+            model_info_in_db = db_session.execute(stmt).all()
+            db_session.commit()
+            if model_info_in_db:
+               stmt = (
+                     update(models.ModelInfo)
+                     .where(models.ModelInfo.model == new_model.model)
+                     .where(models.ModelInfo.feature == new_model.feature)
+                     .values(new_model.as_dict())
+               )
+               db_session.execute(stmt)
+               db_session.commit()
+            else:
+               db_session.add(new_model)
+               db_session.commit()
       except Exception as e:
          print(f">> ERROR: {e}")
 
@@ -284,9 +287,7 @@ class CreditCardWorker(AppWorker):
       X_test = pd.DataFrame(test, [0])
 
       for column in X_test.columns:
-         print(f"column: {column}")
          if column not in right_order_colums_with_types.keys():
-            print(f"drop {column}")
             X_test = X_test.drop([column], axis=1)
 
       print(X_test)
