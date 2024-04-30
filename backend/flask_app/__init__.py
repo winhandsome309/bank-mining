@@ -17,16 +17,42 @@ user_datastore = SQLAlchemySessionUserDatastore(db_session, User, Role)
 app.security = Security(app, user_datastore)
 
 with app.app_context():
-   init_db()
+    init_db()
 
-   app.security.datastore.find_or_create_role(
-      name="Customer", permissions={"user-read", "user-write"}
-   )
-   db_session.commit()
+	# Create all roles
+    app.security.datastore.find_or_create_role(
+        name="Maintainer", permissions={"all-read", "all-write"}
+    )
+    db_session.commit()
 
-   if not app.security.datastore.find_user(email="test1@me.com"):
-      app.security.datastore.create_user(email="test1@me.com", password=hash_password("password"), roles=['Customer'])
+    app.security.datastore.find_or_create_role(
+        name="Admin", permissions={"all-read", "all-write"}
+    )
+    db_session.commit()
 
-   db_session.commit()
+    app.security.datastore.find_or_create_role(
+        name="Moderator", permissions={"all-read"}
+    )
+    db_session.commit()
+
+    app.security.datastore.find_or_create_role(
+        name="Customer", permissions={"app-read"}
+    )
+    db_session.commit()
+
+    maintainer_email = app.config["BANK_MAINTAINER_EMAIL"]
+    maintainer_password = app.config["BANK_MAINTAINER_PASSWORD"]
+    maintainer_username = app.config["BANK_MAINTAINER_USERNAME"]
+    maintainer_chat_token = app.config["BANK_MAINTAINER_REMARK_TOKEN"]
+
+    if not app.security.datastore.find_user(email=maintainer_email):
+        app.security.datastore.create_user(
+            email=maintainer_email,
+            username=maintainer_username,
+            chat_token=maintainer_chat_token,
+            password=hash_password(maintainer_password),
+            roles=["Maintainer"],
+        )
+        db_session.commit()
 
 from . import routes
