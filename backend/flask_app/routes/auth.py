@@ -13,7 +13,7 @@ appconfig = DevConfig
 def index():
     return "<p>This is index file</p>"
 
-@app.route("/get-token", methods=["GET"])
+@app.route("/api/metabase/get-token", methods=["GET"])
 @cross_origin()
 def getToken():
     if request.method == "GET":

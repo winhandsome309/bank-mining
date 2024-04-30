@@ -2,7 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import DeclarativeBase
-import flask_app.authorization as at
 from contextlib import contextmanager
 import os
 
@@ -19,4 +18,3 @@ def init_db():
     import flask_app.models
     print(f">> INFO: Initializing database ...")
     Base.metadata.create_all(engine, Base.metadata.tables.values(), checkfirst=True)
-    at.create_roles(db_session)

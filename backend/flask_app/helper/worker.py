@@ -287,9 +287,7 @@ class CreditCardWorker(AppWorker):
       X_test = pd.DataFrame(test, [0])
 
       for column in X_test.columns:
-         print(f"column: {column}")
          if column not in right_order_colums_with_types.keys():
-            print(f"drop {column}")
             X_test = X_test.drop([column], axis=1)
 
       print(X_test)

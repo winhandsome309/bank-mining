@@ -5,6 +5,7 @@ import flask_app.helper.utils as utils
 from sqlalchemy import select
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
+from flask_app.models import Staff, Customer
 
 @app.route("/api/predict-result", methods=["GET", "POST"])
 def get_predict_result():
@@ -30,3 +31,21 @@ def get_model_info():
         res = db_session.execute(stmt).all()
         db_session.commit()
     return utils.parse_output(res)
+
+@app.route("/api/admin/staffs", methods=["GET", "POST"])
+def get_all_staff():
+    if request.method == "GET":
+        stmt = select(Staff)
+        res = db_session.execute(stmt).all()
+        db_session.commit()
+
+        return utils.parse_output(res)
+
+@app.route("/api/admin/customers", methods=["GET", "POST"])
+def get_all_customer():
+    if request.method == "GET":
+        stmt = select(Customer)
+        res = db_session.execute(stmt).all()
+        db_session.commit()
+
+        return utils.parse_output(res)

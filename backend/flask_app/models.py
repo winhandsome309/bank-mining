@@ -261,16 +261,18 @@ class ModelInfo(Base):
 
 class RolesUsers(Base):
     __tablename__ = 'roles_users'
-    id = Column(Integer(), primary_key=True)
-    user_id = Column('user_id', Integer(), ForeignKey('user.id'))
-    role_id = Column('role_id', Integer(), ForeignKey('role.id'))
+
+    id          = Column(Integer(), primary_key=True)
+    user_id     = Column('user_id', Integer(), ForeignKey('user.id'))
+    role_id     = Column('role_id', Integer(), ForeignKey('role.id'))
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class Role(Base, RoleMixin):
     __tablename__ = 'role'
-    id = Column(Integer(), primary_key=True)
-    name = Column(String(80), unique=True)
+
+    id          = Column(Integer(), primary_key=True)
+    name        = Column(String(80), unique=True)
     description = Column(String(255))
     permissions = Column(MutableList.as_mutable(AsaList()), nullable=True)
 
@@ -278,20 +280,55 @@ class Role(Base, RoleMixin):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class User(Base, UserMixin):
     __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
-    email = Column(String(255), unique=True)
-    username = Column(String(255), unique=True, nullable=True)
-    password = Column(String(255), nullable=False)
-    last_login_at = Column(DateTime())
-    current_login_at = Column(DateTime())
-    last_login_ip = Column(String(100))
-    current_login_ip = Column(String(100))
-    login_count = Column(Integer)
-    active = Column(Boolean())
-    fs_uniquifier = Column(String(64), unique=True, nullable=False)
-    confirmed_at = Column(DateTime())
-    roles = relationship('Role', secondary='roles_users',
-                         backref=backref('users', lazy='dynamic'))
+
+    id                  = Column(Integer, primary_key=True)
+    email               = Column(String(255), unique=True)
+    username            = Column(String(255), unique=True, nullable=True)
+    password            = Column(String(255), nullable=False)
+    last_login_at       = Column(DateTime())
+    current_login_at    = Column(DateTime())
+    last_login_ip       = Column(String(100))
+    current_login_ip    = Column(String(100))
+    login_count         = Column(Integer)
+    active              = Column(Boolean())
+    chat_token          = Column(String(512), unique=True, nullable=True)
+    fs_uniquifier       = Column(String(64), unique=True, nullable=False)
+    confirmed_at        = Column(DateTime())
+    current_login_ip    = Column(String(255), unique=True)
+    roles               = relationship('Role', secondary='roles_users',
+                                        backref=backref('users', lazy='dynamic'))
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class Customer(Base):
+    __tablename__ = 'customer'
+
+    id:         Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    fname:      Mapped[str]
+    since:      Mapped[timestamp] = mapped_column(nullable=True)
+    user_id:    Mapped[int] = mapped_column(ForeignKey('user.id'))
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class Staff(Base):
+    __tablename__ = 'staff'
+
+    id:         Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    fname:      Mapped[str] 
+    position:   Mapped[str]
+    user_id:    Mapped[int] = mapped_column(ForeignKey('user.id'))
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class CustomersApplications(Base):
+    __tablename__ = 'customers_applications'
+
+    id:             Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    customer_id:    Mapped[int] = mapped_column(ForeignKey('customer.id'))
+    appliation_id:  Mapped[str] = mapped_column(ForeignKey('loan_application.id'))
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
