@@ -17,32 +17,66 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios'
 
+var csrf_token
+
+axios
+  .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
+    data: null,
+    withCredentials: true,
+    headers: { 'Content-Type': 'application/json' },
+  })
+  .then(function (resp) {
+    csrf_token = resp.data['response']['csrf_token']
+    document.cookie = 'csrf_token=' + csrf_token + '; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+  })
+
+axios.interceptors.request.use(
+  function (config) {
+    if (['post', 'delete', 'patch', 'put'].includes(config['method'])) {
+      if (csrf_token !== '') {
+        config.headers['X-CSRF-Token'] = csrf_token
+      }
+    }
+    return config
+  },
+  function (error) {
+    return Promise.reject(error)
+  },
+)
+
 const Login = () => {
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
 
   const login = () => {
-    document.cookie = 'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-    document.cookie = 'role=customer; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-    window.location.replace('')
-    return
     const formData = new FormData()
     formData.append('email', userName)
     formData.append('password', password)
-    formData.append(
-      'csrf_token',
-      'ImNhYmNiMWQ5OGEzMmVmMzViNzE1YjFmZGE5YjJlOGU1YjdmNzA3Y2Ui.Zi-Fwg.PoWfWJTCNZuc_inGVBmJShCUlXc',
-    )
-    formData.append('submit', 'Login')
-    formData.append('next', '')
+    formData.append('remember', 'false')
 
-    axios.post(process.env.REACT_APP_API_ENDPOINT + '/login', formData).then((res) => {
-      if (res.status === 201) {
-        document.cookie =
-          'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-        window.location.replace('')
-      }
-    })
+    axios
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/login',
+        {
+          email: userName,
+          password: password,
+          remember: false,
+          csrf_token: csrf_token,
+        },
+        {
+          withCredentials: true,
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          document.cookie =
+            'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+          document.cookie = 'role=admin; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+          window.location.replace('')
+        }
+      })
   }
 
   return (

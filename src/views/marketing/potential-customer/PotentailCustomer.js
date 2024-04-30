@@ -47,30 +47,56 @@ import { cilCheck, cilX, cilPlus, cilUserPlus } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
 import CommunicateFunction from '../../../components/CommunicateFunction'
 import Voting from '../../../components/Voting'
+import CreateFunction from '../../../components/CreateFunction'
 
 const listMarketingParams = [
   ['id', 'abc', 'normal'],
   ['age', 'abc', 'normal'],
   ['job', 'abc', 'normal'],
-  ['marital', 'abc', 'select', ['single', 'married', 'divorced']],
-  ['education', 'abc', 'select', ['primary', 'secondary', 'tertiary']],
-  ['default', 'abc', 'select', ['yes', 'no']],
+  [
+    'marital',
+    'abc',
+    'select',
+    ['single', 'married', 'divorced'],
+    ['single', 'married', 'divorced'],
+  ],
+  [
+    'education',
+    'abc',
+    'select',
+    ['primary', 'secondary', 'tertiary'],
+    ['primary', 'secondary', 'tertiary'],
+  ],
+  ['default', 'abc', 'select', ['yes', 'no'], ['1', '0']],
   ['balance', 'abc', 'normal'],
-  ['housing', 'abc', 'select', ['yes', 'no']],
-  ['loan', 'abc', 'select', ['yes', 'no']],
-  ['contact', 'abc', 'select', ['cellular', 'telephone', 'unknown']],
+  ['housing', 'abc', 'select', ['yes', 'no'], ['1', '0']],
+  ['loan', 'abc', 'select', ['yes', 'no'], ['1', '0']],
+  [
+    'contact',
+    'abc',
+    'select',
+    ['cellular', 'telephone', 'unknown'],
+    ['cellular', 'telephone', 'unknown'],
+  ],
   ['day', 'abc', 'normal'],
   [
     'month',
     'abc',
     'select',
     ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'],
+    ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'],
   ],
   ['duration', 'abc', 'normal'],
   ['campaign', 'abc', 'normal'],
   ['pdays', 'abc', 'normal'],
   ['previous', 'abc', 'normal'],
-  ['poutcome', 'abc', 'select', ['success', 'failure', 'other', 'unknown']],
+  [
+    'poutcome',
+    'abc',
+    'select',
+    ['success', 'failure', 'other', 'unknown'],
+    ['success', 'failure', 'other', 'unknown'],
+  ],
 ]
 
 const PotentialCustomer = (props) => {
@@ -142,6 +168,10 @@ const PotentialCustomer = (props) => {
           addToast(successToast('Customer is created successfully'))
         }
       })
+  }
+
+  const createMultipleCustomer = (file) => {
+    console.log(file)
   }
 
   const deleteCustomer = async (id) => {
@@ -336,100 +366,17 @@ const PotentialCustomer = (props) => {
         </CCol>
       </CRow>
 
-      <CModal
-        scrollable
-        visible={visibleCreate}
-        backdrop="static"
-        onClose={() => setVisibleCreate(false)}
-      >
-        <CModalHeader>
-          <CModalTitle>Add Customer</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CCol>
-            {listMarketingParams.map(
-              (params, index) =>
-                index % 2 != 0 && (
-                  <CRow className="mb-3">
-                    <CCol>
-                      <CTooltip placement="left" content={listMarketingParams[index][0]}>
-                        {params[2] == 'normal' ? (
-                          <CFormInput
-                            floatingLabel={listMarketingParams[index][0]}
-                            id={listMarketingParams[index][0]}
-                            placeholder={listMarketingParams[index][0]}
-                            onChange={(e) => {
-                              setForm({ ...form, [listMarketingParams[index][0]]: e.target.value })
-                            }}
-                          />
-                        ) : (
-                          <CFormSelect
-                            floatingLabel={listMarketingParams[index][0]}
-                            aria-label="Default"
-                            onChange={(e) => {
-                              setForm({ ...form, [listMarketingParams[index][0]]: e.target.value })
-                            }}
-                          >
-                            <option>Select</option>
-                            {listMarketingParams[index][3].map((value) => (
-                              <option value={value}>{value}</option>
-                            ))}
-                          </CFormSelect>
-                        )}
-                      </CTooltip>
-                    </CCol>
-                    <CCol>
-                      <CTooltip placement="left" content={listMarketingParams[index + 1][0]}>
-                        {listMarketingParams[index + 1][2] == 'normal' ? (
-                          <CFormInput
-                            floatingLabel={listMarketingParams[index + 1][0]}
-                            id={listMarketingParams[index + 1][0]}
-                            placeholder={listMarketingParams[index + 1][0]}
-                            onChange={(e) => {
-                              setForm({
-                                ...form,
-                                [listMarketingParams[index + 1][0]]: e.target.value,
-                              })
-                            }}
-                          />
-                        ) : (
-                          <CFormSelect
-                            floatingLabel={listMarketingParams[index + 1][0]}
-                            aria-label="Default"
-                            onChange={(e) => {
-                              setForm({
-                                ...form,
-                                [listMarketingParams[index + 1][0]]: e.target.value,
-                              })
-                            }}
-                          >
-                            <option>Select</option>
-                            {listMarketingParams[index + 1][3].map((value) => (
-                              <option value={value}>{value}</option>
-                            ))}
-                          </CFormSelect>
-                        )}
-                      </CTooltip>
-                    </CCol>
-                  </CRow>
-                ),
-            )}
-          </CCol>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisibleCreate(false)}>
-            Close
-          </CButton>
-          <CButton
-            color="primary"
-            onClick={() => {
-              createCustomer()
-            }}
-          >
-            Create
-          </CButton>
-        </CModalFooter>
-      </CModal>
+      <CreateFunction
+        visibleCreate={visibleCreate}
+        setVisibleCreate={setVisibleCreate}
+        listParams={listMarketingParams}
+        form={form}
+        setForm={setForm}
+        createMultiple={createMultipleCustomer}
+        createSingle={createCustomer}
+        nameCreate={'Customer'}
+      />
+
       <CToaster ref={toaster} push={toast} placement="top-end" />
 
       <COffcanvas

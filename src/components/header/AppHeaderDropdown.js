@@ -21,11 +21,26 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
+import axios from 'axios'
 import avatar8 from './../../assets/images/avatars/8.jpg'
 import avatar10 from './../../assets/images/avatars/10.png'
 
 const AppHeaderDropdown = () => {
+  const logout = () => {
+    axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/logout', {
+        data: null,
+        withCredentials: true,
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then((res) => {
+        document.cookie = 'authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+        document.cookie = 'role=admin; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+        window.location.replace('')
+      })
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
@@ -36,30 +51,18 @@ const AppHeaderDropdown = () => {
         <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates
-          <CBadge color="info" className="ms-2">
-            42
-          </CBadge>
         </CDropdownItem>
         <CDropdownItem href="#">
           <CIcon icon={cilEnvelopeOpen} className="me-2" />
           Messages
-          <CBadge color="success" className="ms-2">
-            42
-          </CBadge>
         </CDropdownItem>
         <CDropdownItem href="#">
           <CIcon icon={cilTask} className="me-2" />
           Tasks
-          <CBadge color="danger" className="ms-2">
-            42
-          </CBadge>
         </CDropdownItem>
         <CDropdownItem href="#">
           <CIcon icon={cilCommentSquare} className="me-2" />
           Comments
-          <CBadge color="warning" className="ms-2">
-            42
-          </CBadge>
         </CDropdownItem>
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
         <CDropdownItem href="#">
@@ -71,13 +74,7 @@ const AppHeaderDropdown = () => {
           Settings
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem
-          href="#"
-          onClick={() => {
-            document.cookie = 'authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-            window.location.replace('')
-          }}
-        >
+        <CDropdownItem href="#" onClick={() => logout()}>
           <CIcon icon={cilLockLocked} className="me-2" />
           Log Out
         </CDropdownItem>
