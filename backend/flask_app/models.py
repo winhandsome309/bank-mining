@@ -2,12 +2,15 @@ import datetime
 from typing_extensions import Annotated
 from sqlalchemy import ForeignKey
 from sqlalchemy import func
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped, relationship, backref
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.types import DateTime
-from sqlalchemy import DDL
+from sqlalchemy import Boolean, DateTime, Column, Integer, \
+                    String, ForeignKey
+from flask_security import UserMixin, RoleMixin, AsaList
+from flask_app.database import Base
 
 class utcnow(expression.FunctionElement):
     type = DateTime()
@@ -22,9 +25,6 @@ timestamp = Annotated[
     mapped_column(nullable=False, server_default=utcnow())
 ]
 
-class Base(DeclarativeBase):
-    def as_dict(self): 
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class HistoryApps(Base):
     __tablename__ = 'history_loan_data'
@@ -44,6 +44,8 @@ class HistoryApps(Base):
     pub_rec:        Mapped[int]
     not_fully_paid: Mapped[int]
     
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class ProcessedApps(Base):
     __tablename__ = 'processed_loan'
 
@@ -62,11 +64,15 @@ class ProcessedApps(Base):
     delinq_2yrs:    Mapped[int]
     pub_rec:        Mapped[int]
 
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class ClientID(Base):
     __tablename__ = 'clientid'
 
     id: Mapped[str] = mapped_column(primary_key=True)
 
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class Application(Base):
     __tablename__ = 'loan_application'
 
@@ -88,6 +94,8 @@ class Application(Base):
     processed:      Mapped[bool]
     processed_at:   Mapped[timestamp] = mapped_column(nullable=True, server_default=None)
 
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class HistoryMarketingClients(Base):
     __tablename__ = 'history_marketing_clients'
     
@@ -109,6 +117,8 @@ class HistoryMarketingClients(Base):
     poutcome: Mapped[str]   = mapped_column(nullable=True)
     deposit: Mapped[str]    = mapped_column(nullable=True)
 
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class MarketingClient(Base):
     __tablename__ = 'marketing_client'
 
@@ -131,6 +141,8 @@ class MarketingClient(Base):
     poutcome: Mapped[str]   = mapped_column(nullable=True)
     created: Mapped[timestamp]
 
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class MarketingOldClient(Base):
     __tablename__ = "marketing_old_client"
 
@@ -152,6 +164,8 @@ class MarketingOldClient(Base):
     previous: Mapped[int]   = mapped_column(nullable=True)
     poutcome: Mapped[str]   = mapped_column(nullable=True)
 
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class HistoryCreditCardTransaction(Base):
     __tablename__ = 'history_credit_card_transaction'
 
@@ -165,6 +179,8 @@ class HistoryCreditCardTransaction(Base):
     online_order: Mapped[float]                      = mapped_column(nullable=True)
     fraud: Mapped[float]                             = mapped_column(nullable=True)
 
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class CreditCardTransaction(Base):
     __tablename__ = 'credit_card_transaction'
     
@@ -180,6 +196,8 @@ class CreditCardTransaction(Base):
     processed:      Mapped[bool]
     processed_at:   Mapped[timestamp]               = mapped_column(nullable=True, server_default=None)
 
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class PredictResult(Base):
     __tablename__ = 'predict_result'
 
@@ -189,10 +207,15 @@ class PredictResult(Base):
     feature:        Mapped[str] = mapped_column(ForeignKey("feature.name"))
     note:           Mapped[str] = mapped_column(nullable=True)
     
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class Feature(Base):
     __tablename__ = 'feature'
     id:             Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name:           Mapped[str] = mapped_column(unique=True)
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class ModelInfo(Base):
     __tablename__ = 'model_info'
 
@@ -204,20 +227,108 @@ class ModelInfo(Base):
     f1_score:       Mapped[float] = mapped_column(nullable=True)
     feature:        Mapped[str] = mapped_column(ForeignKey("feature.name"))
 
-create_id_func = DDL(
-    "CREATE FUNCTION trigger_function()"
-    "RETURNS TRIGGER"
-    "LANGUAGE PLPGSQL"
-    "AS $$"
-    "BEGIN"
-    # Trigger logic
-    "END;"
-    "$$"
-)
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+# class UserRole(Base):
+#     __tablename__ = 'roles_users'
+    
+#     id:         Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+#     user_id:    Mapped[str] = mapped_column(ForeignKey('user.id'))
+#     role_id:    Mapped[int] = mapped_column(ForeignKey('role.id'))
 
-create_id = DDL(
-    "CREATE TRIGGER insert_app_id"
-    "BEFORE INSERT"
-    "history_marketing_clients"
-    "EXECUTE PROCEDURE insert_client_id"
-)
+# class User(Base,UserMixin):
+#     __tablename__ = 'user'
+
+#     id          : Mapped[str] = mapped_column(primary_key=True)
+#     email       : Mapped[str] = mapped_column(unique=True)
+#     username    : Mapped[str] = mapped_column(unique=True, nullable=True)
+#     password    : Mapped[str]
+#     last_login_at:  Mapped[timestamp] = mapped_column(nullable=True)
+#     last_login_ip:  Mapped[str] = mapped_column(nullable=True)
+#     current_login_at: Mapped[timestamp] = mapped_column(nullable=True)
+#     current_login_ip: Mapped[str] = mapped_column(nullable=True)
+#     active      : Mapped[bool]
+#     fs_uniquifier:    Mapped[str] = mapped_column(nullable=True)
+#     roles       : Mapped['Role'] = relationship('Role', secondary=UserRole.__tablename__, backref=backref('users', lazy='dynamic'))
+
+# class Role(Base, RoleMixin):
+#     __tablename__ = 'role'
+
+#     id:     Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+#     name:   Mapped[str] = mapped_column(unique=True)
+#     description: Mapped[str] = mapped_column(nullable=True)
+#     permissions = mapped_column(MutableList.as_mutable(AsaList()), nullable=True)
+
+class RolesUsers(Base):
+    __tablename__ = 'roles_users'
+
+    id          = Column(Integer(), primary_key=True)
+    user_id     = Column('user_id', Integer(), ForeignKey('user.id'))
+    role_id     = Column('role_id', Integer(), ForeignKey('role.id'))
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+class Role(Base, RoleMixin):
+    __tablename__ = 'role'
+
+    id          = Column(Integer(), primary_key=True)
+    name        = Column(String(80), unique=True)
+    description = Column(String(255))
+    permissions = Column(MutableList.as_mutable(AsaList()), nullable=True)
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+class User(Base, UserMixin):
+    __tablename__ = 'user'
+
+    id                  = Column(Integer, primary_key=True)
+    email               = Column(String(255), unique=True)
+    username            = Column(String(255), unique=True, nullable=True)
+    password            = Column(String(255), nullable=False)
+    last_login_at       = Column(DateTime())
+    current_login_at    = Column(DateTime())
+    last_login_ip       = Column(String(100))
+    current_login_ip    = Column(String(100))
+    login_count         = Column(Integer)
+    active              = Column(Boolean())
+    chat_token          = Column(String(512), unique=True, nullable=True)
+    fs_uniquifier       = Column(String(64), unique=True, nullable=False)
+    confirmed_at        = Column(DateTime())
+    current_login_ip    = Column(String(255), unique=True)
+    roles               = relationship('Role', secondary='roles_users',
+                                        backref=backref('users', lazy='dynamic'))
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class Customer(Base):
+    __tablename__ = 'customer'
+
+    id:         Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    fname:      Mapped[str]
+    since:      Mapped[timestamp] = mapped_column(nullable=True)
+    user_id:    Mapped[int] = mapped_column(ForeignKey('user.id'))
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class Staff(Base):
+    __tablename__ = 'staff'
+
+    id:         Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    fname:      Mapped[str] 
+    position:   Mapped[str]
+    user_id:    Mapped[int] = mapped_column(ForeignKey('user.id'))
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class CustomersApplications(Base):
+    __tablename__ = 'customers_applications'
+
+    id:             Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    customer_id:    Mapped[int] = mapped_column(ForeignKey('customer.id'))
+    appliation_id:  Mapped[str] = mapped_column(ForeignKey('loan_application.id'))
+
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
