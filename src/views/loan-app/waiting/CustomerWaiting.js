@@ -40,6 +40,7 @@ import {
   CContainer,
   CFooter,
   CFormSelect,
+  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -313,9 +314,7 @@ const CustomerWaiting = () => {
                         Log Annual Inc
                       </CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">...</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary text-center">
-                        Result
-                      </CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">Status</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
@@ -326,11 +325,9 @@ const CustomerWaiting = () => {
                         onClick={() => {
                           setAppData(item)
                           setChangeApp(!changeApp)
-                          // setVisibleApp(true)
                         }}
                       >
                         <CTableDataCell className="text-center">
-                          {/* <div className="fw-semibold">{item.id.substring(0, 5)}...</div> */}
                           <div>{item.id}</div>
                         </CTableDataCell>
                         <CTableDataCell>
@@ -351,28 +348,10 @@ const CustomerWaiting = () => {
                         <CTableDataCell>
                           <div>...</div>
                         </CTableDataCell>
-                        <CTableDataCell className="text-center space-between">
-                          <CIcon
-                            icon={cilCheck}
-                            className="text-success"
-                            onClick={(e) => {
-                              setAppData(item)
-                              e.stopPropagation()
-                              setMsgRecheck('ACCEPT')
-                              setVisibleRecheck(true)
-                            }}
-                          />
-                          {'  '}
-                          <CIcon
-                            icon={cilX}
-                            className="text-danger"
-                            onClick={(e) => {
-                              setAppData(item)
-                              e.stopPropagation()
-                              setMsgRecheck('REJECT')
-                              setVisibleRecheck(true)
-                            }}
-                          />
+                        <CTableDataCell>
+                          <CBadge color="primary" shape="rounded-pill">
+                            Waiting
+                          </CBadge>
                         </CTableDataCell>
                       </CTableRow>
                     ))}
@@ -487,7 +466,7 @@ const CustomerWaiting = () => {
       <CToaster ref={toaster} push={toast} placement="top-end" />
 
       <COffcanvas
-        className="w-25"
+        className="w-50"
         placement="end"
         visible={visibleApp}
         onHide={() => setVisibleApp(false)}
@@ -497,160 +476,43 @@ const CustomerWaiting = () => {
           <CCloseButton className="text-reset ms-auto" onClick={() => setVisibleApp(false)} />
         </COffcanvasHeader>
         <COffcanvasBody>
-          <CCol>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Id </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>
-                {/* <CRow>{appData['id'].substring(0, 20)}</CRow>
-                <CRow>{appData['id'].substring(20)}</CRow> */}
-                {appData['id']}
-              </CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Credit Policy </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['credit_policy']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Purpose </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['purpose']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Int Rate </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['int_rate']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Installment </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['installment']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Log Annual Inc </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['log_annual_inc']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Dti </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['dti']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Fico </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['fico']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Days With Cr Line </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['days_with_cr_line']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Revol Bal </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['revol_bal']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Revol Util </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['revol_util']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Inq Last 6mths </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['inq_last_6mths']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Delinq 2yrs </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['delinq_2yrs']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Pub Rec </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['pub_rec']}</CCol>
-            </CRow>
-          </CCol>
-
-          <hr />
-
-          <h5 className="text-center mb-4 bold-text">Application Status</h5>
-          <CCol className="ms-2">
-            <CRow className="mb-2">{/* <AppTimeline /> */}</CRow>
-          </CCol>
+          {listLoanParams.map(
+            (params, index) =>
+              index % 2 == 0 && (
+                <CRow>
+                  <CCol>
+                    <CRow className="mb-2">
+                      <CCol>
+                        <CContainer>
+                          <CTooltip placement="left" content={params[1]}>
+                            <div> {params[0]} </div>
+                          </CTooltip>
+                        </CContainer>
+                      </CCol>
+                      <CCol>{appData[params[0]]}</CCol>
+                    </CRow>
+                  </CCol>
+                  {index + 1 < listLoanParams.length ? (
+                    <CCol>
+                      <CRow>
+                        <CCol>
+                          <CContainer>
+                            <CTooltip placement="left" content={listLoanParams[index + 1][1]}>
+                              <div> {listLoanParams[index + 1][0]} </div>
+                            </CTooltip>
+                          </CContainer>
+                        </CCol>
+                        <CCol>{appData[listLoanParams[index + 1][0]]}</CCol>
+                      </CRow>
+                    </CCol>
+                  ) : (
+                    <CCol></CCol>
+                  )}
+                </CRow>
+              ),
+          )}
         </COffcanvasBody>
+        <CFooter></CFooter>
       </COffcanvas>
     </>
   )

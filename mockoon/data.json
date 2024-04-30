@@ -94,6 +94,35 @@
         }
       ],
       "responseMode": null
+    },
+    {
+      "uuid": "47b6ca81-9875-4978-829f-8331111fae97",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/user",
+      "responses": [
+        {
+          "uuid": "4ea7bf84-ac1c-43f1-b81d-dd1f0c3be903",
+          "body": "[\n  {\n    \"id\": \"1\",\n    \"email\": \"test1@me.com\",\n    \"username\": \"abc\",\n    \"role\": \"admin\",\n    \"permission\": \"read\"\n  },\n  {\n    \"id\": \"2\",\n    \"email\": \"test2@me.com\",\n    \"username\": \"xyz\",\n    \"role\": \"admin\",\n    \"permission\": \"write\"\n  }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
     }
   ],
   "rootChildren": [
@@ -108,6 +137,10 @@
     {
       "type": "route",
       "uuid": "7dd01296-8a96-47a2-b55e-e0d05a2444db"
+    },
+    {
+      "type": "route",
+      "uuid": "47b6ca81-9875-4978-829f-8331111fae97"
     }
   ],
   "proxyMode": false,

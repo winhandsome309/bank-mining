@@ -7,7 +7,7 @@ from flask_security import Security, SQLAlchemySessionUserDatastore, hash_passwo
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
 # manage sessions per request - make sure connections are closed and returned
 app.teardown_appcontext(lambda exc: db_session.close())

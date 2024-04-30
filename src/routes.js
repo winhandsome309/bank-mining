@@ -18,9 +18,11 @@ const OldCustomer = React.lazy(() => import('./views/marketing/old-customer/OldC
 const MarketingModels = React.lazy(() => import('./views/marketing/models/Models'))
 const MarketingAboutData = React.lazy(() => import('./views/marketing/about-data/AboutData'))
 
-// Marketing
-
 // Fraud
+
+// Staff Management
+const StaffManagement = React.lazy(() => import('./views/management/StaffManagement'))
+const CustomerManagement = React.lazy(() => import('./views/management/CustomerManagement'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -80,7 +82,12 @@ const routes = [
   { path: '/marketing/old-customer', name: 'OldCustomer', element: OldCustomer },
   { path: '/marketing/models', name: 'Models', element: MarketingModels },
   { path: '/marketing/about-data', name: 'AboutData', element: MarketingAboutData },
-  //
+  // Fraud
+
+  // Management
+  { path: '/management/staff', name: 'Management', element: StaffManagement },
+  { path: '/management/customer', name: 'Management', element: CustomerManagement },
+  //Other
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
