@@ -12,6 +12,7 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
@@ -20,49 +21,34 @@ import axios from 'axios'
 var csrf_token
 
 axios
-  .post(
-    process.env.REACT_APP_API_ENDPOINT + '/logout',
-    {},
-    {
-      withCredentials: true,
-      mode: 'cors',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-    },
-  )
-  .then((res) => {
-    if (res.status === 200) {
-      axios
-        .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
-          data: null,
-          withCredentials: true,
-          headers: { 'Content-Type': 'application/json' },
-        })
-        .then(function (resp) {
-          csrf_token = resp.data['response']['csrf_token']
-          document.cookie =
-            'csrf_token=' + csrf_token + '; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-        })
-
-      axios.interceptors.request.use(
-        function (config) {
-          if (['post', 'delete', 'patch', 'put'].includes(config['method'])) {
-            if (csrf_token !== '') {
-              config.headers['X-CSRF-Token'] = csrf_token
-            }
-          }
-          return config
-        },
-        function (error) {
-          return Promise.reject(error)
-        },
-      )
-    }
+  .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
+    data: null,
+    withCredentials: true,
+    headers: { 'Content-Type': 'application/json' },
   })
+  .then(function (resp) {
+    csrf_token = resp.data['response']['csrf_token']
+    document.cookie = 'csrf_token=' + csrf_token + '; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+  })
+
+axios.interceptors.request.use(
+  function (config) {
+    if (['post', 'delete', 'patch', 'put'].includes(config['method'])) {
+      if (csrf_token !== '') {
+        config.headers['X-CSRF-Token'] = csrf_token
+      }
+    }
+    return config
+  },
+  function (error) {
+    return Promise.reject(error)
+  },
+)
 
 const Login = () => {
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
+  const [loadingButton, setLoadingButton] = useState(false)
 
   const afterLogin = () => {
     axios
@@ -106,11 +92,8 @@ const Login = () => {
       .then((res) => {
         if (res.status === 200) {
           afterLogin()
-          // document.cookie =
-          //   'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-          // document.cookie = 'role=admin; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-          // window.location.replace('')
         }
+        setLoadingButton(!loadingButton)
       })
   }
 
@@ -150,16 +133,21 @@ const Login = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton
-                          color="primary"
-                          className="px-4"
-                          onClick={() => {
-                            login()
-                          }}
-                          disabled={userName == '' || password == ''}
-                        >
-                          Login
-                        </CButton>
+                        {!loadingButton ? (
+                          <CButton
+                            color="primary"
+                            className="px-4"
+                            onClick={() => {
+                              setLoadingButton(!loadingButton)
+                              login()
+                            }}
+                            disabled={userName == '' || password == ''}
+                          >
+                            Login
+                          </CButton>
+                        ) : (
+                          <CSpinner />
+                        )}
                       </CCol>
                       <CCol xs={6} className="text-right">
                         <CButton color="link" className="px-0">

@@ -42,7 +42,8 @@ def afterLogin():
         role  = utils.parse_output(res)[0]
 
         resp = make_response("SUCCESS", 200)
-        resp.set_cookie('role', role["name"].lower())
+        temp = role["name"].lower() if role["name"].lower() == "customer" else "admin"
+        resp.set_cookie('role', temp)
         return resp
     return make_response("ERROR", 400)
 
