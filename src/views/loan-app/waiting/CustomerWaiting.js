@@ -165,14 +165,14 @@ const CustomerWaiting = () => {
   const [msgRecheck, setMsgRecheck] = useState('')
   const [predictResult, setPredictResult] = useState(false)
   const [changeApp, setChangeApp] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
+  const [lastUpdate, setLastUpdate] = useState('')
   const isMounted = useRef(false)
 
   const fetchApplication = async () => {
-    axios
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list')
-      .then((res) => {
-        setTableData(res.data)
-      })
+    axios.get('http://localhost:3001/api/loan_application/waiting-list').then((res) => {
+      setTableData(res.data)
+    })
   }
 
   const createApplication = async () => {
@@ -323,27 +323,29 @@ const CustomerWaiting = () => {
                         v-for="item in tableItems"
                         key={index}
                         onClick={() => {
-                          setAppData(item)
+                          setAppData(item['data'])
+                          setCurrentStep(item['step'])
+                          setLastUpdate(item['last_update'])
                           setChangeApp(!changeApp)
                         }}
                       >
                         <CTableDataCell className="text-center">
-                          <div>{item.id}</div>
+                          <div>{item['data'].id}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.purpose}</div>
+                          <div>{item['data'].purpose}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.credit_policy}</div>
+                          <div>{item['data'].credit_policy}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.int_rate}</div>
+                          <div>{item['data'].int_rate}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.installment}</div>
+                          <div>{item['data'].installment}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.log_annual_inc}</div>
+                          <div>{item['data'].log_annual_inc}</div>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>...</div>
@@ -405,6 +407,7 @@ const CustomerWaiting = () => {
                         )}
                       </CTooltip>
                     </CCol>
+
                     {index + 1 < listLoanParams.length ? (
                       <CCol>
                         <CTooltip placement="left" content={listLoanParams[index + 1][0]}>
@@ -476,41 +479,72 @@ const CustomerWaiting = () => {
           <CCloseButton className="text-reset ms-auto" onClick={() => setVisibleApp(false)} />
         </COffcanvasHeader>
         <COffcanvasBody>
-          {listLoanParams.map(
-            (params, index) =>
-              index % 2 == 0 && (
-                <CRow>
-                  <CCol>
-                    <CRow className="mb-2">
-                      <CCol>
-                        <CContainer>
-                          <CTooltip placement="left" content={params[1]}>
-                            <div> {params[0]} </div>
-                          </CTooltip>
-                        </CContainer>
-                      </CCol>
-                      <CCol>{appData[params[0]]}</CCol>
-                    </CRow>
-                  </CCol>
-                  {index + 1 < listLoanParams.length ? (
-                    <CCol>
-                      <CRow>
-                        <CCol>
-                          <CContainer>
-                            <CTooltip placement="left" content={listLoanParams[index + 1][1]}>
-                              <div> {listLoanParams[index + 1][0]} </div>
-                            </CTooltip>
-                          </CContainer>
-                        </CCol>
-                        <CCol>{appData[listLoanParams[index + 1][0]]}</CCol>
-                      </CRow>
-                    </CCol>
-                  ) : (
-                    <CCol></CCol>
-                  )}
-                </CRow>
-              ),
-          )}
+          <CCol>
+            <CRow>
+              <div className="mt-2 mb-4">
+                <CCard>
+                  <CCardHeader>Detail</CCardHeader>
+                  <CCardBody>
+                    {listLoanParams.map(
+                      (params, index) =>
+                        index % 2 == 0 && (
+                          <CRow>
+                            <CCol>
+                              <CRow className="mb-2">
+                                <CCol>
+                                  <CContainer>
+                                    <CTooltip placement="left" content={params[1]}>
+                                      <div> {params[0]} </div>
+                                    </CTooltip>
+                                  </CContainer>
+                                </CCol>
+                                <CCol>{appData[params[0]]}</CCol>
+                              </CRow>
+                            </CCol>
+                            {index + 1 < listLoanParams.length ? (
+                              <CCol>
+                                <CRow>
+                                  <CCol>
+                                    <CContainer>
+                                      <CTooltip
+                                        placement="left"
+                                        content={listLoanParams[index + 1][1]}
+                                      >
+                                        <div> {listLoanParams[index + 1][0]} </div>
+                                      </CTooltip>
+                                    </CContainer>
+                                  </CCol>
+                                  <CCol>{appData[listLoanParams[index + 1][0]]}</CCol>
+                                </CRow>
+                              </CCol>
+                            ) : (
+                              <CCol></CCol>
+                            )}
+                          </CRow>
+                        ),
+                    )}
+                  </CCardBody>
+                </CCard>
+              </div>
+            </CRow>
+
+            <CRow>
+              <div>
+                <CCard>
+                  <CCardHeader>Application Status</CCardHeader>
+                  <CCardBody>
+                    <div className="mt-3 mb-3">
+                      <AppTimeline currentStep={currentStep} />
+                    </div>
+                    <div className="mb-2">
+                      <b className="me-3">Last update: </b>
+                      {lastUpdate}
+                    </div>
+                  </CCardBody>
+                </CCard>
+              </div>
+            </CRow>
+          </CCol>
         </COffcanvasBody>
         <CFooter></CFooter>
       </COffcanvas>

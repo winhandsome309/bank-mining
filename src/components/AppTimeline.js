@@ -1,32 +1,51 @@
 import { useState } from 'react'
-import { Stepper, Button, Group } from '@mantine/core'
+import { Stepper, rem } from '@mantine/core'
+import { IconCircleX } from '@tabler/icons-react'
 
-const AppTimeline = () => {
-  const [active, setActive] = useState(1)
-  const nextStep = () => setActive((current) => (current < 3 ? current + 1 : current))
-  const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current))
-
+const AppTimeline = (props) => {
   return (
     <>
-      <Stepper active={active} onStepClick={setActive}>
-        <Stepper.Step label="First step" description="Create an account">
-          Step 1 content: Create an account
+      <Stepper
+        active={props.currentStep == -1 ? 3 : props.currentStep}
+        allowNextStepsSelect={false}
+      >
+        <Stepper.Step label="First step" description="Create an application" className="mb-2">
+          Step 1 content: Create an application
         </Stepper.Step>
-        <Stepper.Step label="Second step" description="Verify email">
-          Step 2 content: Verify email
+        <Stepper.Step label="Second step" description="Waiting" className="mb-2">
+          Step 2 content: Application is waiting to be examined
         </Stepper.Step>
-        <Stepper.Step label="Final step" description="Get full access">
-          Step 3 content: Get full access
-        </Stepper.Step>
-        <Stepper.Completed>Completed, click back button to get to previous step</Stepper.Completed>
+        {props.currentStep == -1 ? (
+          <Stepper.Step
+            label="Third step"
+            description="Processed"
+            className="mb-2"
+            color="red"
+            completedIcon={<IconCircleX style={{ width: rem(20), height: rem(20) }} />}
+          >
+            Step 3 content: Application is being examnied
+          </Stepper.Step>
+        ) : (
+          <Stepper.Step label="Third step" description="Processed" className="mb-2">
+            Step 3 content: Application is being examnied
+          </Stepper.Step>
+        )}
+        {props.currentStep == -1 ? (
+          <Stepper.Step
+            label="Final step"
+            description="Done"
+            className="mb-2"
+            color="red"
+            progressIcon={<IconCircleX style={{ width: rem(20), height: rem(20) }} />}
+          >
+            Step 4 content: Application was dinied. Stopped at step 3.
+          </Stepper.Step>
+        ) : (
+          <Stepper.Step label="Final step" description="Done" className="mb-2">
+            Step 4 content: Application was approve. Waiting for future reponse.
+          </Stepper.Step>
+        )}
       </Stepper>
-
-      <Group justify="center" mt="xl">
-        <Button variant="default" onClick={prevStep}>
-          Back
-        </Button>
-        <Button onClick={nextStep}>Next step</Button>
-      </Group>
     </>
   )
 }
