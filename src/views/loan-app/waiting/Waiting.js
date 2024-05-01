@@ -447,6 +447,7 @@ const Waiting = () => {
                       <CCol className="ms-2">
                         <CRow className="mb-2">
                           <CCol
+                            xs={8}
                             style={{
                               color:
                                 predictResult['logistic_regression_(feature_selected)'] == 0
@@ -454,9 +455,15 @@ const Waiting = () => {
                                   : 'red',
                             }}
                           >
-                            logistic_regression_(feature_selected):
+                            <CTooltip
+                              placement="left"
+                              content={'Logistic Regression using Feature Selection method'}
+                            >
+                              <div> Logistic Regression (A): </div>
+                            </CTooltip>
                           </CCol>
                           <CCol
+                            xs={4}
                             className="text-end"
                             style={{
                               color:
@@ -472,6 +479,7 @@ const Waiting = () => {
                         </CRow>
                         <CRow className="mb-2">
                           <CCol
+                            xs={8}
                             style={{
                               color:
                                 predictResult['logistic_regression_(improved)'] == 0
@@ -479,9 +487,12 @@ const Waiting = () => {
                                   : 'red',
                             }}
                           >
-                            logistic_regression_(improved):
+                            <CTooltip placement="left" content={'Logistic Regression is improved'}>
+                              <div> Logistic Regression (B): </div>
+                            </CTooltip>
                           </CCol>
                           <CCol
+                            xs={4}
                             className="text-end"
                             style={{
                               color:
@@ -497,14 +508,16 @@ const Waiting = () => {
                         </CRow>
                         <CRow className="mb-2">
                           <CCol
+                            xs={8}
                             style={{
                               color:
                                 predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
                             }}
                           >
-                            random_forest_(improved):
+                            Random Forest:
                           </CCol>
                           <CCol
+                            xs={4}
                             className="text-end"
                             style={{
                               color:

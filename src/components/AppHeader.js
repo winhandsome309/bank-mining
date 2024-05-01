@@ -13,6 +13,7 @@ import {
   CNavLink,
   CNavItem,
   useColorModes,
+  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -28,7 +29,7 @@ import {
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 
-const AppHeader = () => {
+const AppHeader = (props) => {
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
@@ -41,6 +42,15 @@ const AppHeader = () => {
         headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
     })
   }, [])
+
+  const colorUser = () => {
+    if (props.role == 'admin') {
+      return 'primary'
+    } else if (props.role == 'staff') {
+      return 'info'
+    }
+    return 'secondary'
+  }
 
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
@@ -67,19 +77,22 @@ const AppHeader = () => {
         <CHeaderNav className="ms-auto">
           <CNavItem>
             <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
+              {/* <CIcon icon={cilBell} size="lg" /> */}
+              <CBadge color={colorUser()} shape="rounded-pill">
+                {props.role.charAt(0).toUpperCase() + props.role.slice(1)}
+              </CBadge>
             </CNavLink>
           </CNavItem>
           {/* <CNavItem>
             <CNavLink href="#">
-              <CIcon icon={cilList} size="lg" />
+              <CIcon icon={cilBell} size="lg" />
             </CNavLink>
           </CNavItem> */}
-          <CNavItem>
+          {/* <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilEnvelopeOpen} size="lg" />
             </CNavLink>
-          </CNavItem>
+          </CNavItem> */}
         </CHeaderNav>
         <CHeaderNav>
           <li className="nav-item py-1">

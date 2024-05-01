@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { ActionIcon, RingProgress, Text, Center, rem } from '@mantine/core'
 import classNames from 'classnames'
 import { getStyle } from '@coreui/utils'
 import { CChart, CChartRadar, CChartDoughnut } from '@coreui/react-chartjs'
@@ -166,7 +167,17 @@ const Models = () => {
                                 </CCol>
                               )}
                               <CCol xs={3}>
-                                <CChartDoughnut
+                                <RingProgress
+                                  size={290}
+                                  thickness={15}
+                                  sections={[{ value: 40, color: colorModel[item[0]] }]}
+                                  label={
+                                    <Text c="black" fw={700} ta="center" size="xl">
+                                      {Math.round(item[1] * 100 * 100) / 100}%
+                                    </Text>
+                                  }
+                                />
+                                {/* <CChartDoughnut
                                   data={{
                                     datasets: [
                                       {
@@ -176,7 +187,7 @@ const Models = () => {
                                     ],
                                   }}
                                   wrapper={true}
-                                />
+                                /> */}
                               </CCol>
                               {index % 2 == 0 && (
                                 <CCol xs={7}>
