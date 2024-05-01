@@ -14,7 +14,7 @@ const DefaultLayout = () => {
     <div>
       <AppSidebar role={userRole} />
       <div className="wrapper d-flex flex-column min-vh-100">
-        <AppHeader />
+        <AppHeader role={userRole} />
         <div className="body flex-grow-1">
           <AppContent role={userRole} />
         </div>

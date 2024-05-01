@@ -41,6 +41,7 @@ import {
   CFooter,
   CFormSelect,
   CBadge,
+  CForm,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -167,6 +168,7 @@ const CustomerWaiting = () => {
   const [changeApp, setChangeApp] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [lastUpdate, setLastUpdate] = useState('')
+  const [validated, setValidated] = useState(false)
   const isMounted = useRef(false)
 
   const fetchApplication = async () => {
@@ -278,6 +280,20 @@ const CustomerWaiting = () => {
     </CToast>
   )
 
+  const handleSubmit = (event) => {
+    const form = event.currentTarget
+    if (form.checkValidity() === false) {
+      event.preventDefault()
+      event.stopPropagation()
+    } else {
+      setVisibleMultipleApp(false)
+      setVisibleSingleApp(false)
+      setSelectedFile(IconNumber0Small)
+      createApplication()
+    }
+    setValidated(true)
+  }
+
   return (
     <>
       <CRow>
@@ -372,99 +388,113 @@ const CustomerWaiting = () => {
         onClose={() => setVisibleCreate(false)}
       >
         <CModalHeader>
-          <CModalTitle>Create Application</CModalTitle>
+          <CModalTitle>Create Your Application</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CCol>
-            {listLoanParams.map(
-              (params, index) =>
-                index % 2 == 0 && (
-                  <CRow className="mb-3">
-                    <CCol>
-                      <CTooltip placement="left" content={listLoanParams[index][0]}>
-                        {params[2] == 'normal' ? (
-                          <CFormInput
-                            floatingLabel={listLoanParams[index][0]}
-                            id={listLoanParams[index][0]}
-                            placeholder={listLoanParams[index][0]}
-                            onChange={(e) => {
-                              setForm({ ...form, [listLoanParams[index][0]]: e.target.value })
-                            }}
-                          />
-                        ) : (
-                          <CFormSelect
-                            floatingLabel={listLoanParams[index][0]}
-                            aria-label="Default"
-                            onChange={(e) => {
-                              setForm({ ...form, [listLoanParams[index][0]]: e.target.value })
-                            }}
-                          >
-                            <option>Select</option>
-                            {listLoanParams[index][3].map((value, i) => (
-                              <option value={listLoanParams[index][4][i]}>{value}</option>
-                            ))}
-                          </CFormSelect>
-                        )}
-                      </CTooltip>
-                    </CCol>
+            <CCard>
+              <CCardBody>
+                <CForm
+                  className="row g-3 needs-validation mt-1"
+                  noValidate
+                  validated={validated}
+                  onSubmit={handleSubmit}
+                >
+                  {listLoanParams.map(
+                    (params, index) =>
+                      index % 2 == 0 && (
+                        <CRow className="mb-3">
+                          <CCol>
+                            <CTooltip placement="left" content={listLoanParams[index][0]}>
+                              {params[2] == 'normal' ? (
+                                <CFormInput
+                                  required
+                                  feedbackValid="Looks good!"
+                                  floatingLabel={listLoanParams[index][0]}
+                                  id={listLoanParams[index][0]}
+                                  placeholder={listLoanParams[index][0]}
+                                  onChange={(e) => {
+                                    setForm({ ...form, [listLoanParams[index][0]]: e.target.value })
+                                  }}
+                                />
+                              ) : (
+                                <CFormSelect
+                                  required
+                                  feedbackValid="Looks good!"
+                                  floatingLabel={listLoanParams[index][0]}
+                                  aria-label="Default"
+                                  onChange={(e) => {
+                                    setForm({ ...form, [listLoanParams[index][0]]: e.target.value })
+                                  }}
+                                >
+                                  <option selected="" value="">
+                                    Select
+                                  </option>
+                                  {listLoanParams[index][3].map((value, i) => (
+                                    <option value={listLoanParams[index][4][i]}>{value}</option>
+                                  ))}
+                                </CFormSelect>
+                              )}
+                            </CTooltip>
+                          </CCol>
 
-                    {index + 1 < listLoanParams.length ? (
-                      <CCol>
-                        <CTooltip placement="left" content={listLoanParams[index + 1][0]}>
-                          {listLoanParams[index + 1][2] == 'normal' ? (
-                            <CFormInput
-                              floatingLabel={listLoanParams[index + 1][0]}
-                              id={listLoanParams[index + 1][0]}
-                              placeholder={listLoanParams[index + 1][0]}
-                              onChange={(e) => {
-                                setForm({
-                                  ...form,
-                                  [listLoanParams[index + 1][0]]: e.target.value,
-                                })
-                              }}
-                            />
+                          {index + 1 < listLoanParams.length ? (
+                            <CCol>
+                              <CTooltip placement="left" content={listLoanParams[index + 1][0]}>
+                                {listLoanParams[index + 1][2] == 'normal' ? (
+                                  <CFormInput
+                                    required
+                                    feedbackValid="Looks good!"
+                                    floatingLabel={listLoanParams[index + 1][0]}
+                                    id={listLoanParams[index + 1][0]}
+                                    placeholder={listLoanParams[index + 1][0]}
+                                    onChange={(e) => {
+                                      setForm({
+                                        ...form,
+                                        [listLoanParams[index + 1][0]]: e.target.value,
+                                      })
+                                    }}
+                                  />
+                                ) : (
+                                  <CFormSelect
+                                    required
+                                    feedbackValid="Looks good!"
+                                    floatingLabel={listLoanParams[index + 1][0]}
+                                    aria-label="Default"
+                                    onChange={(e) => {
+                                      setForm({
+                                        ...form,
+                                        [listLoanParams[index + 1][0]]: e.target.value,
+                                      })
+                                    }}
+                                  >
+                                    <option selected="" value="">
+                                      Select
+                                    </option>
+                                    {listLoanParams[index + 1][3].map((value, i) => (
+                                      <option value={listLoanParams[index + 1][4][i]}>
+                                        {value}
+                                      </option>
+                                    ))}
+                                  </CFormSelect>
+                                )}
+                              </CTooltip>
+                            </CCol>
                           ) : (
-                            <CFormSelect
-                              floatingLabel={listLoanParams[index + 1][0]}
-                              aria-label="Default"
-                              onChange={(e) => {
-                                setForm({
-                                  ...form,
-                                  [listLoanParams[index + 1][0]]: e.target.value,
-                                })
-                              }}
-                            >
-                              <option>Select</option>
-                              {listLoanParams[index + 1][3].map((value, i) => (
-                                <option value={listLoanParams[index + 1][4][i]}>{value}</option>
-                              ))}
-                            </CFormSelect>
+                            <CCol></CCol>
                           )}
-                        </CTooltip>
-                      </CCol>
-                    ) : (
-                      <CCol></CCol>
-                    )}
-                  </CRow>
-                ),
-            )}
+                        </CRow>
+                      ),
+                  )}
+                  <CButton type="submit" color="primary">
+                    Create
+                  </CButton>
+                </CForm>
+              </CCardBody>
+            </CCard>
+            <CRow className="ms-2 mt-1">Please input all required fields.</CRow>
           </CCol>
         </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisibleCreate(false)}>
-            Close
-          </CButton>
-          <CButton
-            color="primary"
-            onClick={() => {
-              createApplication()
-              // setVisibleCreate(false)
-              // addToast(successToast('Application is created successfully'))
-            }}
-          >
-            Create
-          </CButton>
-        </CModalFooter>
       </CModal>
       <CToaster ref={toaster} push={toast} placement="top-end" />
 
