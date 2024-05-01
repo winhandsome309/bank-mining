@@ -104,17 +104,17 @@ const StaffManagement = () => {
   const [checkRenderInfo, setCheckRenderInfo] = useState({})
 
   const fetchStaff = () => {
-    // axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/user').then((res) => {
-    //   if (res.status === 200) {
-    //     console.log(res.data)
-    //     setPredictResult(res.data)
-    //   }
-    // })
-    axios.get('http://localhost:3001' + '/api/user').then((res) => {
+    axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/staffs').then((res) => {
       if (res.status === 200) {
+        console.log(res.data)
         setTableData(res.data)
       }
     })
+    // axios.get('http://localhost:3001' + '/api/user').then((res) => {
+    //   if (res.status === 200) {
+    //     setTableData(res.data)
+    //   }
+    // })
   }
 
   const createUser = async () => {

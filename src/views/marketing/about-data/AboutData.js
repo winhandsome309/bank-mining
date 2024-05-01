@@ -55,7 +55,7 @@ const AboutData = () => {
 
   const getToken = async (id) => {
     axios
-      .get(process.env.REACT_APP_API_ENDPOINT + '/get-token', {
+      .get(process.env.REACT_APP_API_ENDPOINT + '/api/metabase/get-token', {
         params: {
           id: id,
         },

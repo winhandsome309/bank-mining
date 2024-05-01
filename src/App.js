@@ -65,20 +65,20 @@ const App = () => {
             exact
             path="/login"
             name="Login Page"
-            element={!checkCookieExists('authorization') ? <Login /> : <DefaultLayout />}
+            element={!checkCookieExists('role') ? <Login /> : <DefaultLayout />}
           />
           <Route
             exact
             path="/register"
             name="Register Page"
-            element={!checkCookieExists('authorization') ? <Register /> : <DefaultLayout />}
+            element={!checkCookieExists('role') ? <Register /> : <DefaultLayout />}
           />
           <Route exact path="/404" name="Page 404" element={<Page404 />} />
           <Route exact path="/500" name="Page 500" element={<Page500 />} />
           <Route
             path="*"
             name="Home"
-            element={checkCookieExists('authorization') ? <DefaultLayout /> : redirect()}
+            element={checkCookieExists('role') ? <DefaultLayout /> : redirect()}
           />
         </Routes>
       </Suspense>

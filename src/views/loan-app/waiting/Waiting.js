@@ -71,6 +71,8 @@ import {
 } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
 import CreateFunction from '../../../components/CreateFunction'
+import CommunicateFunction from '../../../components/CommunicateFunction'
+import Voting from '../../../components/Voting'
 
 const listLoanParams = [
   ['credit_policy', 'abc', 'select', ['yes', 'no'], [1, 0]],
@@ -413,207 +415,121 @@ const Waiting = () => {
           <CCloseButton className="text-reset ms-auto" onClick={() => setVisibleApp(false)} />
         </COffcanvasHeader>
         <COffcanvasBody>
-          <CCol>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Id </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['id']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Credit Policy </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['credit_policy']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Purpose </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['purpose']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Int Rate </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['int_rate']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Installment </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['installment']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Log Annual Inc </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['log_annual_inc']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Dti </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['dti']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Fico </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['fico']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Days With Cr Line </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['days_with_cr_line']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Revol Bal </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['revol_bal']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Revol Util </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['revol_util']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Inq Last 6mths </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['inq_last_6mths']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Delinq 2yrs </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['delinq_2yrs']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Pub Rec </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['pub_rec']}</CCol>
-            </CRow>
-          </CCol>
+          <CRow>
+            <CCol>
+              <CRow className="mb-3">
+                <div>
+                  <CCard>
+                    <CCardHeader>
+                      <div>
+                        <strong>Detail</strong>
+                      </div>
+                    </CCardHeader>
+                    <CCardBody>
+                      <CCol>
+                        {listLoanParams.map((params, index) => (
+                          <CRow className="mb-1">
+                            <CCol>
+                              <CContainer>
+                                <CTooltip placement="left" content={params[1]}>
+                                  <div> {params[0]} </div>
+                                </CTooltip>
+                              </CContainer>
+                            </CCol>
+                            <CCol>{appData[params[0]]}</CCol>
+                          </CRow>
+                        ))}
+                      </CCol>
 
-          <hr />
+                      <hr />
 
-          <h5 className="text-center mb-4 bold-text">Result of Models</h5>
-          <CCol className="ms-2">
-            <CRow className="mb-2">
-              <CCol
-                style={{
-                  color:
-                    predictResult['logistic_regression_(feature_selected)'] == 0 ? 'green' : 'red',
-                }}
-              >
-                logistic_regression_(feature_selected):
-              </CCol>
-              <CCol
-                className="text-end"
-                style={{
-                  color:
-                    predictResult['logistic_regression_(feature_selected)'] == 0 ? 'green' : 'red',
-                }}
-              >
-                {predictResult['logistic_regression_(feature_selected)'] == 0 ? 'Safe' : 'Unsafe'}
-              </CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol
-                style={{
-                  color: predictResult['logistic_regression_(improved)'] == 0 ? 'green' : 'red',
-                }}
-              >
-                logistic_regression_(improved):
-              </CCol>
-              <CCol
-                className="text-end"
-                style={{
-                  color: predictResult['logistic_regression_(improved)'] == 0 ? 'green' : 'red',
-                }}
-              >
-                {predictResult['logistic_regression_(improved)'] == 0 ? 'Safe' : 'Unsafe'}
-              </CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol
-                style={{
-                  color: predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
-                }}
-              >
-                random_forest_(improved):
-              </CCol>
-              <CCol
-                className="text-end"
-                style={{
-                  color: predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
-                }}
-              >
-                {predictResult['random_forest_(improved)'] == 0 ? 'Safe' : 'Unsafe'}
-              </CCol>
-            </CRow>
-          </CCol>
+                      <h5 className="text-center mb-4 bold-text">Result of Models</h5>
+                      <CCol className="ms-2">
+                        <CRow className="mb-2">
+                          <CCol
+                            style={{
+                              color:
+                                predictResult['logistic_regression_(feature_selected)'] == 0
+                                  ? 'green'
+                                  : 'red',
+                            }}
+                          >
+                            logistic_regression_(feature_selected):
+                          </CCol>
+                          <CCol
+                            className="text-end"
+                            style={{
+                              color:
+                                predictResult['logistic_regression_(feature_selected)'] == 0
+                                  ? 'green'
+                                  : 'red',
+                            }}
+                          >
+                            {predictResult['logistic_regression_(feature_selected)'] == 0
+                              ? 'Safe'
+                              : 'Unsafe'}
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-2">
+                          <CCol
+                            style={{
+                              color:
+                                predictResult['logistic_regression_(improved)'] == 0
+                                  ? 'green'
+                                  : 'red',
+                            }}
+                          >
+                            logistic_regression_(improved):
+                          </CCol>
+                          <CCol
+                            className="text-end"
+                            style={{
+                              color:
+                                predictResult['logistic_regression_(improved)'] == 0
+                                  ? 'green'
+                                  : 'red',
+                            }}
+                          >
+                            {predictResult['logistic_regression_(improved)'] == 0
+                              ? 'Safe'
+                              : 'Unsafe'}
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-2">
+                          <CCol
+                            style={{
+                              color:
+                                predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
+                            }}
+                          >
+                            random_forest_(improved):
+                          </CCol>
+                          <CCol
+                            className="text-end"
+                            style={{
+                              color:
+                                predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
+                            }}
+                          >
+                            {predictResult['random_forest_(improved)'] == 0 ? 'Safe' : 'Unsafe'}
+                          </CCol>
+                        </CRow>
+                      </CCol>
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </CRow>
+              <CRow>
+                <div>
+                  <Voting />
+                </div>
+              </CRow>
+            </CCol>
+
+            <CCol>
+              <CommunicateFunction />
+            </CCol>
+          </CRow>
         </COffcanvasBody>
         <CFooter>
           <div></div>

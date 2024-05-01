@@ -20,40 +20,73 @@ import axios from 'axios'
 var csrf_token
 
 axios
-  .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
-    data: null,
-    withCredentials: true,
-    headers: { 'Content-Type': 'application/json' },
-  })
-  .then(function (resp) {
-    csrf_token = resp.data['response']['csrf_token']
-    document.cookie = 'csrf_token=' + csrf_token + '; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-  })
+  .post(
+    process.env.REACT_APP_API_ENDPOINT + '/logout',
+    {},
+    {
+      withCredentials: true,
+      mode: 'cors',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    },
+  )
+  .then((res) => {
+    if (res.status === 200) {
+      axios
+        .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
+          data: null,
+          withCredentials: true,
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .then(function (resp) {
+          csrf_token = resp.data['response']['csrf_token']
+          document.cookie =
+            'csrf_token=' + csrf_token + '; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+        })
 
-axios.interceptors.request.use(
-  function (config) {
-    if (['post', 'delete', 'patch', 'put'].includes(config['method'])) {
-      if (csrf_token !== '') {
-        config.headers['X-CSRF-Token'] = csrf_token
-      }
+      axios.interceptors.request.use(
+        function (config) {
+          if (['post', 'delete', 'patch', 'put'].includes(config['method'])) {
+            if (csrf_token !== '') {
+              config.headers['X-CSRF-Token'] = csrf_token
+            }
+          }
+          return config
+        },
+        function (error) {
+          return Promise.reject(error)
+        },
+      )
     }
-    return config
-  },
-  function (error) {
-    return Promise.reject(error)
-  },
-)
+  })
 
 const Login = () => {
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
 
-  const login = () => {
-    const formData = new FormData()
-    formData.append('email', userName)
-    formData.append('password', password)
-    formData.append('remember', 'false')
+  const afterLogin = () => {
+    axios
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/api/login',
+        {
+          email: userName,
+          password: password,
+        },
+        {
+          withCredentials: true,
+          mode: 'cors',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          window.location.replace('')
+        }
+      })
+  }
 
+  const login = () => {
     axios
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/login',
@@ -65,16 +98,18 @@ const Login = () => {
         },
         {
           withCredentials: true,
+          credentials: 'include',
           mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
         },
       )
       .then((res) => {
         if (res.status === 200) {
-          document.cookie =
-            'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-          document.cookie = 'role=admin; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
-          window.location.replace('')
+          afterLogin()
+          // document.cookie =
+          //   'authorization=authorization; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+          // document.cookie = 'role=admin; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
+          // window.location.replace('')
         }
       })
   }
