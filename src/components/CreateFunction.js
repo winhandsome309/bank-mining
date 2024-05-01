@@ -41,6 +41,7 @@ import {
   CFooter,
   CFormSelect,
   CCollapse,
+  CForm,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -70,11 +71,27 @@ import {
   cilPlus,
 } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
+import { IconNumber0Small } from '@tabler/icons-react'
 
 const CreateFunction = (props) => {
   const [visibleMultipleApp, setVisibleMultipleApp] = useState(false)
   const [visibleSingleApp, setVisibleSingleApp] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
+  const [validated, setValidated] = useState(false)
+
+  const handleSubmit = (event) => {
+    const form = event.currentTarget
+    if (form.checkValidity() === false) {
+      event.preventDefault()
+      event.stopPropagation()
+    } else {
+      setVisibleMultipleApp(false)
+      setVisibleSingleApp(false)
+      setSelectedFile(IconNumber0Small)
+      props.createSingle()
+    }
+    setValidated(true)
+  }
 
   return (
     <CModal
@@ -135,96 +152,121 @@ const CreateFunction = (props) => {
           <CCollapse visible={visibleSingleApp}>
             <CCard className="mt-3">
               <CCardBody>
-                {props.listParams.map(
-                  (params, index) =>
-                    index % 2 == 0 && (
-                      <CRow className="mb-3">
-                        <CCol>
-                          <CTooltip placement="left" content={params[0]}>
-                            {params[2] == 'normal' ? (
-                              <CFormInput
-                                floatingLabel={params[0]}
-                                id={params[0]}
-                                placeholder={params[0]}
-                                onChange={(e) => {
-                                  props.setForm({
-                                    ...props.form,
-                                    [params[0]]: e.target.value,
-                                  })
-                                }}
-                              />
-                            ) : (
-                              <CFormSelect
-                                floatingLabel={params[0]}
-                                aria-label="Default"
-                                onChange={(e) => {
-                                  props.setForm({
-                                    ...props.form,
-                                    [params[0]]: e.target.value,
-                                  })
-                                }}
-                              >
-                                <option>Select</option>
-                                {params[3].map((value, i) => (
-                                  <option value={params[4][i]}>{value}</option>
-                                ))}
-                              </CFormSelect>
-                            )}
-                          </CTooltip>
-                        </CCol>
-                        {index + 1 < props.listParams.length ? (
+                <CForm
+                  className="row g-3 needs-validation"
+                  noValidate
+                  validated={validated}
+                  onSubmit={handleSubmit}
+                >
+                  {props.listParams.map(
+                    (params, index) =>
+                      index % 2 == 0 && (
+                        <CRow className="mb-3">
                           <CCol>
-                            <CTooltip placement="left" content={props.listParams[index + 1][0]}>
-                              {props.listParams[index + 1][2] == 'normal' ? (
+                            <CTooltip placement="left" content={params[0]}>
+                              {params[2] == 'normal' ? (
                                 <CFormInput
-                                  floatingLabel={props.listParams[index + 1][0]}
-                                  id={props.listParams[index + 1][0]}
-                                  placeholder={props.listParams[index + 1][0]}
+                                  required
+                                  feedbackValid="Looks good!"
+                                  floatingLabel={params[0]}
+                                  id={params[0]}
+                                  placeholder={params[0]}
                                   onChange={(e) => {
                                     props.setForm({
                                       ...props.form,
-                                      [props.listParams[index + 1][0]]: e.target.value,
+                                      [params[0]]: e.target.value,
                                     })
                                   }}
                                 />
                               ) : (
                                 <CFormSelect
-                                  floatingLabel={props.listParams[index + 1][0]}
+                                  required
+                                  feedbackValid="Looks good!"
+                                  floatingLabel={params[0]}
                                   aria-label="Default"
                                   onChange={(e) => {
                                     props.setForm({
                                       ...props.form,
-                                      [props.listParams[index + 1][0]]: e.target.value,
+                                      [params[0]]: e.target.value,
                                     })
                                   }}
                                 >
-                                  <option>Select</option>
-                                  {props.listParams[index + 1][3].map((value, i) => (
-                                    <option value={props.listParams[index + 1][4][i]}>
-                                      {value}
-                                    </option>
+                                  <option selected="" value="">
+                                    Select
+                                  </option>
+                                  {params[3].map((value, i) => (
+                                    <option value={params[4][i]}>{value}</option>
                                   ))}
                                 </CFormSelect>
                               )}
                             </CTooltip>
                           </CCol>
-                        ) : (
-                          <CCol></CCol>
-                        )}
-                      </CRow>
-                    ),
-                )}
+                          {index + 1 < props.listParams.length ? (
+                            <CCol>
+                              <CTooltip placement="left" content={props.listParams[index + 1][0]}>
+                                {props.listParams[index + 1][2] == 'normal' ? (
+                                  <CFormInput
+                                    required
+                                    feedbackValid="Looks good!"
+                                    floatingLabel={props.listParams[index + 1][0]}
+                                    id={props.listParams[index + 1][0]}
+                                    placeholder={props.listParams[index + 1][0]}
+                                    onChange={(e) => {
+                                      props.setForm({
+                                        ...props.form,
+                                        [props.listParams[index + 1][0]]: e.target.value,
+                                      })
+                                    }}
+                                  />
+                                ) : (
+                                  <CFormSelect
+                                    required
+                                    feedbackValid="Looks good!"
+                                    floatingLabel={props.listParams[index + 1][0]}
+                                    aria-label="Default"
+                                    onChange={(e) => {
+                                      props.setForm({
+                                        ...props.form,
+                                        [props.listParams[index + 1][0]]: e.target.value,
+                                      })
+                                    }}
+                                  >
+                                    <option selected="" value="">
+                                      Select
+                                    </option>
+                                    {props.listParams[index + 1][3].map((value, i) => (
+                                      <option value={props.listParams[index + 1][4][i]}>
+                                        {value}
+                                      </option>
+                                    ))}
+                                  </CFormSelect>
+                                )}
+                              </CTooltip>
+                            </CCol>
+                          ) : (
+                            <CCol></CCol>
+                          )}
+                        </CRow>
+                      ),
+                  )}
+                  <CButton type="submit" color="primary">
+                    Create
+                  </CButton>
+                </CForm>
               </CCardBody>
-              <CCardFooter>
+              {/* <CCardFooter>
                 <CButton
                   color="primary"
                   onClick={() => {
+                    setVisibleMultipleApp(false)
+                    setVisibleSingleApp(false)
+                    setSelectedFile(IconNumber0Small)
                     props.createSingle()
                   }}
                 >
                   Create
                 </CButton>
-              </CCardFooter>
+              </CCardFooter> */}
             </CCard>
           </CCollapse>
         </CCol>

@@ -28,12 +28,16 @@ import avatar10 from './../../assets/images/avatars/10.png'
 const AppHeaderDropdown = () => {
   const logout = () => {
     axios
-      .post(process.env.REACT_APP_API_ENDPOINT + '/logout', {
-        data: null,
-        withCredentials: true,
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-      })
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/logout',
+        {},
+        {
+          data: null,
+          withCredentials: true,
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
       .then((res) => {
         document.cookie = 'authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
         document.cookie = 'role=admin; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
