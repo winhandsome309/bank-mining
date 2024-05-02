@@ -32,22 +32,24 @@ import axios from 'axios'
 
 var csrf_token
 
+// Set withCredentials to true for all requests
+// Credit: https://www.dhiwise.com/post/managing-secure-cookies-via-axios-interceptors
+axios.defaults.withCredentials = true;
+
 axios
   .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
     data: null,
-    withCredentials: true,
     headers: { 'Content-Type': 'application/json' },
   })
   .then(function (resp) {
     csrf_token = resp.data['response']['csrf_token']
-    document.cookie = 'csrf_token=' + csrf_token + '; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/'
   })
 
 axios.interceptors.request.use(
   function (config) {
     if (['post', 'delete', 'patch', 'put'].includes(config['method'])) {
       if (csrf_token !== '') {
-        config.headers['X-CSRF-Token'] = csrf_token
+        config.headers['X-XSRF-Token'] = csrf_token
       }
     }
     return config
@@ -98,7 +100,6 @@ const Login = () => {
           email: userName,
           password: password,
           remember: false,
-          csrf_token: csrf_token,
         },
         {
           withCredentials: true,
@@ -116,7 +117,12 @@ const Login = () => {
       })
       .catch((error) => {
         setLoadingButton(false)
-        setToast(failToast('Login fail'))
+        if (error.response.data.response) {
+          setToast(failToast(error.response.data.response.errors))
+        }
+        else {
+          setToast(failToast('Login fail'))          
+        }
       })
   }
 
@@ -134,7 +140,7 @@ const Login = () => {
   )
   const failToast = (msg) => (
     <CToast title="Success" color="danger" className="d-flex">
-      <CToastBody>{msg} !</CToastBody>
+      <CToastBody>{msg} ! </CToastBody>
       <CToastClose className="me-2 m-auto" white />
     </CToast>
   )

@@ -4,10 +4,12 @@ from flask_app.helper.config import DevConfig
 from flask_app.database import init_db, db_session
 from flask_app.models import User, Role
 from flask_security import Security, SQLAlchemySessionUserDatastore, hash_password
+import flask_wtf
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
 CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+flask_wtf.CSRFProtect(app)
 
 # manage sessions per request - make sure connections are closed and returned
 app.teardown_appcontext(lambda exc: db_session.close())
