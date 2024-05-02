@@ -123,7 +123,7 @@ const CreateFunction = (props) => {
                   <CFormInput
                     type="file"
                     id="formFile"
-                    label="Default file input example"
+                    label="Input File CSV"
                     onChange={(e) => {
                       setSelectedFile(e.target.files[0])
                     }}
