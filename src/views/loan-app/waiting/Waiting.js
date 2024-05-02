@@ -167,6 +167,7 @@ const Waiting = () => {
   const [msgRecheck, setMsgRecheck] = useState('')
   const [predictResult, setPredictResult] = useState(false)
   const [changeApp, setChangeApp] = useState(false)
+  const [loadingMultipleCreation, setLoadingMultipleCreation] = useState(false)
   const isMounted = useRef(false)
 
   const fetchApplication = async () => {
@@ -186,6 +187,7 @@ const Waiting = () => {
       .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', formData)
       .then((res) => {
         if (res.status === 201) {
+          setLoadingMultipleCreation(false)
           setVisibleCreate(false)
           fetchApplication()
           addToast(successToast('Application is created successfully'))
@@ -194,7 +196,20 @@ const Waiting = () => {
   }
 
   const createMultipleApplication = (file) => {
-    console.log(file)
+    const formData = new FormData()
+    formData.append('file', file)
+    axios
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/list/waiting-list',
+        formData,
+      )
+      .then((res) => {
+        if (res.status == 201) {
+          setVisibleCreate(false)
+          fetchApplication()
+          addToast(successToast('Application is created successfully'))
+        }
+      })
   }
 
   const deleteApplication = async (id) => {
@@ -392,6 +407,8 @@ const Waiting = () => {
       </CRow>
 
       <CreateFunction
+        loadingMultipleCreation={loadingMultipleCreation}
+        setLoadingMultipleCreation={setLoadingMultipleCreation}
         visibleCreate={visibleCreate}
         setVisibleCreate={setVisibleCreate}
         listParams={listLoanParams}
@@ -443,7 +460,7 @@ const Waiting = () => {
 
                       <hr />
 
-                      <h5 className="text-center mb-4 bold-text">Result of Models</h5>
+                      <h5 className="text-center mb-2 bold-text">Result of Models</h5>
                       <CCol className="ms-2">
                         <CRow className="mb-2">
                           <CCol
@@ -533,9 +550,11 @@ const Waiting = () => {
                 </div>
               </CRow>
               <CRow>
-                <div>
-                  <Voting />
-                </div>
+                {changeApp && (
+                  <div>
+                    <Voting applicationId={appData['id']} />
+                  </div>
+                )}
               </CRow>
             </CCol>
 

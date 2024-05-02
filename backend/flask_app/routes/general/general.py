@@ -5,7 +5,7 @@ import flask_app.helper.utils as utils
 from sqlalchemy import select
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
-from flask_app.models import Staff, Customer
+from flask_app.models import Staff, Customer, Vote
 
 @app.route("/api/predict-result", methods=["GET", "POST"])
 def get_predict_result():
@@ -49,3 +49,21 @@ def get_all_customer():
         db_session.commit()
 
         return utils.parse_output(res)
+
+@app.route("/api/voting", methods=["GET", "POST"])
+def get_vote():
+    if request.method == "GET":
+        id = request.args.get("id")
+        stmt = select(Vote).where(Vote.application_id == id)
+        res = db_session.execute(stmt).all()
+        db_session.commit()
+
+        voteRes = utils.parse_output(res)
+        like, dislike = 0, 0
+        for vote in voteRes:
+            if (vote["status"] == "like"): like += 1
+            else: dislike += 1
+        return make_response({"like": like, "dislike": dislike}, 200)
+
+    elif request.method == "POST":
+        pass

@@ -42,6 +42,7 @@ import {
   CFormSelect,
   CCollapse,
   CForm,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -129,14 +130,19 @@ const CreateFunction = (props) => {
                   />
                 </CCardBody>
                 <CCardFooter>
-                  <CButton
-                    color="primary"
-                    onClick={() => {
-                      props.createMultiple(selectedFile)
-                    }}
-                  >
-                    Create
-                  </CButton>
+                  {props.loadingMultipleCreation ? (
+                    <CSpinner />
+                  ) : (
+                    <CButton
+                      color="primary"
+                      onClick={() => {
+                        props.setLoadingMultipleCreation(true)
+                        props.createMultiple(selectedFile)
+                      }}
+                    >
+                      Create
+                    </CButton>
+                  )}
                 </CCardFooter>
               </CCard>
             </CCollapse>
@@ -153,7 +159,7 @@ const CreateFunction = (props) => {
             <CCard className="mt-3">
               <CCardBody>
                 <CForm
-                  className="row g-3 needs-validation"
+                  className="row g-3 needs-validation mt-2"
                   noValidate
                   validated={validated}
                   onSubmit={handleSubmit}

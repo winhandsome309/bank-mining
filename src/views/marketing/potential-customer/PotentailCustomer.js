@@ -255,6 +255,46 @@ const PotentialCustomer = (props) => {
       })
   }
 
+  const likeCustomer = async (id) => {
+    axios
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/api/voting',
+        {},
+        {
+          params: {
+            id: id,
+            status: 'like',
+          },
+        },
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          addToast(successToast('Liked successully'))
+          // fetchCustomer()
+        }
+      })
+  }
+
+  const dislikeCustomer = async (id) => {
+    axios
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/api/voting',
+        {},
+        {
+          params: {
+            id: id,
+            status: 'dislike',
+          },
+        },
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          addToast(successToast('Disliked successully'))
+          // fetchCustomer()
+        }
+      })
+  }
+
   useEffect(() => {
     fetchCustomer()
   }, [])
@@ -536,7 +576,11 @@ const PotentialCustomer = (props) => {
               className="me-2"
               onClick={() => {
                 setVisibleApp(false)
-                setMsgRecheck('REJECT')
+                if (props.role == 'staff') {
+                  setMsgRecheck('DISLIKE')
+                } else {
+                  setMsgRecheck('REJECT')
+                }
                 setVisibleRecheck(true)
               }}
             >
@@ -546,7 +590,11 @@ const PotentialCustomer = (props) => {
               color="success"
               onClick={() => {
                 setVisibleApp(false)
-                setMsgRecheck('ACCEPT')
+                if (props.role == 'staff') {
+                  setMsgRecheck('LIKE')
+                } else {
+                  setMsgRecheck('ACCEPT')
+                }
                 setVisibleRecheck(true)
               }}
             >
@@ -581,10 +629,14 @@ const PotentialCustomer = (props) => {
               if (msgRecheck == 'ACCEPT') {
                 if (props.role == 'admin') {
                   acceptCustomer(appData.id)
+                } else {
+                  likeCustomer(appData.id)
                 }
               } else {
                 if (props.role == 'admin') {
                   deleteCustomer(appData.id)
+                } else {
+                  dislikeCustomer(appData.id)
                 }
               }
               setVisibleRecheck(false)

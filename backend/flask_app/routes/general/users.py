@@ -2,11 +2,11 @@ from flask import request, make_response
 from flask_app import app
 from flask_app.database import db_session
 import flask_app.helper.utils as utils
-from sqlalchemy import select
+from sqlalchemy import select, update
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
-from flask_app.models import Staff, Customer, CustomersApplications, Application
-from flask_security import hash_password, roles_required, current_user, roles_accepted
+from flask_app.models import Staff, Customer, CustomersApplications, Application, User
+from flask_security import hash_password, roles_required, current_user, roles_accepted, verify_password
 import datetime
 import time
 
@@ -61,7 +61,7 @@ def create_customer():
    password    = str(int(time.time()))
 
    try:
-      user = app.security.datastore.create_user(email=email, username=username, password=password, roles=['Customer'])
+      user = app.security.datastore.create_user(email=email, username=username, password=hash_password(password), roles=['Customer'])
       db_session.commit()
 
       new_customer = Customer(
@@ -87,6 +87,25 @@ def create_customer():
          },
          200
       )
+   except:
+      return make_response("ERROR", 400)
+   
+@app.route('/api/customer/reset-password', methods=["POST"])
+# @roles_required("Customer")
+def customer_reset_password():
+   form = request.form
+   email    = form.get('email')
+   oldPassword = form.get('oldPassword')
+   newPassword = form.get('newPassword')
+   try:
+      stmt = (
+         update(User)
+         .where(User.email == email and verify_password(oldPassword, User.password))
+         .values(password=hash_password(newPassword)))
+      db_session.execute(stmt)
+      db_session.commit()
+
+      return make_response("SUCCESS", 200)
    except:
       return make_response("ERROR", 400)
 

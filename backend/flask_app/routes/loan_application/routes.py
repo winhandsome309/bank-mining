@@ -13,6 +13,8 @@ import flask_app.helper.utils as utils
 from flask_app.helper import worker as wk
 import time
 from flask_security import roles_accepted, auth_required, current_user, login_required
+import pandas
+import time
 
 model_info = wk.ModelInfo.create("Loan Application")
 worker = wk.LoanWorker(model_info)
@@ -114,6 +116,58 @@ def waiting_list():
         db_session.commit()
 
         return make_response("Deleted", 200)
+    
+@app.route("/api/loan_application/list/waiting-list", methods=["POST"])
+def list_waiting_list():
+    if request.method == "POST":
+        file = request.files['file']
+        if file.filename.endswith('.csv'):
+            # Read file
+            df = pandas.read_csv(file)
+            listData = df.to_dict(orient="records")
+            for data in listData:
+                data["id"] = str(int(time.time()))
+                id = str(int(time.time())) 
+                new_id = ClientID(id=id)
+
+                new_app = Application(
+                    id=id,
+                    credit_policy=data["credit_policy"],
+                    purpose=data["purpose"],
+                    int_rate=data["int_rate"],
+                    installment=data["installment"],
+                    log_annual_inc=data["log_annual_inc"],
+                    dti=data["dti"],
+                    fico=data["fico"],
+                    days_with_cr_line=data["days_with_cr_line"],
+                    revol_bal=data["revol_bal"],
+                    revol_util=data["revol_util"],
+                    inq_last_6mths=data["inq_last_6mths"],
+                    delinq_2yrs=data["delinq_2yrs"],
+                    pub_rec=data["pub_rec"],
+                    created=datetime.datetime.now(),
+                    processed=False,
+                    processed_at=null()
+                )
+                predict = worker.predict(new_app.as_dict())
+                new_predict_result = PredictResult(
+                    id=id,
+                    predict=predict.__str__(),
+                    feature='loan'
+                )
+                try:
+                    db_session.add(new_id)
+                    db_session.commit()
+
+                    db_session.add(new_app)
+                    db_session.commit()
+
+                    db_session.add(new_predict_result)
+                    db_session.commit()
+                except:
+                    pass
+                time.sleep(1)
+            return make_response("SUCCESS", 201)
 
 @app.route("/api/loan_application/processed-list", methods=["GET", "POST"])
 def processed_list():

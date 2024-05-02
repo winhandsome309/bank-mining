@@ -58,8 +58,39 @@ import {
 } from '@coreui/icons'
 import axios from 'axios'
 
-const Voting = () => {
+const Voting = (props) => {
   const [comFunction, setComFunction] = React.useState('Comment')
+  const [like, setLike] = React.useState(0)
+  const [dislike, setDislike] = React.useState(0)
+  const [numberLike, setNumberLike] = React.useState(0)
+  const [numberDislike, setNumberDislike] = React.useState(0)
+
+  const fetchVoting = () => {
+    axios
+      .get(process.env.REACT_APP_API_ENDPOINT + '/api/voting', {
+        params: {
+          id: props.applicationId,
+        },
+      })
+      .then((res) => {
+        var likeVal = res.data['like']
+        var dislikeVal = res.data['dislike']
+        var sum = parseInt(likeVal) + parseInt(dislikeVal)
+        if (sum == 0) {
+          setLike(0)
+          setDislike(0)
+        } else {
+          setLike((likeVal * 100) / sum)
+          setDislike((dislikeVal * 100) / sum)
+          setNumberLike(likeVal)
+          setNumberDislike(dislikeVal)
+        }
+      })
+  }
+
+  React.useEffect(() => {
+    fetchVoting()
+  }, [])
 
   return (
     <>
@@ -99,7 +130,9 @@ const Voting = () => {
                     color: 'green',
                   }}
                 >
-                  <CProgress value={50} color="success" height={10} />
+                  <CProgress value={like} color="success" height={10} animated variant="striped">
+                    {numberLike} votes
+                  </CProgress>
                 </div>
               </CRow>
               <CRow className="mt-1 mb-1">
@@ -108,7 +141,9 @@ const Voting = () => {
                     color: 'red',
                   }}
                 >
-                  <CProgress value={50} color="danger" height={10} />
+                  <CProgress value={dislike} color="danger" height={10} animated variant="striped">
+                    {numberDislike} votes
+                  </CProgress>
                 </div>
               </CRow>
             </CCol>
@@ -119,7 +154,7 @@ const Voting = () => {
                     color: 'green',
                   }}
                 >
-                  50%
+                  {like}%
                 </div>
               </CRow>
               <CRow>
@@ -128,34 +163,11 @@ const Voting = () => {
                     color: 'red',
                   }}
                 >
-                  50%
+                  {dislike}%
                 </div>
               </CRow>
             </CCol>
           </CRow>
-          {/* 
-          <CCol className="ms-3">
-            <CRow>
-              <div
-                style={{
-                  color: 'green',
-                }}
-              >
-                <CIcon icon={cilThumbUp} className="me-2" />
-                Approve
-              </div>
-            </CRow>
-            <CRow>
-              <div
-                style={{
-                  color: 'red',
-                }}
-              >
-                <CIcon icon={cilThumbDown} className="me-2" />
-                Deny
-              </div>
-            </CRow>
-          </CCol> */}
         </CCardBody>
       </CCard>
     </>
