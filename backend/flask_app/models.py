@@ -332,3 +332,14 @@ class CustomersApplications(Base):
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
+class Vote(Base):
+    __tablename__ = 'vote'
+
+    id:             Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id:        Mapped[int] = mapped_column(ForeignKey('user.id'))
+    application_id:  Mapped[str] = mapped_column(ForeignKey('loan_application.id'))
+    status:         Mapped[str]
+    
+    def as_dict(self): 
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

@@ -26,6 +26,8 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import { PasswordInput, rem, Input } from '@mantine/core'
+import { IconLock, IconAt } from '@tabler/icons-react'
 import axios from 'axios'
 
 var csrf_token
@@ -106,10 +108,15 @@ const Login = () => {
         },
       )
       .then((res) => {
+        setLoadingButton(false)
         if (res.status === 200) {
+          setToast(successToast('Login successully'))
           afterLogin()
         }
-        setLoadingButton(!loadingButton)
+      })
+      .catch((error) => {
+        setLoadingButton(false)
+        setToast(failToast('Login fail'))
       })
   }
 
@@ -125,11 +132,27 @@ const Login = () => {
       <CToastClose className="me-2 m-auto" white />
     </CToast>
   )
+  const failToast = (msg) => (
+    <CToast title="Success" color="danger" className="d-flex">
+      <CToastBody>{msg} !</CToastBody>
+      <CToastClose className="me-2 m-auto" white />
+    </CToast>
+  )
 
   const resetPassword = () => {
-    // axios post
-    setToast(successToast('Reset password successully'))
-    setVisibleResetPassword(false)
+    const formData = new FormData()
+    formData.append('email', usernameResetPassword)
+    formData.append('oldPassword', oldPasswordResetPassword)
+    formData.append('newPassword', newPasswordResetPassword)
+    axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/reset-password', formData)
+      .then((res) => {
+        if (res.status === 200) {
+          setLoadingButton(false)
+          setToast(successToast('Reset password successully'))
+          setVisibleResetPassword(false)
+        }
+      })
   }
 
   return (
@@ -143,14 +166,14 @@ const Login = () => {
                   <CForm>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
-                    <CInputGroup className="mb-3">
+                    {/* <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
                       <CFormInput
                         value={userName}
-                        placeholder="Username"
-                        autoComplete="username"
+                        placeholder="Email"
+                        autoComplete="email"
                         onChange={(e) => setUserName(e.target.value)}
                       />
                     </CInputGroup>
@@ -165,7 +188,25 @@ const Login = () => {
                         autoComplete="current-password"
                         onChange={(e) => setPassword(e.target.value)}
                       />
-                    </CInputGroup>
+                    </CInputGroup> */}
+                    <Input
+                      className="mb-3 mt-2"
+                      placeholder="Email"
+                      size="md"
+                      leftSection={<IconAt size={16} />}
+                      onChange={(e) => {
+                        setUserName(e.target.value)
+                      }}
+                    />
+                    <PasswordInput
+                      className="mb-4"
+                      size="md"
+                      leftSection={
+                        <IconLock style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+                      }
+                      placeholder="Password"
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                     <CRow>
                       <CCol xs={8}>
                         {!loadingButton ? (
@@ -190,7 +231,7 @@ const Login = () => {
                           className="px-0"
                           onClick={() => setVisibleResetPassword(!visibleResetPassword)}
                         >
-                          Forgot password?
+                          Reset password?
                         </CButton>
                       </CCol>
                     </CRow>
@@ -214,15 +255,15 @@ const Login = () => {
         <CModalBody>
           <CForm>
             <CCol>
-              <CRow>
+              {/* <CRow>
                 <CInputGroup className="mb-4">
                   <CInputGroupText>
                     <CIcon icon={cilUser} />
                   </CInputGroupText>
                   <CFormInput
                     value={usernameResetPassword}
-                    type="username"
-                    placeholder="Username"
+                    type="email"
+                    placeholder="Email"
                     autoComplete=""
                     onChange={(e) => setUsernameResetPassword(e.target.value)}
                   />
@@ -255,14 +296,45 @@ const Login = () => {
                     onChange={(e) => setNewPasswordResetPassword(e.target.value)}
                   />
                 </CInputGroup>
-              </CRow>
+              </CRow> */}
+              <Input
+                className="mb-4 mt-2"
+                placeholder="Email"
+                size="md"
+                leftSection={<IconAt size={16} />}
+                onChange={(e) => setUsernameResetPassword(e.target.value)}
+              />
+              <PasswordInput
+                className="mb-4"
+                size="md"
+                leftSection={<IconLock style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
+                placeholder="Old Password"
+                onChange={(e) => setOldPasswordResetPassword(e.target.value)}
+              />
+              <PasswordInput
+                className="mb-4"
+                size="md"
+                leftSection={<IconLock style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
+                placeholder="New Password"
+                onChange={(e) => setNewPasswordResetPassword(e.target.value)}
+              />
             </CCol>
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="primary" onClick={() => resetPassword()}>
-            Reset
-          </CButton>
+          {!loadingButton ? (
+            <CButton
+              color="primary"
+              onClick={() => {
+                setLoadingButton(true)
+                resetPassword()
+              }}
+            >
+              Reset
+            </CButton>
+          ) : (
+            <CSpinner />
+          )}
         </CModalFooter>
       </CModal>
       <CToaster ref={toaster} push={toast} placement="top-end" />
