@@ -140,7 +140,7 @@ const Login = () => {
   )
   const failToast = (msg) => (
     <CToast title="Success" color="danger" className="d-flex">
-      <CToastBody>{msg} ! </CToastBody>
+      <CToastBody>{msg} !</CToastBody>
       <CToastClose className="me-2 m-auto" white />
     </CToast>
   )
