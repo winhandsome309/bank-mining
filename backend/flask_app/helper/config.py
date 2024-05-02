@@ -17,3 +17,4 @@ class DevConfig(object):
     BANK_MAINTAINER_REMARK_TOKEN= os.environ.get("BANK_MAINTAINER_REMARK_TOKEN")
     BANK_MAINTAINER_USERNAME    = os.environ.get("BANK_MAINTAINER_USERNAME", 'admin')
     BANK_MAINTAINER_EMAIL       = os.environ.get("BANK_MAINTAINER_EMAIL", 'admin@banking.com')
+    SECURITY_CHANGEABLE         = os.environ.get("SECURITY_CHANGEABLE", True)
