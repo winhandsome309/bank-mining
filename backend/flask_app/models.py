@@ -307,7 +307,7 @@ class Customer(Base):
     id:         Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     fname:      Mapped[str]
     since:      Mapped[timestamp] = mapped_column(nullable=True)
-    user_id:    Mapped[int] = mapped_column(ForeignKey('user.id'))
+    user_id:    Mapped[int] = mapped_column(ForeignKey('user.id', ondelete="CASCADE"))
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -318,7 +318,7 @@ class Staff(Base):
     id:         Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     fname:      Mapped[str] 
     position:   Mapped[str]
-    user_id:    Mapped[int] = mapped_column(ForeignKey('user.id'))
+    user_id:    Mapped[int] = mapped_column(ForeignKey('user.id', ondelete="CASCADE"))
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -327,8 +327,8 @@ class CustomersApplications(Base):
     __tablename__ = 'customers_applications'
 
     id:             Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    customer_id:    Mapped[int] = mapped_column(ForeignKey('customer.id'))
-    appliation_id:  Mapped[str] = mapped_column(ForeignKey('loan_application.id'))
+    customer_id:    Mapped[int] = mapped_column(ForeignKey('customer.id', ondelete="CASCADE"))
+    appliation_id:  Mapped[str] = mapped_column(ForeignKey('loan_application.id', ondelete="CASCADE"))
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
