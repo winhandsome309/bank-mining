@@ -2,7 +2,7 @@ from flask import request, make_response
 from flask_app import app
 from flask_app.database import db_session
 import flask_app.helper.utils as utils
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
 from flask_app.models import Staff, Customer, CustomersApplications, Application, User
@@ -11,18 +11,19 @@ import datetime
 import time
 
 @app.route("/api/staff/create", methods=['POST'])
-@roles_required('Maintainer', 'Admin')
+@roles_accepted('Maintainer', 'Admin')
 def create_staff():
-   form = request.form
-   email       = form.get('email')
-   username    = form.get('username')
-   fname       = form.get('fname')
-   position    = form.get('position')
-   chat_token  = form.get('chat_token')
-   roles       = list(form.get('roles'))
+   req = request.json
+   email       = req['email']
+   username    = req['username']
+   fname       = req['fname']
+   position    = req['position']
+   chat_token  = req.get('chat_token')
+   role_names  = req['role_names']
    password    = str(int(time.time()))
 
    try:
+      roles = [app.security.datastore.find_role(r) for r in role_names]
       user = app.security.datastore.create_user(email=email, username=username, chat_token=chat_token, password=hash_password(password), roles=roles)
       db_session.commit()
 
@@ -46,6 +47,7 @@ def create_staff():
          },
          200
       )
+
    except:
       return make_response("ERROR", 400)
 
@@ -119,9 +121,20 @@ def get_user_application():
 
    if isinstance(customer, Customer):
       try:
-         stmt = select(Application).where(Application.id == select(CustomersApplications.appliation_id).where(CustomersApplications.customer_id == customer.id))
-         application = db_session.execute(stmt).fetchall()
+         stmt = select(Application) \
+               .where(Application.id == select(CustomersApplications.appliation_id) \
+               .where(CustomersApplications.customer_id == customer.id))
+         res = db_session.execute(stmt)
          db_session.commit()
+
+         # step: 1: submitted, 2: processed, 3: sent result to user
+         step = 1
+         applications = utils.Utils.parse_output(res)
+
+         return make_response(applications, 200)
+
+         # body = utils.create_response_body(200, False, get_user_application.__name__, utils.Utils.parse_output(application))
+         # return make_response(body, 200)
 
       except:
          print(customer)
@@ -130,3 +143,99 @@ def get_user_application():
       return utils.parse_output(application)
 
    return make_response('NOT FOUND', 404)
+"""
+[
+  {
+    "data": {
+      "created": "Thu, 25 Apr 2024 08:34:45 GMT",
+      "credit_policy": 0,
+      "days_with_cr_line": 1.0,
+      "delinq_2yrs": 1,
+      "dti": 1.0,
+      "fico": 1,
+      "id": "1714008885",
+      "inq_last_6mths": 1,
+      "installment": 1.0,
+      "int_rate": 1.0,
+      "log_annual_inc": 1.0,
+      "processed": false,
+      "processed_at": null,
+      "pub_rec": 1,
+      "purpose": "credit_card",
+      "revol_bal": 1,
+      "revol_util": 1.0
+    },
+    "step": "4",
+    "last_update": "01/05/2024 17:06:00"
+  }
+]
+"""
+@app.route('/api/role/change', methods=['POST'])
+@roles_required('Maintainer')
+def change_staff_role():
+   form = request.form
+   email = form.get('email')
+   role_name = form.get('role_name')
+
+   datastore = app.security.datastore
+   user = datastore.find_user(email=email)
+   role = datastore.find_role(role=role_name)
+   if user and role:
+      status_code = 404
+      if user == current_user:
+         status_code = 400
+         body = utils.create_response_body(400, True, change_staff_role.__name__, data={'message': 'You can not change role of yourself'})
+      elif user.has_role('Customer'):
+         body = utils.create_response_body(404, True, change_staff_role.__name__, data={'message': 'Can not change the role of a customer!'})
+      elif user.has_role('Maintainer'):
+         body = utils.create_response_body(404, True, change_staff_role.__name__, data={'message': 'Can not change the role of a maintainer!'})
+      else:
+         try:
+            _ = datastore.remove_role_from_user(user, 'Admin')
+            _ = datastore.remove_role_from_user(user, 'Moderator')
+            success = datastore.add_role_to_user(user, role_name)
+
+            db_session.commit()
+            if success:
+               body = utils.create_response_body(200, True, change_staff_role.__name__, data={'message': 'Change role successfully!'})
+               status_code = 200
+         except:
+            body = utils.create_response_body(400, True, change_staff_role.__name__)
+
+      return make_response(body, status_code)
+   else:
+      body = utils.create_response_body(404, True, change_staff_role.__name__, data={'message': 'User or role is not existed!'})
+   return make_response(body, 404)
+
+
+
+@app.route('/api/user/delete', methods=['POST'])
+@roles_required('Maintainer')
+def delete_user():
+   form = request.form
+   email = form.get('email')
+
+   datastore = app.security.datastore
+   user = datastore.find_user(email=email)
+   
+   if not user:
+      body = utils.create_response_body(404, True, delete_user.__name__, data={'message': 'User or role is not existed!'})
+      return make_response(body, 404)
+
+   if user == current_user:   
+      body = utils.create_response_body(400, True, delete_user.__name__, data={'message': 'Can not delete yourself!'})
+      return make_response(body, 400)
+
+   if user.has_role('Maintainer'):
+      body = utils.create_response_body(400, True, delete_user.__name__, data={'message': 'Can not delete a mantainer!'})
+      return make_response(body, 400)
+   
+   try:
+      datastore.delete_user(user)
+      db_session.commit()
+      body = utils.create_response_body(200, True, delete_user.__name__, data={'message': 'Delete user successfully!'})
+      return make_response(body, 200) 
+   except:
+      body = utils.create_response_body(400, True, delete_user.__name__) 
+
+   return make_response(body, 400)
