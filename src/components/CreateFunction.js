@@ -169,7 +169,7 @@ const CreateFunction = (props) => {
                       index % 2 == 0 && (
                         <CRow className="mb-3">
                           <CCol>
-                            <CTooltip placement="left" content={params[0]}>
+                            <CTooltip placement="left" content={params[1]}>
                               {params[2] == 'normal' ? (
                                 <CFormInput
                                   required
@@ -209,7 +209,7 @@ const CreateFunction = (props) => {
                           </CCol>
                           {index + 1 < props.listParams.length ? (
                             <CCol>
-                              <CTooltip placement="left" content={props.listParams[index + 1][0]}>
+                              <CTooltip placement="left" content={props.listParams[index + 1][1]}>
                                 {props.listParams[index + 1][2] == 'normal' ? (
                                   <CFormInput
                                     required
