@@ -50,6 +50,25 @@ def create_staff():
 
    except:
       return make_response("ERROR", 400)
+   
+@app.route('/api/staff/reset-password', methods=["POST"])
+# @roles_required("Customer")
+def staff_reset_password():
+   form = request.form
+   email    = form.get('email')
+   oldPassword = form.get('old_password')
+   newPassword = form.get('new_password')
+   try:
+      stmt = (
+         update(User)
+         .where(User.email == email and verify_password(oldPassword, User.password))
+         .values(password=hash_password(newPassword)))
+      db_session.execute(stmt)
+      db_session.commit()
+
+      return make_response("SUCCESS", 200)
+   except:
+      return make_response("ERROR", 400)
 
 @app.route("/api/customer/create", methods=['POST'])
 @roles_accepted('Maintainer', 'Admin')

@@ -34,11 +34,11 @@ def get_model_info():
     return utils.parse_output(res)
 
 @app.route("/api/admin/staffs", methods=["GET", "POST"])
-@roles_accepted('Admin', 'Maintainer')
+# @roles_accepted('Admin', 'Maintainer')
 def get_all_staff():
     if request.method == "GET":
         try:
-            staff_roles = select(User.email, User.active, User.chat_token, User.username, Staff.position, Staff.fname, Role.name.label('role')) \
+            staff_roles = select(User.id, User.email, User.active, User.chat_token, User.username, Staff.position, Staff.fname, Role.name.label('role')) \
                             .join(Staff, User.id == Staff.user_id) \
                             .join(RolesUsers, User.id == RolesUsers.user_id) \
                             .join(Role, RolesUsers.role_id == Role.id)
@@ -54,7 +54,7 @@ def get_all_staff():
         return make_response(body, 200)
 
 @app.route("/api/admin/customers", methods=["GET", "POST"])
-@roles_accepted('Admin', 'Maintainer')
+# @roles_accepted('Admin', 'Maintainer')
 def get_all_customer():
     if request.method == "GET":
         try:
