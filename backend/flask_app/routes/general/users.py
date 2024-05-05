@@ -77,11 +77,16 @@ def create_customer():
    email       = form.get('email')
    username    = form.get('username')
    fname       = form.get('fname')
+   application_id = form.get('application_id')
    since       = datetime.datetime.now()
 
    password    = str(int(time.time()))
 
    try:
+      if application_id:
+         application = db_session.get(Application, str(application_id))
+         assert application is not None, "Application is not existed!"
+   
       user = app.security.datastore.create_user(email=email, username=username, password=hash_password(password), roles=['Customer'])
       db_session.commit()
 
@@ -95,7 +100,9 @@ def create_customer():
       db_session.commit()
       
       # Assign customer with an application
-      
+      if application_id:
+         utils.assign_customer_to_application(new_customer.id, application_id, db_session) 
+      db_session.commit()
 
       return make_response(
          {
@@ -108,8 +115,11 @@ def create_customer():
          },
          200
       )
-   except:
-      return make_response("ERROR", 400)
+
+   except Exception as e:
+      db_session.rollback()
+      body = utils.create_response_body(400, True, "create customer", data={'exception': str(e)})
+      return make_response(body, 400)
    
 @app.route('/api/customer/reset-password', methods=["POST"])
 # @roles_required("Customer")
@@ -132,6 +142,7 @@ def customer_reset_password():
 
 @app.route('/api/user/application', methods=['GET', 'POST'])
 @roles_required('Customer')
+@utils.server_return_500_if_errors
 def get_user_application():
    user_id = current_user.id
    stmt = select(Customer).where(Customer.user_id == user_id)
@@ -141,54 +152,42 @@ def get_user_application():
    if isinstance(customer, Customer):
       try:
          stmt = select(Application) \
-               .where(Application.id == select(CustomersApplications.appliation_id) \
+               .where(Application.id == select(CustomersApplications.application_id) \
                .where(CustomersApplications.customer_id == customer.id))
-         res = db_session.execute(stmt)
+
+         applications = db_session.execute(stmt).all()
+         if len(applications) == 0:
+            body = utils.create_response_body(200, False, get_user_application.__name__, data={'message': "Not found applications for this user!"})
+            return make_response(body, 200)
          db_session.commit()
 
-         # step: 1: submitted, 2: processed, 3: sent result to user
-         step = 1
-         applications = utils.Utils.parse_output(res)
+         applications = utils.Utils.parse_output(applications)
+         for app in applications:
+            processed = app.get('processed')
+            if processed:
+               processed_at   = app.get('processed_at')
+               reported       = app.get('reported')
 
+               if reported:
+                  app.update({"step": 3})
+                  app.update({"last_update": processed_at})
+               else:
+                  app.update({"step": 2})
+                  app.update({"last_update": processed_at})
+            else:
+               app.update({"step": 1})
+               app.update({"last_update": None})
+
+          
          return make_response(applications, 200)
-
-         # body = utils.create_response_body(200, False, get_user_application.__name__, utils.Utils.parse_output(application))
-         # return make_response(body, 200)
 
       except:
          print(customer)
          return make_response("ERROR", 400)
 
-      return utils.parse_output(application)
 
    return make_response('NOT FOUND', 404)
-"""
-[
-  {
-    "data": {
-      "created": "Thu, 25 Apr 2024 08:34:45 GMT",
-      "credit_policy": 0,
-      "days_with_cr_line": 1.0,
-      "delinq_2yrs": 1,
-      "dti": 1.0,
-      "fico": 1,
-      "id": "1714008885",
-      "inq_last_6mths": 1,
-      "installment": 1.0,
-      "int_rate": 1.0,
-      "log_annual_inc": 1.0,
-      "processed": false,
-      "processed_at": null,
-      "pub_rec": 1,
-      "purpose": "credit_card",
-      "revol_bal": 1,
-      "revol_util": 1.0
-    },
-    "step": "4",
-    "last_update": "01/05/2024 17:06:00"
-  }
-]
-"""
+
 @app.route('/api/role/change', methods=['POST'])
 @roles_required('Maintainer')
 def change_staff_role():
@@ -252,9 +251,9 @@ def delete_user():
    try:
       datastore.delete_user(user)
       db_session.commit()
-      body = utils.create_response_body(200, True, delete_user.__name__, data={'message': 'Delete user successfully!'})
+      body = utils.create_response_body(200, False, delete_user.__name__, data={'message': 'Delete user successfully!'})
       return make_response(body, 200) 
-   except:
-      body = utils.create_response_body(400, True, delete_user.__name__) 
+   except Exception as e:
+      body = utils.create_response_body(400, True, delete_user.__name__, data={'exception': str(e)}) 
 
    return make_response(body, 400)
