@@ -155,13 +155,15 @@ const Models = () => {
                     (item, index) =>
                       nameMetricModel.includes(item[0]) && (
                         <CCard style={{ height: '23rem' }} className="mb-4">
-                          <CCardHeader>{item[0]}</CCardHeader>
+                          <CCardHeader>
+                            {item[0].charAt(0).toUpperCase() + item[0].slice(1)}
+                          </CCardHeader>
                           <CCardBody>
                             <CRow>
                               <CCol xs={1}></CCol>
                               {index % 2 != 0 && (
-                                <CCol xs={7}>
-                                  <div className="align-items-center justify-content-center">
+                                <CCol xs={7} className="mt-5">
+                                  <div className="align-items-center justify-content-center mt-5 me-3">
                                     {infoAttr[item[0]]}
                                   </div>
                                 </CCol>
@@ -177,23 +179,13 @@ const Models = () => {
                                     </Text>
                                   }
                                 />
-                                {/* <CChartDoughnut
-                                  data={{
-                                    datasets: [
-                                      {
-                                        backgroundColor: [colorModel[item[0]], '#E7E9ED'],
-                                        data: [item[1] * 100, (1 - item[1]) * 100],
-                                      },
-                                    ],
-                                  }}
-                                  wrapper={true}
-                                /> */}
                               </CCol>
                               {index % 2 == 0 && (
-                                <CCol xs={7}>
-                                  <div className="align-items-center justify-content-center">
+                                <CCol xs={7} className="mt-5">
+                                  <div className="align-items-center justify-content-center mt-5 ms-3">
                                     {infoAttr[item[0]]}
                                   </div>
+                                  <CRow xs={4} />
                                 </CCol>
                               )}
                               <CCol xs={1}></CCol>
