@@ -106,15 +106,16 @@ const StaffManagement = () => {
   const fetchStaff = () => {
     axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/staffs').then((res) => {
       if (res.status === 200) {
-        console.log(res.data)
-        setTableData(res.data)
+        var data = res.data['data']
+        var temp = []
+        for (var i = 0; i < data.length; i++) {
+          if (data[i]['role'] != 'Customer') {
+            temp.push(data[i])
+          }
+        }
+        setTableData(temp)
       }
     })
-    // axios.get('http://localhost:3001' + '/api/user').then((res) => {
-    //   if (res.status === 200) {
-    //     setTableData(res.data)
-    //   }
-    // })
   }
 
   const createUser = async () => {
@@ -176,13 +177,20 @@ const StaffManagement = () => {
                 <CTable align="middle" className="mb-0 border" responsive>
                   <CTableHead className="text-nowrap">
                     <CTableRow>
-                      <CTableHeaderCell className="bg-body-tertiary text-center">
+                      <CTableHeaderCell
+                        className="bg-body-tertiary text-center"
+                        style={{ width: '15rem' }}
+                      >
                         ID
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary ">Email</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Username</CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary " style={{ width: '5rem' }} />
+                      <CTableHeaderCell className="bg-body-tertiary " style={{ width: '16rem' }}>
+                        Email
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary" style={{ width: '17rem' }}>
+                        Username
+                      </CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">Role</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Permission</CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary"></CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -190,102 +198,92 @@ const StaffManagement = () => {
                     {tableData.map((item, index) => (
                       <>
                         <CTableRow v-for="item in tableItems" key={index}>
-                          <CTableDataCell className="text-center">
-                            <div>{item.id}</div>
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            <div>{item.email}</div>
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            <div>{item.username}</div>
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            <div>{item.role}</div>
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            <CBadge color="secondary"> {item.permission}</CBadge>
-                          </CTableDataCell>
-                          <CTableDataCell style={{ width: '5rem' }}>
-                            <CButton
-                              color="primary"
-                              variant="outline"
-                              shape="square"
-                              size="sm"
-                              onClick={() => {
-                                toggleDetail(item.id)
-                              }}
-                            >
-                              {details.includes(item.id) ? 'Hide' : 'Show'}
-                            </CButton>
-                          </CTableDataCell>
-                        </CTableRow>
-
-                        <CTableRow>
-                          <CTableDataCell colSpan={6} style={{ backgroundColor: '#F3F4F7' }}>
-                            <CCollapse visible={details.includes(item.id)}>
-                              <CCol className="ms-3">
-                                <CRow>
-                                  <CCol xs={2}>
-                                    <CFormSelect
-                                      floatingLabel={'Role'}
-                                      aria-label="Default"
-                                      onChange={(e) => {}}
-                                    >
-                                      <option>Select</option>
-                                      <option>Mode</option>
-                                      <option>Admin</option>
-                                      <option>Staff</option>
-                                    </CFormSelect>
-                                  </CCol>
-                                  <CCol xs={2}>
-                                    <CFormSelect
-                                      floatingLabel={'Permission'}
-                                      aria-label="Default"
-                                      onChange={(e) => {}}
-                                    >
-                                      <option>Select</option>
-                                      <option>Write</option>
-                                      <option>Read</option>
-                                      <option>Add</option>
-                                    </CFormSelect>
-                                  </CCol>
-                                  <CCol xs={5} />
-                                  <CCol>
-                                    <CButton
-                                      color="success"
-                                      variant="outline"
-                                      shape="square"
-                                      size="sm"
-                                      className="me-3"
-                                      style={{ width: '7rem', height: '3.5rem' }}
-                                    >
-                                      Save changes
-                                    </CButton>
-                                    <CButton
-                                      variant="outline"
-                                      shape="square"
-                                      size="sm"
-                                      color="danger"
-                                      style={{ width: '7rem', height: '3.5rem' }}
-                                    >
-                                      Delete User
-                                    </CButton>
-                                  </CCol>
-                                  {/* <CCol xs={1}>
-                                    <CRow className="mb-1">
-                                      <CButton size="sm" color="success">
-                                        Save changes
-                                      </CButton>
-                                    </CRow>
+                          <CTableDataCell className="text-center" colSpan={12}>
+                            <CCol>
+                              <CRow>
+                                <CCol>
+                                  <div>{item.id}</div>
+                                </CCol>
+                                <CCol>
+                                  <div>{item.email}</div>
+                                </CCol>
+                                <CCol style={{ width: '15rem' }}>
+                                  <div>{item.username}</div>
+                                </CCol>
+                                <CCol>
+                                  <div>{item.role}</div>
+                                </CCol>
+                                <CCol style={{ width: '5rem' }}>
+                                  <CButton
+                                    color="primary"
+                                    variant="outline"
+                                    shape="square"
+                                    size="sm"
+                                    onClick={() => {
+                                      toggleDetail(item.id)
+                                    }}
+                                  >
+                                    {details.includes(item.id) ? 'Hide' : 'Show'}
+                                  </CButton>
+                                </CCol>
+                              </CRow>
+                              <CRow>
+                                <CCollapse visible={details.includes(item.id)}>
+                                  <hr />
+                                  <CCol className="mt-3 ms-3 mb-3 me-3">
                                     <CRow>
-                                      <CButton size="sm" color="danger">
-                                        Delete User
-                                      </CButton>
+                                      <CCol xs={2}>
+                                        <CFormSelect
+                                          required
+                                          floatingLabel={'Role'}
+                                          aria-label="Default"
+                                          onChange={(e) => {}}
+                                        >
+                                          <option>Select</option>
+                                          <option>Mode</option>
+                                          <option>Admin</option>
+                                          <option>Customer</option>
+                                        </CFormSelect>
+                                      </CCol>
+                                      {/* <CCol xs={2}>
+                                        <CFormSelect
+                                          floatingLabel={'Permission'}
+                                          aria-label="Default"
+                                          onChange={(e) => {}}
+                                        >
+                                          <option>Select</option>
+                                          <option>Write</option>
+                                          <option>Read</option>
+                                          <option>Add</option>
+                                        </CFormSelect>
+                                      </CCol> */}
+                                      <CCol xs={7} />
+                                      <CCol>
+                                        <CButton
+                                          color="success"
+                                          variant="outline"
+                                          shape="square"
+                                          size="sm"
+                                          className="me-3"
+                                          style={{ width: '7rem', height: '3.5rem' }}
+                                        >
+                                          Save changes
+                                        </CButton>
+                                        <CButton
+                                          variant="outline"
+                                          shape="square"
+                                          size="sm"
+                                          color="danger"
+                                          style={{ width: '7rem', height: '3.5rem' }}
+                                        >
+                                          Delete User
+                                        </CButton>
+                                      </CCol>
                                     </CRow>
-                                  </CCol> */}
-                                </CRow>
-                              </CCol>
-                            </CCollapse>
+                                  </CCol>
+                                </CCollapse>
+                              </CRow>
+                            </CCol>
                           </CTableDataCell>
                         </CTableRow>
                       </>

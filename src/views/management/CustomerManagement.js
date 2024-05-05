@@ -74,12 +74,14 @@ import {
 } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
 
-const listStaffParams = [
+const listCustomerParams = [
   ['email', 'abc', 'normal'],
-  ['username', 'abc', 'normal'],
-  ['role', 'abc', 'select', ['admin', 'staff'], ['admin', 'staff']],
-  ['permission', 'abc', 'select', ['read', 'write', 'all'], ['read', 'write', 'all']],
-  ['chat_token', 'abc', 'normal'],
+  // ['username', 'abc', 'normal'],
+  // ['role', 'abc', 'select', ['admin', 'customer'], ['admin', 'customer']],
+  // ['permission', 'abc', 'select', ['read', 'write', 'all'], ['read', 'write', 'all']],
+  // ['chat_token', 'abc', 'normal'],
+  ['customer_id', 'abc', 'normal'],
+  ['application_id', 'abc', 'normal'],
 ]
 
 const CustomerManagement = () => {
@@ -93,9 +95,8 @@ const CustomerManagement = () => {
   })
   const [form, setForm] = useState({
     email: '',
-    username: '',
-    role: '',
-    permission: '',
+    customer_id: '',
+    application_id: '',
   })
   const [details, setDetails] = useState([])
   const [visibleCreate, setVisibleCreate] = useState(false)
@@ -103,11 +104,10 @@ const CustomerManagement = () => {
   const toaster = useRef()
   const [checkRenderInfo, setCheckRenderInfo] = useState({})
 
-  const fetchStaff = () => {
+  const fetchCustomer = () => {
     axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/customers').then((res) => {
       if (res.status === 200) {
-        console.log(res.data)
-        setTableData(res.data)
+        setTableData(res.data['data'])
       }
     })
   }
@@ -115,16 +115,17 @@ const CustomerManagement = () => {
   const createUser = async () => {
     const formData = new FormData()
     Object.keys(form).forEach((key) => {
-      console.log(key, form[key])
       formData.append(key, form[key])
     })
-    axios.post(process.env.REACT_APP_API_ENDPOINT + '/api/staff/create', formData).then((res) => {
-      if (res.status === 201) {
-        setVisibleCreate(false)
-        fetchStaff()
-        addToast(successToast('Customer is created successfully'))
-      }
-    })
+    axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/create', formData)
+      .then((res) => {
+        if (res.status === 201) {
+          setVisibleCreate(false)
+          fetchCustomer()
+          addToast(successToast('Customer is created successfully'))
+        }
+      })
   }
 
   const toggleDetail = (index) => {
@@ -145,7 +146,7 @@ const CustomerManagement = () => {
   }
 
   useEffect(() => {
-    fetchStaff()
+    fetchCustomer()
   }, [])
 
   return (
@@ -155,7 +156,7 @@ const CustomerManagement = () => {
           <CCard className="mb-4">
             <CCardHeader>
               <div className="d-none d-md-flex">
-                {'Staff'}
+                {'Customer'}
                 <CIcon
                   icon={cilUserPlus}
                   size="lg"
@@ -238,7 +239,7 @@ const CustomerManagement = () => {
                                           <option>Select</option>
                                           <option>Mode</option>
                                           <option>Admin</option>
-                                          <option>Staff</option>
+                                          <option>Customer</option>
                                         </CFormSelect>
                                       </CCol>
                                       <CCol xs={2}>
@@ -299,79 +300,41 @@ const CustomerManagement = () => {
         onClose={() => setVisibleCreate(false)}
       >
         <CModalHeader>
-          <CModalTitle>Add User</CModalTitle>
+          <CModalTitle>Add Customer</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CCol>
-            {listStaffParams.map(
-              (params, index) =>
-                index % 2 == 0 && (
-                  <CRow className="mb-3">
-                    <CCol>
-                      <CTooltip placement="left" content={listStaffParams[index][0]}>
-                        {params[2] == 'normal' ? (
-                          <CFormTextarea
-                            floatingLabel={listStaffParams[index][0]}
-                            id={listStaffParams[index][0]}
-                            placeholder={listStaffParams[index][0]}
-                            onChange={(e) => {
-                              setForm({ ...form, [listStaffParams[index][0]]: e.target.value })
-                            }}
-                          />
-                        ) : (
-                          <CFormSelect
-                            floatingLabel={listStaffParams[index][0]}
-                            aria-label="Default"
-                            onChange={(e) => {
-                              setForm({ ...form, [listStaffParams[index][0]]: e.target.value })
-                            }}
-                          >
-                            <option>Select</option>
-                            {listStaffParams[index][3].map((value) => (
-                              <option value={value}>{value}</option>
-                            ))}
-                          </CFormSelect>
-                        )}
-                      </CTooltip>
-                    </CCol>
-                    {index + 1 < listStaffParams.length && (
-                      <CCol>
-                        <CTooltip placement="left" content={listStaffParams[index + 1][0]}>
-                          {listStaffParams[index + 1][2] == 'normal' ? (
-                            <CFormTextarea
-                              floatingLabel={listStaffParams[index + 1][0]}
-                              id={listStaffParams[index + 1][0]}
-                              placeholder={listStaffParams[index + 1][0]}
-                              onChange={(e) => {
-                                setForm({
-                                  ...form,
-                                  [listStaffParams[index + 1][0]]: e.target.value,
-                                })
-                              }}
-                            />
-                          ) : (
-                            <CFormSelect
-                              floatingLabel={listStaffParams[index + 1][0]}
-                              aria-label="Default"
-                              onChange={(e) => {
-                                setForm({
-                                  ...form,
-                                  [listStaffParams[index + 1][0]]: e.target.value,
-                                })
-                              }}
-                            >
-                              <option>Select</option>
-                              {listStaffParams[index + 1][3].map((value) => (
-                                <option value={value}>{value}</option>
-                              ))}
-                            </CFormSelect>
-                          )}
-                        </CTooltip>
-                      </CCol>
+            {listCustomerParams.map((params, index) => (
+              <CRow className="mb-3">
+                <CCol>
+                  <CTooltip placement="left" content={listCustomerParams[index][0]}>
+                    {params[2] == 'normal' ? (
+                      <CFormTextarea
+                        floatingLabel={listCustomerParams[index][0]}
+                        id={listCustomerParams[index][0]}
+                        placeholder={listCustomerParams[index][0]}
+                        onChange={(e) => {
+                          setForm({ ...form, [listCustomerParams[index][0]]: e.target.value })
+                        }}
+                      />
+                    ) : (
+                      <CFormSelect
+                        floatingLabel={listCustomerParams[index][0]}
+                        aria-label="Default"
+                        onChange={(e) => {
+                          setForm({ ...form, [listCustomerParams[index][0]]: e.target.value })
+                        }}
+                      >
+                        <option>Select</option>
+                        {listCustomerParams[index][3].map((value) => (
+                          <option value={value}>{value}</option>
+                        ))}
+                      </CFormSelect>
                     )}
-                  </CRow>
-                ),
-            )}
+                  </CTooltip>
+                </CCol>
+              </CRow>
+            ))}
           </CCol>
         </CModalBody>
         <CModalFooter>

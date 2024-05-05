@@ -34,7 +34,7 @@ var csrf_token
 
 // Set withCredentials to true for all requests
 // Credit: https://www.dhiwise.com/post/managing-secure-cookies-via-axios-interceptors
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true
 
 axios
   .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
@@ -119,9 +119,8 @@ const Login = () => {
         setLoadingButton(false)
         if (error.response.data.response) {
           setToast(failToast(error.response.data.response.errors))
-        }
-        else {
-          setToast(failToast('Login fail'))          
+        } else {
+          setToast(failToast('Login fail'))
         }
       })
   }
