@@ -93,6 +93,7 @@ class Application(Base):
     created:        Mapped[timestamp]
     processed:      Mapped[bool]
     processed_at:   Mapped[timestamp] = mapped_column(nullable=True, server_default=None)
+    process_result: Mapped[bool] = mapped_column(nullable=True)
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -324,15 +325,19 @@ class Staff(Base):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class CustomersApplications(Base):
-    __tablename__ = 'customers_applications'
+    __tablename__ = 'customers_application'
 
     id:             Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     customer_id:    Mapped[int] = mapped_column(ForeignKey('customer.id', ondelete="CASCADE"))
-    appliation_id:  Mapped[str] = mapped_column(ForeignKey('loan_application.id', ondelete="CASCADE"))
+    application_id: Mapped[str] = mapped_column(ForeignKey('loan_application.id', ondelete="CASCADE"))
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-    
+
+    @staticmethod
+    def create(customer_id, application_id):
+        return CustomersApplications(customer_id=customer_id, application_id=application_id)
+     
 class Vote(Base):
     __tablename__ = 'vote'
 
