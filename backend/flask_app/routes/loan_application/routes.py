@@ -208,3 +208,24 @@ def processed_list():
         _ = db_session.execute(stmtDeleteApp)
         db_session.commit()
         return make_response("success", 200)
+
+@app.route('/api/loan_application/process', methods=['POST'])
+def toggle_process_application():
+    form = request.form
+    applicaton_id = str(form.get('application_id'))    
+    result = form.get('result')
+
+    application = db_session.get(Application, applicaton_id)
+    assert application, "Application is not existed!"
+
+    processed_at = datetime.datetime.now()
+    stmt = update(Application).where(Application.id == applicaton_id) \
+            .values(processed = not application.processed, processed_at=processed_at)
+
+    # stmt = update(Application).where(Application.id == applicaton_id) \
+    #         .values(processed = True, processed_at=processed_at, process_result=result)
+    db_session.execute(stmt)
+    db_session.commit()
+
+    body = utils.create_response_body(200, False, toggle_process_application.__name__, data={"message": "Toggle process application successfully!"})
+    return make_response(body, 200)
