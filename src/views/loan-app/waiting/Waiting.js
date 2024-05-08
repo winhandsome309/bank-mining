@@ -470,6 +470,7 @@ const Waiting = () => {
         placement="end"
         visible={visibleApp}
         onHide={() => setVisibleApp(false)}
+        backdrop="static"
       >
         <COffcanvasHeader>
           <COffcanvasTitle>Application Detail</COffcanvasTitle>

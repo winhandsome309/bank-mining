@@ -174,18 +174,19 @@ const CustomerManagement = () => {
                     <CTableRow>
                       <CTableHeaderCell
                         className="bg-body-tertiary text-center"
-                        style={{ width: '6rem' }}
+                        style={{ width: '15rem' }}
                       >
                         ID
                       </CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary " style={{ width: '6rem' }} />
                       <CTableHeaderCell className="bg-body-tertiary" style={{ width: '15rem' }}>
                         Email
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Username</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary" style={{ width: '10rem' }}>
-                        Role
+                      <CTableHeaderCell className="bg-body-tertiary" style={{ width: '16.5rem' }}>
+                        Username
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Permission</CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">Role</CTableHeaderCell>
+                      {/* <CTableHeaderCell className="bg-body-tertiary">Permission</CTableHeaderCell> */}
                       <CTableHeaderCell className="bg-body-tertiary"></CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -196,21 +197,21 @@ const CustomerManagement = () => {
                           <CTableDataCell className="text-center" colSpan={12}>
                             <CCol>
                               <CRow>
-                                <CCol xs={1}>
+                                <CCol>
                                   <div>{item.id}</div>
                                 </CCol>
-                                <CCol xs={3}>
+                                <CCol>
                                   <div>{item.email}</div>
                                 </CCol>
-                                <CCol xs={2}>
+                                <CCol>
                                   <div>{item.username}</div>
                                 </CCol>
-                                <CCol xs={2}>
+                                <CCol>
                                   <div>{item.role}</div>
                                 </CCol>
-                                <CCol xs={2} style={{ width: '15rem' }}>
+                                {/* <CCol style={{ width: '15rem' }}>
                                   <CBadge color="secondary"> {item.permission}</CBadge>
-                                </CCol>
+                                </CCol> */}
                                 <CCol style={{ width: '5rem' }}>
                                   <CButton
                                     color="primary"
@@ -242,7 +243,7 @@ const CustomerManagement = () => {
                                           <option>Customer</option>
                                         </CFormSelect>
                                       </CCol>
-                                      <CCol xs={2}>
+                                      {/* <CCol xs={2}>
                                         <CFormSelect
                                           floatingLabel={'Permission'}
                                           aria-label="Default"
@@ -253,7 +254,7 @@ const CustomerManagement = () => {
                                           <option>Read</option>
                                           <option>Add</option>
                                         </CFormSelect>
-                                      </CCol>
+                                      </CCol> */}
                                       <CCol xs={5} />
                                       <CCol>
                                         <CButton
