@@ -602,9 +602,7 @@ const Waiting = () => {
               </CRow>
             </CCol>
 
-            <CCol>
-              <CommunicateFunction />
-            </CCol>
+            <CCol>{appData['id'] != '' && <CommunicateFunction id={appData['id']} />}</CCol>
           </CRow>
         </COffcanvasBody>
         <CFooter>
