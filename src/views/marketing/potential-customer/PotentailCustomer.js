@@ -460,6 +460,7 @@ const PotentialCustomer = (props) => {
         placement="end"
         visible={visibleApp}
         onHide={() => setVisibleApp(false)}
+        backdrop="static"
       >
         <COffcanvasHeader>
           <COffcanvasTitle>Customer Detail</COffcanvasTitle>
@@ -567,9 +568,7 @@ const PotentialCustomer = (props) => {
               </CRow>
             </CCol>
 
-            <CCol>
-              <CommunicateFunction />
-            </CCol>
+            <CCol>{appData['id'] != '' && <CommunicateFunction id={appData['id']} />}</CCol>
           </CRow>
         </COffcanvasBody>
         <CFooter>

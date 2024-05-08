@@ -56,7 +56,7 @@ import {
 } from '@coreui/icons'
 import axios from 'axios'
 
-const CommunicateFunction = () => {
+const CommunicateFunction = (props) => {
   const [comFunction, setComFunction] = React.useState('Comment')
 
   var remark_config = {
@@ -97,6 +97,7 @@ const CommunicateFunction = () => {
         components: ['embed', 'last-comments', 'counter'],
         no_footer: true,
         max_shown_comments: 10,
+        url: "${props.id}",
       };
       !function(e,n){for(var o=0;o<e.length;o++){var r=n.createElement("script"),c=".js",d=n.head||n.body;"noModule"in r?(r.type="module",c=".mjs"):r.async=!0,r.defer=!0,r.src=remark_config.host+"/web/"+e[o]+c,d.appendChild(r)}}(remark_config.components||["embed"],document);`
     parentElement.appendChild(script)
@@ -121,7 +122,6 @@ const CommunicateFunction = () => {
   }
   const recreateRemark42Instance = () => {
     if (!window) {
-      return
     }
     const remark42 = window.REMARK42
     if (remark42) {
@@ -129,22 +129,13 @@ const CommunicateFunction = () => {
       remark42.createInstance(window.remark_config)
     }
   }
-  React.useEffect(manageScript, [location])
-  React.useEffect(recreateRemark42Instance, [location])
+  React.useEffect(manageScript, [props.id])
+  React.useEffect(recreateRemark42Instance, [props.id])
 
   return (
     <>
       <CCard>
         <CCardHeader>
-          {/* <CDropdown>
-            <CDropdownToggle split={false} color="light">
-              <strong>{comFunction}</strong>
-            </CDropdownToggle>
-            <CDropdownMenu>
-              <CDropdownItem onClick={() => setComFunction('Vote')}>Vote</CDropdownItem>
-              <CDropdownItem onClick={() => setComFunction('Comment')}>Comment</CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown> */}
           <div>
             <strong>Comment</strong>
           </div>

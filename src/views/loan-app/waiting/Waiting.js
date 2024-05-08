@@ -470,6 +470,7 @@ const Waiting = () => {
         placement="end"
         visible={visibleApp}
         onHide={() => setVisibleApp(false)}
+        backdrop="static"
       >
         <COffcanvasHeader>
           <COffcanvasTitle>Application Detail</COffcanvasTitle>
@@ -602,9 +603,7 @@ const Waiting = () => {
               </CRow>
             </CCol>
 
-            <CCol>
-              <CommunicateFunction />
-            </CCol>
+            <CCol>{appData['id'] != '' && <CommunicateFunction id={appData['id']} />}</CCol>
           </CRow>
         </COffcanvasBody>
         <CFooter>
