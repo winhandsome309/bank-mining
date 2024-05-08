@@ -1,0 +1,37 @@
+version: "1"
+services:
+  hsbanking-api:
+    image: hsbaking-flask
+    ports:
+     - "5000:8000"
+
+    environment:
+    - FLASK_ENV=development
+    - FLASK_APP=flask_run.py
+    - DEBUG=True
+    - FLASK_DEBUG=1
+    - REACT_APP_API_ENDPOINT=http://localhost:5000
+    - REACT_APP_LOAN_DASHBOARD=12
+    - REACT_APP_MARKETING_DASHBOARD=11
+    - REACT_APP_REMARK_URL=http://localhost:8080
+    - REACT_APP_REMARK_SITE_ID=remark
+    # Model dirs
+    - ANALYSIS_DIR=analysis
+    - SQLALCHEMY_DATABASE_URI=postgresql://banking_db_4ebh_user:h8cggpsHBl0E6KRdCuOxNnuL7OkX4BgV@dpg-co4o7bcf7o1s738upj3g-a.singapore-postgres.render.com/banking_db_4ebh
+    - POSTGRE_HOST=dpg-co4o7bcf7o1s738upj3g-a.singapore-postgres.render.com
+    - POSTGRE_USER=banking_db_4ebh_user
+    - POSTGRE_PASSWORD=h8cggpsHBl0E6KRdCuOxNnuL7OkX4BgV
+    - POSTGRE_DB=banking_db_4ebh
+
+    - METABASE_SITE_URL=http://localhost:3002
+    - METABASE_SECRET_KEY=6d5bc8d158ffd9cd13c4cc4c503ce582f92eb7aa6b62ed08034c8f4b97b0b884
+    - BANK_MAINTAINER_REMARK_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJyZW1hcmsiLCJleHAiOjE3MTQzNjQ3NzIsImlzcyI6InJlbWFyazQyIiwibmJmIjoxNzE0MzYyOTEyLCJoYW5kc2hha2UiOnsiaWQiOiJUaGFuaDo6dGhhbmguZGF1eHVhbjI0MDJAaGNtdXQuZWR1LnZuIn19.ye_jmlNzKbvqqUimc3VvOwThkP4Aa2nuWxkaHC88QDo
+    # Mail settings
+    - SENDGRID_API_KEY=''
+    - MAIL_SERVER=smtp.sendgrid.net
+    - MAIL_PORT=587
+    - MAIL_USE_TLS=True
+
+    - MAIL_USERNAME=apikey
+    - MAIL_PASSWORD=''
+    - MAIL_DEFAULT_SENDER=thanh.dauxuan2402@hcmut.edu.vn

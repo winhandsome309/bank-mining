@@ -8,6 +8,9 @@ from flask_app.helper import utils
 from typing import NamedTuple
 from sqlalchemy import select, null, update, delete
 from flask_app import models
+import os
+
+ANALYSIS_DIR = os.environ.get('ANALYSIS_DIR', 'analysis')
 
 class FeatureName():
    Loan_Application        = 'Loan Application'
@@ -19,38 +22,38 @@ class ModelInfo(NamedTuple):
 
    FEATURE_NAME_TO_MODEL_PATH = {
       FeatureName.Loan_Application : {
-         "logistic_regression_(feature_selected)": 'analysis/loan_app/workspace/logistic_regression_(feature_selected).pkl',
-         "logistic_regression_(improved)": "analysis/loan_app/workspace/logistic_regression_(improved).pkl",
-         "random_forest_(improved)": "analysis/loan_app/workspace/random_forest_(improved).pkl"
+         "logistic_regression_(feature_selected)": f'{ANALYSIS_DIR}/loan_app/workspace/logistic_regression_(feature_selected).pkl',
+         "logistic_regression_(improved)": f"{ANALYSIS_DIR}/loan_app/workspace/logistic_regression_(improved).pkl",
+         "random_forest_(improved)": f"{ANALYSIS_DIR}/loan_app/workspace/random_forest_(improved).pkl"
       },
       FeatureName.Marketing_Application : {
-         "gaussiannb": "analysis/marketing/gaussiannb.pkl",
-         "gradientboostingclassifier": "analysis/marketing/gradientboostingclassifier.pkl",
-         "mlpclassifier": "analysis/marketing/mlpclassifier.pkl",
-         "votingclassifier": "analysis/marketing/votingclassifier.pkl"
+         "gaussiannb": f"{ANALYSIS_DIR}/marketing/gaussiannb.pkl",
+         "gradientboostingclassifier": f"{ANALYSIS_DIR}/marketing/gradientboostingclassifier.pkl",
+         "mlpclassifier": f"{ANALYSIS_DIR}/marketing/mlpclassifier.pkl",
+         "votingclassifier": f"{ANALYSIS_DIR}/marketing/votingclassifier.pkl"
       },
       FeatureName.Credit_Application: {
-         "decisiontreeclassifier": "analysis/credit_card/decisiontreeclassifier.pkl",
-         "kneighborsclassifier": "analysis/credit_card/kneighborsclassifier.pkl",
-         "randomforestclassifier": "analysis/credit_card/randomforestclassifier.pkl" 
+         "decisiontreeclassifier": f"{ANALYSIS_DIR}/credit_card/decisiontreeclassifier.pkl",
+         "kneighborsclassifier": f"{ANALYSIS_DIR}/credit_card/kneighborsclassifier.pkl",
+         "randomforestclassifier": f"{ANALYSIS_DIR}/credit_card/randomforestclassifier.pkl" 
       }
    }
 
    FEATURE_NAME_TO_MODEL_INFO_PATH = {
-      FeatureName.Loan_Application : "analysis/loan_app/workspace/model_info.json",
-      FeatureName.Marketing_Application: "analysis/marketing/model_info.json",
-      FeatureName.Credit_Application: "analysis/credit_card/model_info.json"
+      FeatureName.Loan_Application : f"{ANALYSIS_DIR}/loan_app/workspace/model_info.json",
+      FeatureName.Marketing_Application: f"{ANALYSIS_DIR}/marketing/model_info.json",
+      FeatureName.Credit_Application: f"{ANALYSIS_DIR}/credit_card/model_info.json"
    }
 
    FEATURE_NAME_TO_SCALER_PATH = {
-      FeatureName.Loan_Application : "analysis/loan_app/workspace/loan_scaler.gz",
+      FeatureName.Loan_Application : f"{ANALYSIS_DIR}/loan_app/workspace/loan_scaler.gz",
       FeatureName.Marketing_Application: "",
-      FeatureName.Credit_Application: "analysis/credit_card/credit_scaler.gz"
+      FeatureName.Credit_Application: f"{ANALYSIS_DIR}/credit_card/credit_scaler.gz"
    }
 
    FEATURE_NAME_TO_MAPPING_PATH = {
       FeatureName.Loan_Application : "",
-      FeatureName.Marketing_Application: "analysis/marketing/mapping_categorical_vars.json",
+      FeatureName.Marketing_Application: f"{ANALYSIS_DIR}/marketing/mapping_categorical_vars.json",
       FeatureName.Credit_Application: ""
    }
 
