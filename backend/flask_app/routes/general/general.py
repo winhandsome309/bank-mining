@@ -34,7 +34,7 @@ def get_model_info():
     return utils.parse_output(res)
 
 @app.route("/api/admin/staffs", methods=["GET", "POST"])
-# @roles_accepted('Admin', 'Maintainer')
+@roles_accepted('Admin', 'Maintainer')
 def get_all_staff():
     if request.method == "GET":
         try:

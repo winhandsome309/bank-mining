@@ -6,6 +6,7 @@ from flask_app.models import User, Role
 from flask_security import Security, SQLAlchemySessionUserDatastore, hash_password
 from flask_mailman import Mail
 import flask_wtf
+# from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
@@ -58,5 +59,10 @@ with app.app_context():
             roles=["Maintainer"],
         )
         db_session.commit()
+
+# Config for apache reverse proxy
+# app.wsgi_app = ProxyFix(
+#     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+# )
 
 from . import routes
