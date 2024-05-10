@@ -143,7 +143,7 @@ def customer_reset_password():
    except:
       return make_response("ERROR", 400)
 
-@app.route('/api/user/application', methods=['GET', 'POST'])
+@app.route('/api/user/application', methods=['GET'])
 @utils.server_return_500_if_errors
 @roles_required('Customer')
 def get_user_application():
@@ -160,8 +160,8 @@ def get_user_application():
 
          applications = db_session.execute(stmt).all()
          if len(applications) == 0:
-            body = utils.create_response_body(200, False, get_user_application.__name__, data={'message': "Not found applications for this user!"})
-            return make_response(body, 200)
+            body = utils.create_response_body(404, True, get_user_application.__name__, data={'message': "Not found applications for this user!"})
+            return make_response(body, 404)
          db_session.commit()
 
          applications = utils.Utils.parse_output(applications)
@@ -219,7 +219,7 @@ def change_staff_role():
 
             db_session.commit()
             if success:
-               body = utils.create_response_body(200, True, change_staff_role.__name__, data={'message': 'Change role successfully!'})
+               body = utils.create_response_body(200, False, change_staff_role.__name__, data={'message': 'Change role successfully!'})
                status_code = 200
          except:
             body = utils.create_response_body(400, True, change_staff_role.__name__)

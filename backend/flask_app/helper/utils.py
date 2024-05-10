@@ -55,6 +55,9 @@ def load_from_json(path):
       return json.load(f)
 
 def assign_customer_to_application(customer_id, application_id, db_session):
+   stmt = select(Customer).where(Customer.id == customer_id)
+   existed_customer = db_session.execute(stmt)
+   assert existed_customer.first() is not None, "Customer is not existed!"
 
    stmt = select(CustomersApplications).where(CustomersApplications.application_id == application_id)
    existed_application = db_session.execute(stmt)
@@ -76,6 +79,11 @@ def update_customer_application(customer_id, application_id, db_session):
    application = db_session.execute(select(Application).where(Application.id == application_id)).all()
 
    assert len(application) != 0, "Application is not existed!"
+   stmt = select(CustomersApplications).where(CustomersApplications.customer_id == customer_id and CustomersApplications.application_id == application_id)
+   record = db_session.execute(stmt).first()
+   if not record:
+      assign_customer_to_application(customer_id, application_id, db_session)
+      return
    update_app = update(CustomersApplications).where(CustomersApplications.customer_id == customer_id).values(application_id = application_id)
    db_session.execute(update_app)
 
