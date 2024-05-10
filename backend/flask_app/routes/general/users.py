@@ -166,7 +166,7 @@ def get_user_application():
 
          applications = utils.Utils.parse_output(applications)
          for app in applications:
-            processed = app.get('processed')
+            processed = app.get("Application").get('processed')
             if processed:
                processed_at   = app.get('processed_at')
                reported       = app.get('reported')
