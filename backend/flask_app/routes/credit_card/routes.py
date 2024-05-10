@@ -11,12 +11,14 @@ import datetime
 import flask_app.helper.utils as utils
 from flask_app.helper import worker as wk
 import time
+from flask_security import roles_accepted
 
 model_info = wk.ModelInfo.create('Credit Fraud Detection')
 worker = wk.CreditCardWorker(model_info)
 worker.load_model_info(db_session)
 
 @app.route("/api/credit_card/history_data", methods=["GET", "POST"])
+@roles_accepted('Maintainer', 'Admin')
 def credit_card_history_data():
     if request.method == "GET":
          stmt = select(HistoryCreditCardTransaction).fetch(100)
@@ -25,6 +27,7 @@ def credit_card_history_data():
          return utils.parse_output(res)
 
 @app.route('/api/credit_card/transaction', methods=['GET', 'POST', 'DELETE'])
+@roles_accepted('Maintainer', 'Admin', 'Moderator')
 def credit_card_transaction():
    if request.method == 'GET': 
       stmt = select(CreditCardTransaction)

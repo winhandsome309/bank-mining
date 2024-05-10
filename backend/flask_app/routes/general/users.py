@@ -190,6 +190,7 @@ def get_user_application():
 
 @app.route('/api/role/change', methods=['POST'])
 @roles_required('Maintainer')
+@utils.server_return_500_if_errors
 def change_staff_role():
    form = request.form
    email = form.get('email')

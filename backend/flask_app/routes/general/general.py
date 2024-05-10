@@ -9,6 +9,7 @@ from flask_app.models import Staff, Customer, Vote, User, Role, RolesUsers, Appl
 from flask_security import roles_required, current_user, roles_accepted
 
 @app.route("/api/predict-result", methods=["GET", "POST"])
+@roles_accepted('Admin', 'Maintainer', "Moderator")
 def get_predict_result():
     if request.method == "GET":
         application_id = request.args.get("application_id")
@@ -23,6 +24,7 @@ def get_predict_result():
         return utils.parse_output(res)
 
 @app.route("/api/model-info", methods=["GET"])
+@roles_accepted('Admin', 'Maintainer')
 def get_model_info():
     feature = request.args.get("feature")
     model = ModelInfo
@@ -55,7 +57,7 @@ def get_all_staff():
 
 # You need to specific "endpoint" option to using multi decorator for your function
 @app.route("/api/admin/customers", methods=["GET", "POST"], endpoint='get_all_customer')
-# @roles_accepted('Admin', 'Maintainer')
+@roles_accepted('Admin', 'Maintainer')
 def get_all_customer():
     if request.method == "GET":
         customer_with_role = select(User.email, User.active, User.chat_token, User.username, Customer.id, Customer.fname,
@@ -98,6 +100,7 @@ def get_all_customer():
         return make_response(body, 400)
 
 @app.route("/api/voting", methods=["GET", "POST"])
+@roles_accepted('Admin', 'Maintainer', 'Moderator')
 def get_vote():
     if request.method == "GET":
         id = request.args.get("id")

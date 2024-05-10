@@ -21,6 +21,7 @@ worker = wk.LoanWorker(model_info)
 worker.load_model_info(db_session)
 
 @app.route("/api/loan_application/history_data", methods=["GET", "POST"])
+@roles_accepted("Maintainter", "Admin")
 def history_data():
     if request.method == "GET":
         stmt = select(HistoryApps).fetch(100)
@@ -30,6 +31,7 @@ def history_data():
         return utils.parse_output(res)
 
 @app.route("/api/loan_application/waiting-list", methods=["GET", "POST", "DELETE"])
+@roles_accepted("Maintainter", "Admin", "Moderator")
 def waiting_list():
     if request.method == "GET":
         stmt = select(Application)
@@ -118,6 +120,7 @@ def waiting_list():
         return make_response("Deleted", 200)
     
 @app.route("/api/loan_application/list/waiting-list", methods=["POST"])
+@roles_accepted("Maintainter", "Admin")
 def list_waiting_list():
     if request.method == "POST":
         file = request.files['file']
@@ -170,6 +173,7 @@ def list_waiting_list():
             return make_response("SUCCESS", 201)
 
 @app.route("/api/loan_application/processed-list", methods=["GET", "POST"])
+@roles_accepted('Admin', 'Maintainer')
 def processed_list():
     if request.method == "GET":
             stmt = select(ProcessedApps)
@@ -210,6 +214,7 @@ def processed_list():
         return make_response("success", 200)
 
 @app.route('/api/loan_application/process', methods=['POST'])
+@roles_accepted("Maintainer", "Admin")
 def toggle_process_application():
     form = request.form
     applicaton_id = str(form.get('application_id'))    
