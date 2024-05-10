@@ -10,7 +10,8 @@ from flask_security import hash_password, roles_required, current_user, roles_ac
 import datetime
 import time
 
-@app.route("/api/staff/create", methods=['POST'])
+@app.route("/api/staff/create", methods=['POST'], endpoint='create_staff')
+@utils.server_return_500_if_errors
 @roles_accepted('Maintainer', 'Admin')
 def create_staff():
    req = request.json
@@ -51,7 +52,8 @@ def create_staff():
    except:
       return make_response("ERROR", 400)
    
-@app.route('/api/staff/reset-password', methods=["POST"])
+@app.route('/api/staff/reset-password', methods=["POST"], endpoint='staff_reset_password')
+@utils.server_return_500_if_errors
 # @roles_required("Customer")
 def staff_reset_password():
    form = request.form
@@ -70,7 +72,8 @@ def staff_reset_password():
    except:
       return make_response("ERROR", 400)
 
-@app.route("/api/customer/create", methods=['POST'])
+@app.route("/api/customer/create", methods=['POST'], endpoint='create_customer')
+@utils.server_return_500_if_errors
 @roles_accepted('Maintainer', 'Admin')
 def create_customer():
    form = request.form
@@ -141,8 +144,8 @@ def customer_reset_password():
       return make_response("ERROR", 400)
 
 @app.route('/api/user/application', methods=['GET', 'POST'])
-@roles_required('Customer')
 @utils.server_return_500_if_errors
+@roles_required('Customer')
 def get_user_application():
    user_id = current_user.id
    stmt = select(Customer).where(Customer.user_id == user_id)
@@ -188,9 +191,9 @@ def get_user_application():
 
    return make_response('NOT FOUND', 404)
 
-@app.route('/api/role/change', methods=['POST'])
-@roles_required('Maintainer')
+@app.route('/api/role/change', methods=['POST'], endpoint='change_staff_role')
 @utils.server_return_500_if_errors
+@roles_required('Maintainer')
 def change_staff_role():
    form = request.form
    email = form.get('email')
@@ -228,7 +231,8 @@ def change_staff_role():
 
 
 
-@app.route('/api/user/delete', methods=['POST'])
+@app.route('/api/user/delete', methods=['POST'], endpoint='delete_user')
+@utils.server_return_500_if_errors
 @roles_required('Maintainer')
 def delete_user():
    form = request.form
