@@ -1,7 +1,6 @@
 from flask_app.models import PredictResult
 from flask_app.models import HistoryMarketingClients
 from flask_app.models import MarketingClient
-from flask_app.models import MarketingOldClient
 from flask_app.models import ClientID
 from flask_app.database import db_session
 from sqlalchemy import select, null, update, delete
@@ -17,16 +16,16 @@ model_info = wk.ModelInfo.create('Marketing Campaign')
 worker = wk.MarketingWorker(model_info)
 worker.load_model_info(db_session)
 
-@app.route("/api/marketing/history_data", methods=["GET", "POST"], endpoint='marketing_histor_data')
+@app.route("/api/marketing/history_data", methods=["GET", "POST"], endpoint='marketing_history_data')
 @utils.server_return_500_if_errors
 @roles_accepted('Maintainer', 'Admin')
 def marketing_history_data():
     if request.method == "GET":
-         stmt = select(HistoryMarketingClients)
+         stmt = select(HistoryMarketingClients).fetch(100)
          res = db_session.execute(stmt).all()
          db_session.commit()
 
-         return utils.parse_output(res)
+         return utils.Utils.parse_output(res)
 
 @app.route('/api/marketing/client', methods=['GET', 'POST', 'DELETE'], endpoint='marketing_client')
 @utils.server_return_500_if_errors
@@ -119,45 +118,4 @@ def marketing_client():
       resDeleteApp = db_session.execute(stmtDeleteApp)
       db_session.commit()
 
-      return make_response("Deleted", 200)
-      
-@app.route("/api/marketing/old_client", methods=["GET", "POST"], endpoint='oldClient')
-@utils.server_return_500_if_errors
-@roles_accepted('Maintainer', 'Admin')
-def oldClient():
-    if request.method == "GET":
-      stmt = select(MarketingOldClient)
-      res = db_session.execute(stmt).all()
-      db_session.commit()
-      return utils.parse_output(res)
-        
-    elif request.method == "POST":
-      idCustomer = request.args.get("customer_id")
-      stmtAcceptCustomer = select(MarketingClient).where(MarketingClient.id == idCustomer)
-      customerRes = db_session.execute(stmtAcceptCustomer).all()
-      db_session.commit()
-
-      customer = utils.parse_output(customerRes)[0]
-      oldCustomer = MarketingOldClient(
-         id=customer["id"],
-         age=customer["age"],
-         job=customer["job"],
-         marital=customer["marital"],
-         education=customer["education"],
-         default=customer["default"],
-         balance=customer["balance"],
-         housing=customer["housing"],
-         loan=customer["loan"],
-         contact=customer["contact"],
-         day=customer["day"],
-         month=customer["month"],
-         duration=customer["duration"],
-         campaign=customer["campaign"],
-         pdays=customer["pdays"],
-         previous=customer["previous"],
-         poutcome=customer["poutcome"],
-      )
-      db_session.add(oldCustomer)
-      stmtDeleteCustomer = delete(MarketingClient).where(MarketingClient.id == idCustomer)
-      _ = db_session.execute(stmtDeleteCustomer)
-      return make_response("success", 200)
+      return make_response("Deleted", 200) 

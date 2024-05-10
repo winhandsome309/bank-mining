@@ -1,5 +1,4 @@
 from flask_app.models import HistoryApps
-from flask_app.models import ProcessedApps
 from flask_app.models import Application
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult

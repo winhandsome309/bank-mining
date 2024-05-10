@@ -46,26 +46,6 @@ class HistoryApps(Base):
     
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-class ProcessedApps(Base):
-    __tablename__ = 'processed_loan'
-
-    id:             Mapped[str] = mapped_column(primary_key=True)
-    credit_policy:  Mapped[int] = mapped_column(primary_key=True)
-    purpose:        Mapped[str]
-    int_rate:       Mapped[float]
-    installment:    Mapped[float]
-    log_annual_inc: Mapped[float]
-    dti:            Mapped[float]
-    fico:           Mapped[int]
-    days_with_cr_line: Mapped[float]
-    revol_bal:      Mapped[int]
-    revol_util:     Mapped[float]
-    inq_last_6mths: Mapped[int]
-    delinq_2yrs:    Mapped[int]
-    pub_rec:        Mapped[int]
-
-    def as_dict(self): 
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 class ClientID(Base):
     __tablename__ = 'clientid'
 
@@ -141,29 +121,6 @@ class MarketingClient(Base):
     previous: Mapped[int]   = mapped_column(nullable=True)
     poutcome: Mapped[str]   = mapped_column(nullable=True)
     created: Mapped[timestamp]
-
-    def as_dict(self): 
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-class MarketingOldClient(Base):
-    __tablename__ = "marketing_old_client"
-
-    id: Mapped[str]         = mapped_column(ForeignKey("clientid.id"), primary_key=True)
-    age: Mapped[int]        = mapped_column(nullable=True)
-    job: Mapped[str]        = mapped_column(nullable=True)
-    marital: Mapped[str]    = mapped_column(nullable=True)
-    education: Mapped[str]  = mapped_column(nullable=True)
-    default: Mapped[str]    = mapped_column(nullable=True)
-    balance: Mapped[int]    = mapped_column(nullable=True)
-    housing: Mapped[str]    = mapped_column(nullable=True)
-    loan: Mapped[str]       = mapped_column(nullable=True)
-    contact: Mapped[str]    = mapped_column(nullable=True)
-    day: Mapped[int]        = mapped_column(nullable=True)
-    month: Mapped[str]      = mapped_column(nullable=True)
-    duration: Mapped[int]   = mapped_column(nullable=True)
-    campaign: Mapped[int]   = mapped_column(nullable=True)
-    pdays: Mapped[int]      = mapped_column(nullable=True)
-    previous: Mapped[int]   = mapped_column(nullable=True)
-    poutcome: Mapped[str]   = mapped_column(nullable=True)
 
     def as_dict(self): 
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
