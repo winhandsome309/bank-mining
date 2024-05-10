@@ -20,7 +20,9 @@ model_info = wk.ModelInfo.create("Loan Application")
 worker = wk.LoanWorker(model_info)
 worker.load_model_info(db_session)
 
-@app.route("/api/loan_application/history_data", methods=["GET", "POST"])
+@app.route("/api/loan_application/history_data", methods=["GET", "POST"], endpoint='history_data')
+@utils.server_return_500_if_errors
+@roles_accepted("Maintainter", "Admin")
 def history_data():
     if request.method == "GET":
         stmt = select(HistoryApps).fetch(100)
@@ -29,7 +31,9 @@ def history_data():
 
         return utils.parse_output(res)
 
-@app.route("/api/loan_application/waiting-list", methods=["GET", "POST", "DELETE"])
+@app.route("/api/loan_application/waiting-list", methods=["GET", "POST", "DELETE"], endpoint='waiting_list')
+@utils.server_return_500_if_errors
+@roles_accepted("Maintainter", "Admin", "Moderator")
 def waiting_list():
     if request.method == "GET":
         stmt = select(Application)
@@ -117,7 +121,9 @@ def waiting_list():
 
         return make_response("Deleted", 200)
     
-@app.route("/api/loan_application/list/waiting-list", methods=["POST"])
+@app.route("/api/loan_application/list/waiting-list", methods=["POST"], endpoint='list_waiting_list')
+@utils.server_return_500_if_errors
+@roles_accepted("Maintainter", "Admin")
 def list_waiting_list():
     if request.method == "POST":
         file = request.files['file']
@@ -169,7 +175,9 @@ def list_waiting_list():
                 time.sleep(1)
             return make_response("SUCCESS", 201)
 
-@app.route("/api/loan_application/processed-list", methods=["GET", "POST"])
+@app.route("/api/loan_application/processed-list", methods=["GET", "POST"], endpoint='processed_list')
+@utils.server_return_500_if_errors
+@roles_accepted('Admin', 'Maintainer')
 def processed_list():
     if request.method == "GET":
             stmt = select(ProcessedApps)
@@ -209,7 +217,9 @@ def processed_list():
         db_session.commit()
         return make_response("success", 200)
 
-@app.route('/api/loan_application/process', methods=['POST'])
+@app.route('/api/loan_application/process', methods=['POST'], endpoint='toggle_process_application')
+@utils.server_return_500_if_errors
+@roles_accepted("Maintainer", "Admin")
 def toggle_process_application():
     form = request.form
     applicaton_id = str(form.get('application_id'))    

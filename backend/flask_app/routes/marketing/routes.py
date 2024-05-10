@@ -10,13 +10,16 @@ from flask import request, make_response
 import datetime
 import flask_app.helper.utils as utils
 from flask_app.helper import worker as wk
+from flask_security import roles_accepted
 import time
 
 model_info = wk.ModelInfo.create('Marketing Campaign')
 worker = wk.MarketingWorker(model_info)
 worker.load_model_info(db_session)
 
-@app.route("/api/marketing/history_data", methods=["GET", "POST"])
+@app.route("/api/marketing/history_data", methods=["GET", "POST"], endpoint='marketing_histor_data')
+@utils.server_return_500_if_errors
+@roles_accepted('Maintainer', 'Admin')
 def marketing_history_data():
     if request.method == "GET":
          stmt = select(HistoryMarketingClients)
@@ -25,8 +28,10 @@ def marketing_history_data():
 
          return utils.parse_output(res)
 
-@app.route('/api/marketing/client', methods=['GET', 'POST', 'DELETE'])
-def client():
+@app.route('/api/marketing/client', methods=['GET', 'POST', 'DELETE'], endpoint='marketing_client')
+@utils.server_return_500_if_errors
+@roles_accepted('Maintainer', 'Admin')
+def marketing_client():
    if request.method == 'GET': 
       stmt = select(MarketingClient)
       res = db_session.execute(stmt).all()
@@ -116,7 +121,9 @@ def client():
 
       return make_response("Deleted", 200)
       
-@app.route("/api/marketing/old_client", methods=["GET", "POST"])
+@app.route("/api/marketing/old_client", methods=["GET", "POST"], endpoint='oldClient')
+@utils.server_return_500_if_errors
+@roles_accepted('Maintainer', 'Admin')
 def oldClient():
     if request.method == "GET":
       stmt = select(MarketingOldClient)

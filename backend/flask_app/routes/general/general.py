@@ -8,7 +8,9 @@ from flask_app.models import PredictResult
 from flask_app.models import Staff, Customer, Vote, User, Role, RolesUsers, Application, CustomersApplications
 from flask_security import roles_required, current_user, roles_accepted
 
-@app.route("/api/predict-result", methods=["GET", "POST"])
+@app.route("/api/predict-result", methods=["GET", "POST"], endpoint='get_predict_result')
+@utils.server_return_500_if_errors
+@roles_accepted('Admin', 'Maintainer', "Moderator")
 def get_predict_result():
     if request.method == "GET":
         application_id = request.args.get("application_id")
@@ -22,7 +24,9 @@ def get_predict_result():
 
         return utils.parse_output(res)
 
-@app.route("/api/model-info", methods=["GET"])
+@app.route("/api/model-info", methods=["GET"], endpoint='get_model_info')
+@utils.server_return_500_if_errors
+@roles_accepted('Admin', 'Maintainer', 'Moderator')
 def get_model_info():
     feature = request.args.get("feature")
     model = ModelInfo
@@ -33,7 +37,8 @@ def get_model_info():
         db_session.commit()
     return utils.parse_output(res)
 
-@app.route("/api/admin/staffs", methods=["GET", "POST"])
+@app.route("/api/admin/staffs", methods=["GET", "POST"], endpoint="get_all_staff")
+@utils.server_return_500_if_errors
 @roles_accepted('Admin', 'Maintainer')
 def get_all_staff():
     if request.method == "GET":
@@ -55,7 +60,8 @@ def get_all_staff():
 
 # You need to specific "endpoint" option to using multi decorator for your function
 @app.route("/api/admin/customers", methods=["GET", "POST"], endpoint='get_all_customer')
-# @roles_accepted('Admin', 'Maintainer')
+@utils.server_return_500_if_errors
+@roles_accepted('Admin', 'Maintainer')
 def get_all_customer():
     if request.method == "GET":
         customer_with_role = select(User.email, User.active, User.chat_token, User.username, Customer.id, Customer.fname,
@@ -97,7 +103,9 @@ def get_all_customer():
         body = utils.create_response_body(400, True, "update_customer_infor", data={'message': "Customer is not existed!"})
         return make_response(body, 400)
 
-@app.route("/api/voting", methods=["GET", "POST"])
+@app.route("/api/voting", methods=["GET", "POST"], endpoint='get_vote')
+@utils.server_return_500_if_errors
+@roles_accepted('Admin', 'Maintainer', 'Moderator')
 def get_vote():
     if request.method == "GET":
         id = request.args.get("id")
