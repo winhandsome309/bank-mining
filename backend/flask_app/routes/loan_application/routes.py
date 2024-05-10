@@ -4,6 +4,7 @@ from flask_app.models import Application
 from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
 from flask_app.models import ClientID
+from flask_app.models import Customer
 from flask_app.database import db_session
 from sqlalchemy import select, null, update, delete
 from flask_app import app
@@ -22,7 +23,7 @@ worker.load_model_info(db_session)
 
 @app.route("/api/loan_application/history_data", methods=["GET", "POST"], endpoint='history_data')
 @utils.server_return_500_if_errors
-@roles_accepted("Maintainter", "Admin")
+@roles_accepted("Maintainer", "Admin")
 def history_data():
     if request.method == "GET":
         stmt = select(HistoryApps).fetch(100)
@@ -33,7 +34,7 @@ def history_data():
 
 @app.route("/api/loan_application/waiting-list", methods=["GET", "POST", "DELETE"], endpoint='waiting_list')
 @utils.server_return_500_if_errors
-@roles_accepted("Maintainter", "Admin", "Moderator")
+@roles_accepted("Maintainer", "Admin", "Moderator")
 def waiting_list():
     if request.method == "GET":
         stmt = select(Application)
@@ -57,13 +58,11 @@ def waiting_list():
         inq_last =      form.get("inq_last_6mths")
         delinq_2yrs =   form.get("delinq_2yrs")
         pub_rec =       form.get("pub_rec")
+        customer_id =   form.get("customer_id")
 
         created =       datetime.datetime.now()
         # id =            utils.get_new_applicaion_id(created.__str__())
         id = str(int(time.time()))
-
-        # predict
-
 
         new_id = ClientID(id=id)
         new_app = Application(
@@ -91,8 +90,11 @@ def waiting_list():
                     predict=predict.__str__(),
                     feature='loan'
         )
+
+    
         try:
             db_session.add(new_id)
+            utils.assign_customer_to_application(customer_id=int(customer_id), application_id=id, db_session=db_session)
             db_session.commit()
 
             db_session.add(new_app)
@@ -101,6 +103,7 @@ def waiting_list():
             db_session.add(new_predict_result)
             db_session.commit()
         except:
+            db_session.rollback()
             return make_response("ERROR", 401)
         return make_response(predict, 201)
 
@@ -123,7 +126,7 @@ def waiting_list():
     
 @app.route("/api/loan_application/list/waiting-list", methods=["POST"], endpoint='list_waiting_list')
 @utils.server_return_500_if_errors
-@roles_accepted("Maintainter", "Admin")
+@roles_accepted("Maintainer", "Admin")
 def list_waiting_list():
     if request.method == "POST":
         file = request.files['file']
