@@ -57,6 +57,7 @@ import {
   cilThumbUp,
 } from '@coreui/icons'
 import axios from 'axios'
+import client from '../hooks/useApi'
 
 const Voting = (props) => {
   const [comFunction, setComFunction] = React.useState('Comment')
@@ -66,7 +67,7 @@ const Voting = (props) => {
   const [numberDislike, setNumberDislike] = React.useState(0)
 
   const fetchVoting = () => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/voting', {
         params: {
           id: props.applicationId,
@@ -85,6 +86,7 @@ const Voting = (props) => {
           setNumberLike(likeVal)
           setNumberDislike(dislikeVal)
         }
+        props.setCheckFetchVote(!props.checkFetchVote)
       })
   }
 

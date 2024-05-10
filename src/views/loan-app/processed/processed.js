@@ -71,6 +71,8 @@ import {
   cilFindInPage,
 } from '@coreui/icons'
 import axios from 'axios'
+import client from '../../../hooks/useApi'
+import listLoanParams from '../ListParams'
 
 const Processed = () => {
   const [uploadFile, setUploadFile] = useState(true)
@@ -113,7 +115,7 @@ const Processed = () => {
   const [searched, setSearched] = useState('')
 
   const fetchApplication = async () => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/processed-list')
       .then((res) => {
         setTableData(res.data)
@@ -164,7 +166,7 @@ const Processed = () => {
           <CCard className="mb-4">
             <CCardHeader>
               <div className="d-none d-md-flex">
-                {'Application'}
+                <div className="mt-2">{'Application'}</div>
                 <CForm className="d-flex ms-auto">
                   <CFormInput
                     type="search"
@@ -258,150 +260,18 @@ const Processed = () => {
         </COffcanvasHeader>
         <COffcanvasBody>
           <CCol>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Id </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>
-                {/* <CRow>{appData['id'].substring(0, 20)}</CRow>
-                <CRow>{appData['id'].substring(20)}</CRow> */}
-                {appData['id']}
-              </CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Credit Policy </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['credit_policy']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Purpose </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['purpose']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Int Rate </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['int_rate']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Installment </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['installment']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Log Annual Inc </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['log_annual_inc']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Dti </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['dti']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Fico </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['fico']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Days With Cr Line </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['days_with_cr_line']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Revol Bal </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['revol_bal']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Revol Util </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['revol_util']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Inq Last 6mths </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['inq_last_6mths']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Delinq 2yrs </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['delinq_2yrs']}</CCol>
-            </CRow>
-            <CRow className="mb-2">
-              <CCol>
-                <CContainer>
-                  <CTooltip placement="left" content="abcd">
-                    <div> Pub Rec </div>
-                  </CTooltip>
-                </CContainer>
-              </CCol>
-              <CCol>{appData['pub_rec']}</CCol>
-            </CRow>
+            {listLoanParams.map((params, index) => (
+              <CRow className="mb-3">
+                <CCol>
+                  <CContainer>
+                    <CTooltip placement="left" content={params[1]}>
+                      <div> {params[0]} </div>
+                    </CTooltip>
+                  </CContainer>
+                </CCol>
+                <CCol>{appData[params[0]]}</CCol>
+              </CRow>
+            ))}
           </CCol>
 
           <hr />

@@ -72,12 +72,19 @@ import {
 } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
 import AppTimeline from '../../../components/AppTimeline'
+import client from '../../../hooks/useApi'
 
 const listLoanParams = [
-  ['credit_policy', 'abc', 'select', ['yes', 'no'], [1, 0]],
+  [
+    'credit_policy',
+    '1 if the customer meets the credit underwriting criteria; 0 otherwise.',
+    'select',
+    ['yes', 'no'],
+    [1, 0],
+  ],
   [
     'purpose',
-    'abc',
+    'The purpose of the loan.',
     'select',
     [
       'debt_consolidation',
@@ -98,17 +105,55 @@ const listLoanParams = [
       'all_other',
     ],
   ],
-  ['int_rate', 'abc', 'normal'],
-  ['installment', 'abc', 'normal'],
-  ['log_annual_inc', 'abc', 'normal'],
-  ['dti', 'abc', 'normal'],
-  ['fico', 'abc', 'normal'],
-  ['days_with_cr_line', 'abc', 'normal'],
-  ['revol_bal', 'abc', 'normal'],
-  ['revol_util', 'abc', 'normal'],
-  ['inq_last_6mths', 'abc', 'select', ['yes', 'no'], [1, 0]],
-  ['delinq_2yrs', 'abc', 'select', ['yes', 'no'], [1, 0]],
-  ['pub_rec', 'abc', 'select', ['yes', 'no'], [1, 0]],
+  [
+    'int_rate',
+    'The interest rate of the loan (more risky borrowers are assigned higher interest rates).',
+    'normal',
+  ],
+  ['installment', 'The monthly installments owed by the borrower if the loan is funded.', 'normal'],
+  [
+    'log_annual_inc',
+    'The natural log of the self-reported annual income of the borrower.',
+    'normal',
+  ],
+  [
+    'dti',
+    'The debt-to-income ratio of the borrower (amount of debt divided by annual income).',
+    'normal',
+  ],
+  ['fico', 'The FICO credit score of the borrower.', 'normal'],
+  ['days_with_cr_line', 'The number of days the borrower has had a credit line.', 'normal'],
+  [
+    'revol_bal',
+    "The borrower's revolving balance (amount unpaid at the end of the credit card billing cycle).",
+    'normal',
+  ],
+  [
+    'revol_util',
+    "The borrower's revolving line utilization rate (the amount of the credit line used relative to total credit available).",
+    'normal',
+  ],
+  [
+    'inq_last_6mths',
+    "The borrower's number of inquiries by creditors in the last 6 months.",
+    'select',
+    ['yes', 'no'],
+    [1, 0],
+  ],
+  [
+    'delinq_2yrs',
+    'The number of times the borrower had been 30+ days past due on a payment in the past 2 years.',
+    'select',
+    ['yes', 'no'],
+    [1, 0],
+  ],
+  [
+    'pub_rec',
+    "The borrower's number of derogatory public records.",
+    'select',
+    ['yes', 'no'],
+    [1, 0],
+  ],
 ]
 
 const CustomerWaiting = () => {
@@ -162,9 +207,6 @@ const CustomerWaiting = () => {
     delinq_2yrs: '',
     pub_rec: '',
   })
-  const [visibleRecheck, setVisibleRecheck] = useState(false)
-  const [msgRecheck, setMsgRecheck] = useState('')
-  const [predictResult, setPredictResult] = useState(false)
   const [changeApp, setChangeApp] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [lastUpdate, setLastUpdate] = useState('')
@@ -172,8 +214,8 @@ const CustomerWaiting = () => {
   const isMounted = useRef(false)
 
   const fetchApplication = async () => {
-    axios.get('http://localhost:3001/api/loan_application/waiting-list').then((res) => {
-      setTableData(res.data)
+    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/user/application').then((res) => {
+      if (res.status == 200) setTableData(res.data)
     })
   }
 
@@ -182,7 +224,7 @@ const CustomerWaiting = () => {
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key])
     })
-    axios
+    client
       .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', formData)
       .then((res) => {
         if (res.status === 201) {
@@ -193,75 +235,17 @@ const CustomerWaiting = () => {
       })
   }
 
-  const deleteApplication = async (id) => {
-    const formData = new FormData()
-    formData.append('id', id)
-    axios
-      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', {
-        data: formData,
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          addToast(warningToast('Rejected successfully'))
-          fetchApplication()
-        }
-      })
-  }
-
-  const fetchPredictResult = async () => {
-    axios
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/predict-result', {
-        params: {
-          application_id: appData.id,
-        },
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          var temp = JSON.parse(res.data[0]['predict'].replace(/'/g, '"'))
-          setPredictResult(temp)
-        }
-      })
-  }
-
-  const acceptApplication = async (id) => {
-    axios
-      .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/processed-list',
-        {},
-        {
-          params: {
-            application_id: id,
-          },
-        },
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          addToast(successToast('Accepted successully'))
-          fetchApplication()
-        }
-      })
-  }
-
   useEffect(() => {
     fetchApplication()
   }, [])
 
-  useEffect(() => {
-    if (changeApp == true) {
-      fetchPredictResult()
-    }
-  }, [appData, changeApp])
-
-  useEffect(() => {
-    if (predictResult != false) {
-      setVisibleApp(true)
-    }
-  }, [appData, predictResult])
+  // useEffect(() => {
+  //   setVisibleApp(true)
+  // }, [appData])
 
   useEffect(() => {
     if (visibleApp == false && isMounted.current) {
       setChangeApp(!changeApp)
-      // setPredictResult(false)
     } else {
       isMounted.current = true
     }
@@ -302,12 +286,12 @@ const CustomerWaiting = () => {
             <CCardHeader>
               <div className="d-none d-md-flex">
                 {'Application'}
-                <CIcon
+                {/* <CIcon
                   icon={cilPlus}
                   size="lg"
                   className="ms-auto focus:cursor-auto"
                   onClick={() => setVisibleCreate(true)}
-                />
+                /> */}
               </div>
             </CCardHeader>
             <CCardBody>
@@ -339,29 +323,34 @@ const CustomerWaiting = () => {
                         v-for="item in tableItems"
                         key={index}
                         onClick={() => {
-                          setAppData(item['data'])
+                          setAppData(item['Application'])
+                          setVisibleApp(true)
                           setCurrentStep(item['step'])
-                          setLastUpdate(item['last_update'])
+                          const myDate = new Date(item['Application'].id * 1000)
+                            .toISOString()
+                            .slice(0, 19)
+                            .replace('T', ' ')
+                          setLastUpdate(myDate)
                           setChangeApp(!changeApp)
                         }}
                       >
                         <CTableDataCell className="text-center">
-                          <div>{item['data'].id}</div>
+                          <div>{item['Application'].id}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item['data'].purpose}</div>
+                          <div>{item['Application'].purpose}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item['data'].credit_policy}</div>
+                          <div>{item['Application'].credit_policy}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item['data'].int_rate}</div>
+                          <div>{item['Application'].int_rate}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item['data'].installment}</div>
+                          <div>{item['Application'].installment}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item['data'].log_annual_inc}</div>
+                          <div>{item['Application'].log_annual_inc}</div>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>...</div>
@@ -380,123 +369,6 @@ const CustomerWaiting = () => {
           </CCard>
         </CCol>
       </CRow>
-
-      <CModal
-        scrollable
-        visible={visibleCreate}
-        backdrop="static"
-        onClose={() => setVisibleCreate(false)}
-      >
-        <CModalHeader>
-          <CModalTitle>Create Your Application</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CCol>
-            <CCard>
-              <CCardBody>
-                <CForm
-                  className="row g-3 needs-validation mt-1"
-                  noValidate
-                  validated={validated}
-                  onSubmit={handleSubmit}
-                >
-                  {listLoanParams.map(
-                    (params, index) =>
-                      index % 2 == 0 && (
-                        <CRow className="mb-3">
-                          <CCol>
-                            <CTooltip placement="left" content={listLoanParams[index][0]}>
-                              {params[2] == 'normal' ? (
-                                <CFormInput
-                                  required
-                                  feedbackValid="Looks good!"
-                                  floatingLabel={listLoanParams[index][0]}
-                                  id={listLoanParams[index][0]}
-                                  placeholder={listLoanParams[index][0]}
-                                  onChange={(e) => {
-                                    setForm({ ...form, [listLoanParams[index][0]]: e.target.value })
-                                  }}
-                                />
-                              ) : (
-                                <CFormSelect
-                                  required
-                                  feedbackValid="Looks good!"
-                                  floatingLabel={listLoanParams[index][0]}
-                                  aria-label="Default"
-                                  onChange={(e) => {
-                                    setForm({ ...form, [listLoanParams[index][0]]: e.target.value })
-                                  }}
-                                >
-                                  <option selected="" value="">
-                                    Select
-                                  </option>
-                                  {listLoanParams[index][3].map((value, i) => (
-                                    <option value={listLoanParams[index][4][i]}>{value}</option>
-                                  ))}
-                                </CFormSelect>
-                              )}
-                            </CTooltip>
-                          </CCol>
-
-                          {index + 1 < listLoanParams.length ? (
-                            <CCol>
-                              <CTooltip placement="left" content={listLoanParams[index + 1][0]}>
-                                {listLoanParams[index + 1][2] == 'normal' ? (
-                                  <CFormInput
-                                    required
-                                    feedbackValid="Looks good!"
-                                    floatingLabel={listLoanParams[index + 1][0]}
-                                    id={listLoanParams[index + 1][0]}
-                                    placeholder={listLoanParams[index + 1][0]}
-                                    onChange={(e) => {
-                                      setForm({
-                                        ...form,
-                                        [listLoanParams[index + 1][0]]: e.target.value,
-                                      })
-                                    }}
-                                  />
-                                ) : (
-                                  <CFormSelect
-                                    required
-                                    feedbackValid="Looks good!"
-                                    floatingLabel={listLoanParams[index + 1][0]}
-                                    aria-label="Default"
-                                    onChange={(e) => {
-                                      setForm({
-                                        ...form,
-                                        [listLoanParams[index + 1][0]]: e.target.value,
-                                      })
-                                    }}
-                                  >
-                                    <option selected="" value="">
-                                      Select
-                                    </option>
-                                    {listLoanParams[index + 1][3].map((value, i) => (
-                                      <option value={listLoanParams[index + 1][4][i]}>
-                                        {value}
-                                      </option>
-                                    ))}
-                                  </CFormSelect>
-                                )}
-                              </CTooltip>
-                            </CCol>
-                          ) : (
-                            <CCol></CCol>
-                          )}
-                        </CRow>
-                      ),
-                  )}
-                  <CButton type="submit" color="primary">
-                    Create
-                  </CButton>
-                </CForm>
-              </CCardBody>
-            </CCard>
-            <CRow className="ms-2 mt-1">Please input all required fields.</CRow>
-          </CCol>
-        </CModalBody>
-      </CModal>
-      <CToaster ref={toaster} push={toast} placement="top-end" />
 
       <COffcanvas
         className="w-50"

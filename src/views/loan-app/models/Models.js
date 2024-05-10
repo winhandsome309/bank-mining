@@ -55,6 +55,7 @@ import {
   cilX,
 } from '@coreui/icons'
 import axios from 'axios'
+import client from '../../../hooks/useApi'
 
 const colorModel = {
   accuracy: '#FF6384',
@@ -82,7 +83,7 @@ const Models = () => {
   const [indexModel, setIndexModel] = useState(0)
 
   const fetchModelInfo = async () => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/model-info', {
         params: {
           feature: 'loan',
@@ -94,7 +95,12 @@ const Models = () => {
           for (var i = 0; i < temp.length; i++) {
             delete temp[i]['feature']
             delete temp[i]['model']
-            temp['f1_score'] = 1
+            temp[i]['f1_score'] =
+              Math.round(
+                ((temp[i]['precision'] * temp[i]['recall']) /
+                  (temp[i]['precision'] + temp[i]['recall'])) *
+                  10000,
+              ) / 10000
           }
           setModelInfo(temp)
         }
@@ -120,11 +126,11 @@ const Models = () => {
                     <CDropdownItem
                       // href="#/loan-app/models"
                       onClick={() => {
-                        setModel('Logistic Regression')
+                        setModel('Logistic regression - Feature selected')
                         setIndexModel(0)
                       }}
                     >
-                      Linear Regression
+                      Logistic regression - Feature selected
                     </CDropdownItem>
                     <CDropdownItem
                       // href="#/loan-app/models"
@@ -172,7 +178,12 @@ const Models = () => {
                                 <RingProgress
                                   size={290}
                                   thickness={15}
-                                  sections={[{ value: 40, color: colorModel[item[0]] }]}
+                                  sections={[
+                                    {
+                                      value: Math.round(item[1] * 100 * 100) / 100,
+                                      color: colorModel[item[0]],
+                                    },
+                                  ]}
                                   label={
                                     <Text c="black" fw={700} ta="center" size="xl">
                                       {Math.round(item[1] * 100 * 100) / 100}%

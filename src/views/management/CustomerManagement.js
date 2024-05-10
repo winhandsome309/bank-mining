@@ -73,14 +73,16 @@ import {
   cilUserPlus,
 } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
+import client from '../../hooks/useApi'
 
 const listCustomerParams = [
   ['email', 'abc', 'normal'],
-  // ['username', 'abc', 'normal'],
+  ['username', 'abc', 'normal'],
   // ['role', 'abc', 'select', ['admin', 'customer'], ['admin', 'customer']],
   // ['permission', 'abc', 'select', ['read', 'write', 'all'], ['read', 'write', 'all']],
   // ['chat_token', 'abc', 'normal'],
-  ['customer_id', 'abc', 'normal'],
+  // ['customer_id', 'abc', 'normal'],
+  ['fname', 'abc', 'normal'],
   ['application_id', 'abc', 'normal'],
 ]
 
@@ -95,7 +97,8 @@ const CustomerManagement = () => {
   })
   const [form, setForm] = useState({
     email: '',
-    customer_id: '',
+    username: '',
+    fname: '',
     application_id: '',
   })
   const [details, setDetails] = useState([])
@@ -105,7 +108,7 @@ const CustomerManagement = () => {
   const [checkRenderInfo, setCheckRenderInfo] = useState({})
 
   const fetchCustomer = () => {
-    axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/customers').then((res) => {
+    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/customers').then((res) => {
       if (res.status === 200) {
         setTableData(res.data['data'])
       }
@@ -117,7 +120,7 @@ const CustomerManagement = () => {
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key])
     })
-    axios
+    client
       .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/create', formData)
       .then((res) => {
         if (res.status === 201) {
@@ -144,6 +147,37 @@ const CustomerManagement = () => {
 
     setCheckRenderInfo(temp)
   }
+
+  const deleteCustomer = (item) => {
+    const formData = new FormData()
+    formData.append('email', item.email)
+    client.post(process.env.REACT_APP_API_ENDPOINT + '/api/user/delete', formData).then((res) => {
+      if (res.status === 201) {
+        setVisibleCreate(false)
+        fetchCustomer()
+        addToast(warningToast('Customer is created successfully'))
+      }
+    })
+  }
+
+  const successToast = (msg) => (
+    <CToast title="Success" color="success" className="d-flex">
+      <CToastBody>{msg} !</CToastBody>
+      <CToastClose className="me-2 m-auto" white />
+    </CToast>
+  )
+  const warningToast = (msg) => (
+    <CToast title="Success" color="warning" className="d-flex">
+      <CToastBody>{msg} !</CToastBody>
+      <CToastClose className="me-2 m-auto" white />
+    </CToast>
+  )
+  const failToast = (msg) => (
+    <CToast title="Success" color="danger" className="d-flex">
+      <CToastBody>{msg} !</CToastBody>
+      <CToastClose className="me-2 m-auto" white />
+    </CToast>
+  )
 
   useEffect(() => {
     fetchCustomer()
@@ -174,15 +208,15 @@ const CustomerManagement = () => {
                     <CTableRow>
                       <CTableHeaderCell
                         className="bg-body-tertiary text-center"
-                        style={{ width: '15rem' }}
+                        style={{ width: '13rem' }}
                       >
                         ID
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary " style={{ width: '6rem' }} />
-                      <CTableHeaderCell className="bg-body-tertiary" style={{ width: '15rem' }}>
+                      <CTableHeaderCell className="bg-body-tertiary " style={{ width: '10rem' }} />
+                      <CTableHeaderCell className="bg-body-tertiary" style={{ width: '22rem' }}>
                         Email
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary" style={{ width: '16.5rem' }}>
+                      <CTableHeaderCell className="bg-body-tertiary" style={{ width: '18rem' }}>
                         Username
                       </CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">Role</CTableHeaderCell>
@@ -197,16 +231,16 @@ const CustomerManagement = () => {
                           <CTableDataCell className="text-center" colSpan={12}>
                             <CCol>
                               <CRow>
-                                <CCol>
+                                <CCol xs={2}>
                                   <div>{item.id}</div>
                                 </CCol>
-                                <CCol>
+                                <CCol xs={4}>
                                   <div>{item.email}</div>
                                 </CCol>
-                                <CCol>
+                                <CCol xs={3}>
                                   <div>{item.username}</div>
                                 </CCol>
-                                <CCol>
+                                <CCol xs={2}>
                                   <div>{item.role}</div>
                                 </CCol>
                                 {/* <CCol style={{ width: '15rem' }}>
@@ -229,50 +263,21 @@ const CustomerManagement = () => {
                               <CRow>
                                 <CCollapse visible={details.includes(item.id)}>
                                   <hr />
-                                  <CCol className="ms-3 mb-3 me-5">
+                                  <CCol className="ms-3 mb-2 me-5">
                                     <CRow>
-                                      <CCol xs={2}>
-                                        <CFormSelect
-                                          floatingLabel={'Role'}
-                                          aria-label="Default"
-                                          onChange={(e) => {}}
-                                        >
-                                          <option>Select</option>
-                                          <option>Mode</option>
-                                          <option>Admin</option>
-                                          <option>Customer</option>
-                                        </CFormSelect>
+                                      <CCol xs={3}>
+                                        <CRow className="ms-2">Number of application: 1</CRow>
+                                        <CRow className="ms-2">Is potential customer: Yes</CRow>
                                       </CCol>
-                                      {/* <CCol xs={2}>
-                                        <CFormSelect
-                                          floatingLabel={'Permission'}
-                                          aria-label="Default"
-                                          onChange={(e) => {}}
-                                        >
-                                          <option>Select</option>
-                                          <option>Write</option>
-                                          <option>Read</option>
-                                          <option>Add</option>
-                                        </CFormSelect>
-                                      </CCol> */}
-                                      <CCol xs={5} />
+                                      <CCol xs={7} />
                                       <CCol>
-                                        <CButton
-                                          color="success"
-                                          variant="outline"
-                                          shape="square"
-                                          size="sm"
-                                          className="me-3"
-                                          style={{ width: '7rem', height: '3.5rem' }}
-                                        >
-                                          Save changes
-                                        </CButton>
                                         <CButton
                                           variant="outline"
                                           shape="square"
                                           size="sm"
                                           color="danger"
                                           style={{ width: '7rem', height: '3.5rem' }}
+                                          onClick={() => deleteCustomer(item)}
                                         >
                                           Delete User
                                         </CButton>

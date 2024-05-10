@@ -18,6 +18,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
+import client from '../../../hooks/useApi'
 
 const Register = () => {
   const [userName, setUserName] = useState('')
@@ -62,11 +63,13 @@ const Register = () => {
     formData.append('email', email)
     formData.append('password', password)
 
-    axios.post(process.env.REACT_APP_API_ENDPOINT + '/api/create-account', formData).then((res) => {
-      if (res.status === 201) {
-        successCreate()
-      }
-    })
+    client
+      .post(process.env.REACT_APP_API_ENDPOINT + '/api/create-account', formData)
+      .then((res) => {
+        if (res.status === 201) {
+          successCreate()
+        }
+      })
   }
 
   return (

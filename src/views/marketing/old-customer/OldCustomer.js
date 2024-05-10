@@ -71,6 +71,7 @@ import {
   cilFindInPage,
 } from '@coreui/icons'
 import axios from 'axios'
+import client from '../../../hooks/useApi'
 
 const listMarketingParams = [
   ['id', 'abc'],
@@ -133,7 +134,7 @@ const OldCustomer = () => {
   const [searched, setSearched] = useState('')
 
   const fetchApplication = async () => {
-    axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/old_client').then((res) => {
+    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/old_client').then((res) => {
       setTableData(res.data)
     })
   }

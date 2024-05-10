@@ -29,35 +29,7 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 import { PasswordInput, rem, Input } from '@mantine/core'
 import { IconLock, IconAt } from '@tabler/icons-react'
 import axios from 'axios'
-
-var csrf_token
-
-// Set withCredentials to true for all requests
-// Credit: https://www.dhiwise.com/post/managing-secure-cookies-via-axios-interceptors
-axios.defaults.withCredentials = true
-
-axios
-  .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
-    data: null,
-    headers: { 'Content-Type': 'application/json' },
-  })
-  .then(function (resp) {
-    csrf_token = resp.data['response']['csrf_token']
-  })
-
-axios.interceptors.request.use(
-  function (config) {
-    if (['post', 'delete', 'patch', 'put'].includes(config['method'])) {
-      if (csrf_token !== '') {
-        config.headers['X-XSRF-Token'] = csrf_token
-      }
-    }
-    return config
-  },
-  function (error) {
-    return Promise.reject(error)
-  },
-)
+import client from '../../../hooks/useApi'
 
 const Login = () => {
   const [userName, setUserName] = useState('')
@@ -71,7 +43,7 @@ const Login = () => {
   const toaster = useRef()
 
   const afterLogin = () => {
-    axios
+    client
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/api/login',
         {
@@ -93,7 +65,7 @@ const Login = () => {
   }
 
   const login = () => {
-    axios
+    client
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/login',
         {
@@ -149,7 +121,7 @@ const Login = () => {
     formData.append('email', usernameResetPassword)
     formData.append('oldPassword', oldPasswordResetPassword)
     formData.append('newPassword', newPasswordResetPassword)
-    axios
+    client
       .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/reset-password', formData)
       .then((res) => {
         if (res.status === 200) {

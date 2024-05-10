@@ -73,88 +73,8 @@ import axios, { formToJSON } from 'axios'
 import CreateFunction from '../../../components/CreateFunction'
 import CommunicateFunction from '../../../components/CommunicateFunction'
 import Voting from '../../../components/Voting'
-
-const listLoanParams = [
-  [
-    'credit_policy',
-    '1 if the customer meets the credit underwriting criteria; 0 otherwise.',
-    'select',
-    ['yes', 'no'],
-    [1, 0],
-  ],
-  [
-    'purpose',
-    'The purpose of the loan.',
-    'select',
-    [
-      'debt_consolidation',
-      'educational',
-      'credit_card',
-      'major_purchase',
-      'home_improvement',
-      'small_business',
-      'all_other',
-    ],
-    [
-      'debt_consolidation',
-      'educational',
-      'credit_card',
-      'major_purchase',
-      'home_improvement',
-      'small_business',
-      'all_other',
-    ],
-  ],
-  [
-    'int_rate',
-    'The interest rate of the loan (more risky borrowers are assigned higher interest rates).',
-    'normal',
-  ],
-  ['installment', 'The monthly installments owed by the borrower if the loan is funded.', 'normal'],
-  [
-    'log_annual_inc',
-    'The natural log of the self-reported annual income of the borrower.',
-    'normal',
-  ],
-  [
-    'dti',
-    'The debt-to-income ratio of the borrower (amount of debt divided by annual income).',
-    'normal',
-  ],
-  ['fico', 'The FICO credit score of the borrower.', 'normal'],
-  ['days_with_cr_line', 'The number of days the borrower has had a credit line.', 'normal'],
-  [
-    'revol_bal',
-    "The borrower's revolving balance (amount unpaid at the end of the credit card billing cycle).",
-    'normal',
-  ],
-  [
-    'revol_util',
-    "The borrower's revolving line utilization rate (the amount of the credit line used relative to total credit available).",
-    'normal',
-  ],
-  [
-    'inq_last_6mths',
-    "The borrower's number of inquiries by creditors in the last 6 months.",
-    'select',
-    ['yes', 'no'],
-    [1, 0],
-  ],
-  [
-    'delinq_2yrs',
-    'The number of times the borrower had been 30+ days past due on a payment in the past 2 years.',
-    'select',
-    ['yes', 'no'],
-    [1, 0],
-  ],
-  [
-    'pub_rec',
-    "The borrower's number of derogatory public records.",
-    'select',
-    ['yes', 'no'],
-    [1, 0],
-  ],
-]
+import client from '../../../hooks/useApi'
+import listLoanParams from '../ListParams'
 
 const Waiting = () => {
   const [uploadFile, setUploadFile] = useState(true)
@@ -209,13 +129,14 @@ const Waiting = () => {
   })
   const [visibleRecheck, setVisibleRecheck] = useState(false)
   const [msgRecheck, setMsgRecheck] = useState('')
-  const [predictResult, setPredictResult] = useState(false)
+  const [predictResult, setPredictResult] = useState(-1)
   const [changeApp, setChangeApp] = useState(false)
   const [loadingMultipleCreation, setLoadingMultipleCreation] = useState(false)
   const isMounted = useRef(false)
+  const [checkFetchVote, setCheckFetchVote] = useState(false)
 
   const fetchApplication = async () => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list')
       .then((res) => {
         setTableData(res.data)
@@ -227,7 +148,7 @@ const Waiting = () => {
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key])
     })
-    axios
+    client
       .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', formData)
       .then((res) => {
         if (res.status === 201) {
@@ -242,7 +163,7 @@ const Waiting = () => {
   const createMultipleApplication = (file) => {
     const formData = new FormData()
     formData.append('file', file)
-    axios
+    client
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/list/waiting-list',
         formData,
@@ -250,6 +171,7 @@ const Waiting = () => {
       .then((res) => {
         if (res.status == 201) {
           setVisibleCreate(false)
+          setLoadingMultipleCreation(false)
           fetchApplication()
           addToast(successToast('Application is created successfully'))
         }
@@ -258,9 +180,10 @@ const Waiting = () => {
 
   const deleteApplication = async (id) => {
     const formData = new FormData()
-    formData.append('id', id)
-    axios
-      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', {
+    formData.append('application_id', id)
+    formData.append('result', 0)
+    client
+      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/process', {
         data: formData,
       })
       .then((res) => {
@@ -272,7 +195,7 @@ const Waiting = () => {
   }
 
   const fetchPredictResult = async () => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/predict-result', {
         params: {
           application_id: appData.id,
@@ -280,23 +203,27 @@ const Waiting = () => {
       })
       .then((res) => {
         if (res.status === 200) {
+          if (res.data != []) {
+            var temp = {
+              'logistic_regression_(feature_selected)': 0,
+              'logistic_regression_(improved)': 0,
+              'random_forest_(improved)': 0,
+            }
+            setPredictResult(temp)
+          }
           var temp = JSON.parse(res.data[0]['predict'].replace(/'/g, '"'))
+
           setPredictResult(temp)
         }
       })
   }
 
   const acceptApplication = async (id) => {
-    axios
-      .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/processed-list',
-        {},
-        {
-          params: {
-            application_id: id,
-          },
-        },
-      )
+    const formData = new FormData()
+    formData.append('application_id', id)
+    formData.append('result', 1)
+    client
+      .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/process', formData)
       .then((res) => {
         if (res.status === 200) {
           addToast(successToast('Accepted successully'))
@@ -316,10 +243,11 @@ const Waiting = () => {
   }, [appData, changeApp])
 
   useEffect(() => {
-    if (predictResult != false) {
+    if (predictResult != -1) {
+      console.log(predictResult)
       setVisibleApp(true)
     }
-  }, [appData, predictResult])
+  }, [appData, predictResult, checkFetchVote])
 
   useEffect(() => {
     if (visibleApp == false && isMounted.current) {
@@ -597,7 +525,11 @@ const Waiting = () => {
               <CRow>
                 {changeApp && (
                   <div>
-                    <Voting applicationId={appData['id']} />
+                    <Voting
+                      applicationId={appData['id']}
+                      checkFetchVote={checkFetchVote}
+                      setCheckFetchVote={setCheckFetchVote}
+                    />
                   </div>
                 )}
               </CRow>

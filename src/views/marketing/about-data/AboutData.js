@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-
+import client from '../../../hooks/useApi'
 import {
   CAvatar,
   CButton,
@@ -54,7 +54,7 @@ const AboutData = () => {
   const [iframeUrl, setIframeUrl] = useState('')
 
   const getToken = async (id) => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/metabase/get-token', {
         params: {
           id: id,

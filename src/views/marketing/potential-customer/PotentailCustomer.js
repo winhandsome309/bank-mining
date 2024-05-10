@@ -48,6 +48,7 @@ import axios, { formToJSON } from 'axios'
 import CommunicateFunction from '../../../components/CommunicateFunction'
 import Voting from '../../../components/Voting'
 import CreateFunction from '../../../components/CreateFunction'
+import client from '../../../hooks/useApi'
 
 const listMarketingParams = [
   // ['id', 'abc', 'normal'],
@@ -185,7 +186,7 @@ const PotentialCustomer = (props) => {
   const isMounted = useRef(false)
 
   const fetchCustomer = async () => {
-    axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client').then((res) => {
+    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client').then((res) => {
       setTableData(res.data)
     })
   }
@@ -195,7 +196,7 @@ const PotentialCustomer = (props) => {
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key])
     })
-    axios
+    client
       .post(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client', formData)
       .then((res) => {
         if (res.status === 201) {
@@ -213,7 +214,7 @@ const PotentialCustomer = (props) => {
   const deleteCustomer = async (id) => {
     const formData = new FormData()
     formData.append('id', id)
-    axios
+    client
       .delete(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client', {
         data: formData,
       })
@@ -226,7 +227,7 @@ const PotentialCustomer = (props) => {
   }
 
   const fetchPredictResult = async () => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/predict-result', {
         params: {
           application_id: appData.id,
@@ -241,7 +242,7 @@ const PotentialCustomer = (props) => {
   }
 
   const acceptCustomer = async (id) => {
-    axios
+    client
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/api/marketing/old_client',
         {},
@@ -260,7 +261,7 @@ const PotentialCustomer = (props) => {
   }
 
   const likeCustomer = async (id) => {
-    axios
+    client
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/api/voting',
         {},
@@ -280,7 +281,7 @@ const PotentialCustomer = (props) => {
   }
 
   const dislikeCustomer = async (id) => {
-    axios
+    client
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/api/voting',
         {},

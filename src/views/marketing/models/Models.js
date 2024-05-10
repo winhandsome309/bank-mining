@@ -51,6 +51,7 @@ import {
   cilX,
 } from '@coreui/icons'
 import axios from 'axios'
+import client from '../../../hooks/useApi'
 
 const colorModel = {
   accuracy: '#FF6384',
@@ -67,7 +68,7 @@ const Models = () => {
   const [indexModel, setIndexModel] = useState(0)
 
   const fetchModelInfo = async () => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/model-info', {
         params: {
           feature: 'marketing',

@@ -34,7 +34,6 @@ def afterLogin():
 @app.route("/api/metabase/get-token", methods=["GET"], endpoint='getMetabaseToken')
 @utils.server_return_500_if_errors
 @roles_accepted('Maintainer', 'Admin', 'Moderator')
-@cross_origin()
 def getMetabaseToken():
     if request.method == "GET":
         idDashboard = int(request.args.get("id"))

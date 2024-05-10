@@ -47,19 +47,19 @@ const _nav = [
   // items: [
   {
     component: CNavItem,
-    name: 'Waiting App.',
+    name: 'Waiting Application',
     to: '/loan-app/waiting',
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Processed App.',
+    name: 'Processed Application',
     to: '/loan-app/processed',
     icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Model Info.',
+    name: 'Model Infomation',
     to: '/loan-app/models',
     icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
   },
@@ -94,7 +94,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Model Info.',
+    name: 'Model Infomation',
     to: '/marketing/models',
     icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
   },
@@ -123,9 +123,15 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Model Info.',
+    name: 'Model Infomation',
     to: '/fraud/models',
     icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'About Data',
+    to: '/fraud/about-data',
+    icon: <CIcon icon={cilFindInPage} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,

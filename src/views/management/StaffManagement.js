@@ -43,6 +43,7 @@ import {
   CCollapse,
   CBadge,
   CFormTextarea,
+  CForm,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -73,17 +74,19 @@ import {
   cilUserPlus,
 } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
+import client from '../../hooks/useApi'
 
 const listStaffParams = [
   ['email', 'abc', 'normal'],
   ['username', 'abc', 'normal'],
   ['role', 'abc', 'select', ['admin', 'staff'], ['admin', 'staff']],
-  ['permission', 'abc', 'select', ['read', 'write', 'all'], ['read', 'write', 'all']],
+  // ['permission', 'abc', 'select', ['read', 'write', 'all'], ['read', 'write', 'all']],
   ['chat_token', 'abc', 'normal'],
 ]
 
 const StaffManagement = () => {
   const [tableData, setTableData] = useState([])
+  const [validated, setValidated] = useState(false)
   const [userInfo, setUserInfo] = useState({
     id: '',
     email: '',
@@ -102,9 +105,21 @@ const StaffManagement = () => {
   const [toast, addToast] = useState(0)
   const toaster = useRef()
   const [checkRenderInfo, setCheckRenderInfo] = useState({})
+  const [role, setRole] = useState('')
+
+  const handleSubmit = (event, item) => {
+    const form = event.currentTarget
+    if (form.checkValidity() === false) {
+      event.preventDefault()
+      event.stopPropagation()
+    } else {
+      changeRole(item)
+    }
+    setValidated(true)
+  }
 
   const fetchStaff = () => {
-    axios.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/staffs').then((res) => {
+    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/staffs').then((res) => {
       if (res.status === 200) {
         var data = res.data['data']
         var temp = []
@@ -124,7 +139,7 @@ const StaffManagement = () => {
       console.log(key, form[key])
       formData.append(key, form[key])
     })
-    axios.post(process.env.REACT_APP_API_ENDPOINT + '/api/staff/create', formData).then((res) => {
+    client.post(process.env.REACT_APP_API_ENDPOINT + '/api/staff/create', formData).then((res) => {
       if (res.status === 201) {
         setVisibleCreate(false)
         fetchStaff()
@@ -148,6 +163,19 @@ const StaffManagement = () => {
     } else temp[index] = true
 
     setCheckRenderInfo(temp)
+  }
+
+  const changeRole = (item) => {
+    const formData = new FormData()
+    formData.append('email', item.email)
+    formData.append('role_name', role)
+    client.post(process.env.REACT_APP_API_ENDPOINT + '/api/role/change', formData).then((res) => {
+      if (res.status === 201) {
+        setVisibleCreate(false)
+        fetchStaff()
+        addToast(successToast('Role is changed successfully'))
+      }
+    })
   }
 
   useEffect(() => {
@@ -230,55 +258,52 @@ const StaffManagement = () => {
                               <CRow>
                                 <CCollapse visible={details.includes(item.id)}>
                                   <hr />
-                                  <CCol className="mt-3 ms-3 mb-3 me-3">
+                                  <CCol className="ms-3 mb-3 me-3">
                                     <CRow>
-                                      <CCol xs={2}>
-                                        <CFormSelect
-                                          required
-                                          floatingLabel={'Role'}
-                                          aria-label="Default"
-                                          onChange={(e) => {}}
-                                        >
-                                          <option>Select</option>
-                                          <option>Mode</option>
-                                          <option>Admin</option>
-                                          <option>Customer</option>
-                                        </CFormSelect>
-                                      </CCol>
-                                      {/* <CCol xs={2}>
-                                        <CFormSelect
-                                          floatingLabel={'Permission'}
-                                          aria-label="Default"
-                                          onChange={(e) => {}}
-                                        >
-                                          <option>Select</option>
-                                          <option>Write</option>
-                                          <option>Read</option>
-                                          <option>Add</option>
-                                        </CFormSelect>
-                                      </CCol> */}
-                                      <CCol xs={7} />
-                                      <CCol>
-                                        <CButton
-                                          color="success"
-                                          variant="outline"
-                                          shape="square"
-                                          size="sm"
-                                          className="me-3"
-                                          style={{ width: '7rem', height: '3.5rem' }}
-                                        >
-                                          Save changes
-                                        </CButton>
-                                        <CButton
-                                          variant="outline"
-                                          shape="square"
-                                          size="sm"
-                                          color="danger"
-                                          style={{ width: '7rem', height: '3.5rem' }}
-                                        >
-                                          Delete User
-                                        </CButton>
-                                      </CCol>
+                                      <CForm
+                                        onSubmit={(e) => handleSubmit(e, item)}
+                                        validated={validated}
+                                        className="row  needs-validation"
+                                      >
+                                        <CCol xs={2}>
+                                          <CFormSelect
+                                            required
+                                            floatingLabel={'Role'}
+                                            aria-label="Default"
+                                            onChange={(e) => setRole(e.target.value)}
+                                          >
+                                            <option selected="" value="">
+                                              Select
+                                            </option>
+                                            <option value="Maintainer">Maintainer</option>
+                                            <option value="Admin">Admin</option>
+                                            <option value="Moderator">Moderator</option>
+                                          </CFormSelect>
+                                        </CCol>
+                                        <CCol xs={8} />
+                                        <CCol>
+                                          <CButton
+                                            color="success"
+                                            variant="outline"
+                                            shape="square"
+                                            size="sm"
+                                            className="me-3"
+                                            style={{ width: '7rem', height: '3.5rem' }}
+                                            type="submit"
+                                          >
+                                            Save changes
+                                          </CButton>
+                                          {/* <CButton
+                                            variant="outline"
+                                            shape="square"
+                                            size="sm"
+                                            color="danger"
+                                            style={{ width: '7rem', height: '3.5rem' }}
+                                          >
+                                            Delete User
+                                          </CButton> */}
+                                        </CCol>
+                                      </CForm>
                                     </CRow>
                                   </CCol>
                                 </CCollapse>
@@ -307,75 +332,37 @@ const StaffManagement = () => {
         </CModalHeader>
         <CModalBody>
           <CCol>
-            {listStaffParams.map(
-              (params, index) =>
-                index % 2 == 0 && (
-                  <CRow className="mb-3">
-                    <CCol>
-                      <CTooltip placement="left" content={listStaffParams[index][0]}>
-                        {params[2] == 'normal' ? (
-                          <CFormTextarea
-                            floatingLabel={listStaffParams[index][0]}
-                            id={listStaffParams[index][0]}
-                            placeholder={listStaffParams[index][0]}
-                            onChange={(e) => {
-                              setForm({ ...form, [listStaffParams[index][0]]: e.target.value })
-                            }}
-                          />
-                        ) : (
-                          <CFormSelect
-                            floatingLabel={listStaffParams[index][0]}
-                            aria-label="Default"
-                            onChange={(e) => {
-                              setForm({ ...form, [listStaffParams[index][0]]: e.target.value })
-                            }}
-                          >
-                            <option>Select</option>
-                            {listStaffParams[index][3].map((value) => (
-                              <option value={value}>{value}</option>
-                            ))}
-                          </CFormSelect>
-                        )}
-                      </CTooltip>
-                    </CCol>
-                    {index + 1 < listStaffParams.length && (
-                      <CCol>
-                        <CTooltip placement="left" content={listStaffParams[index + 1][0]}>
-                          {listStaffParams[index + 1][2] == 'normal' ? (
-                            <CFormTextarea
-                              floatingLabel={listStaffParams[index + 1][0]}
-                              id={listStaffParams[index + 1][0]}
-                              placeholder={listStaffParams[index + 1][0]}
-                              onChange={(e) => {
-                                setForm({
-                                  ...form,
-                                  [listStaffParams[index + 1][0]]: e.target.value,
-                                })
-                              }}
-                            />
-                          ) : (
-                            <CFormSelect
-                              floatingLabel={listStaffParams[index + 1][0]}
-                              aria-label="Default"
-                              onChange={(e) => {
-                                setForm({
-                                  ...form,
-                                  [listStaffParams[index + 1][0]]: e.target.value,
-                                })
-                              }}
-                            >
-                              <option>Select</option>
-                              {listStaffParams[index + 1][3].map((value) => (
-                                <option value={value}>{value}</option>
-                              ))}
-                            </CFormSelect>
-                          )}
-                        </CTooltip>
-                      </CCol>
+            {listStaffParams.map((params, index) => (
+              <CRow className="mb-3">
+                <CCol>
+                  <CTooltip placement="left" content={listStaffParams[index][0]}>
+                    {params[2] == 'normal' ? (
+                      <CFormTextarea
+                        floatingLabel={listStaffParams[index][0]}
+                        id={listStaffParams[index][0]}
+                        placeholder={listStaffParams[index][0]}
+                        onChange={(e) => {
+                          setForm({ ...form, [listStaffParams[index][0]]: e.target.value })
+                        }}
+                      />
+                    ) : (
+                      <CFormSelect
+                        floatingLabel={listStaffParams[index][0]}
+                        aria-label="Default"
+                        onChange={(e) => {
+                          setForm({ ...form, [listStaffParams[index][0]]: e.target.value })
+                        }}
+                      >
+                        <option>Select</option>
+                        {listStaffParams[index][3].map((value) => (
+                          <option value={value}>{value}</option>
+                        ))}
+                      </CFormSelect>
                     )}
-                  </CRow>
-                ),
-            )}
+                  </CTooltip>
+                </CCol>
+              </CRow>
+            ))}
           </CCol>
         </CModalBody>
         <CModalFooter>

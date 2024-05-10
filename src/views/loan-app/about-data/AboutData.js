@@ -49,12 +49,13 @@ import {
   cilCheck,
   cilX,
 } from '@coreui/icons'
+import client from '../../../hooks/useApi'
 
 const AboutData = () => {
   const [iframeUrl, setIframeUrl] = useState('')
 
   const getToken = async (id) => {
-    axios
+    client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/metabase/get-token', {
         params: {
           id: id,
@@ -70,13 +71,6 @@ const AboutData = () => {
   }, [])
 
   return (
-    // <>
-    //   {iframeUrl == '' ? (
-    //     <></>
-    //   ) : (
-    //     <iframe src={iframeUrl} frameBorder={0} width={1250} height={2550} allowTransparency />
-    //   )}
-    // </>
     <>
       <CRow>
         <CCol xs>
