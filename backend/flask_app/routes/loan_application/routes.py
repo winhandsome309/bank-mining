@@ -37,7 +37,7 @@ def history_data():
 @roles_accepted("Maintainer", "Admin", "Moderator")
 def waiting_list():
     if request.method == "GET":
-        stmt = select(Application)
+        stmt = select(Application).where(Application.processed == False)
         res = db_session.execute(stmt).all()
         db_session.commit()
 
@@ -183,43 +183,11 @@ def list_waiting_list():
 @roles_accepted('Admin', 'Maintainer')
 def processed_list():
     if request.method == "GET":
-            stmt = select(ProcessedApps)
+            stmt = select(Application).where(Application.processed == True)
             res = db_session.execute(stmt).all()
             db_session.commit()
             return utils.parse_output(res)
         
-    elif request.method == "POST":
-        idWaitingApp = request.args.get("application_id")
-        stmtAcceptWaitingApp = select(Application).where(Application.id == idWaitingApp)
-        waitingAppRes = db_session.execute(stmtAcceptWaitingApp).all()
-        db_session.commit()
-
-        waitingApp = utils.parse_output(waitingAppRes)[0]
-        processedApp = ProcessedApps(
-            id=waitingApp["id"],
-            credit_policy=waitingApp["credit_policy"], 
-            purpose=waitingApp["purpose"],
-            int_rate=waitingApp["int_rate"],
-            installment=waitingApp["installment"],
-            log_annual_inc=waitingApp["log_annual_inc"],
-            dti=waitingApp["dti"],
-            fico=waitingApp["fico"],
-            days_with_cr_line=waitingApp["days_with_cr_line"],
-            revol_bal=waitingApp["revol_bal"],
-            revol_util=waitingApp["revol_util"],
-            inq_last_6mths=waitingApp["inq_last_6mths"],
-            delinq_2yrs=waitingApp["delinq_2yrs"],
-            pub_rec=waitingApp["pub_rec"],
-            # not_fully_paid=-1,
-        )
-        db_session.add(processedApp)
-        db_session.commit()
-
-        stmtDeleteApp = delete(Application).where(Application.id == idWaitingApp)
-        _ = db_session.execute(stmtDeleteApp)
-        db_session.commit()
-        return make_response("success", 200)
-
 @app.route('/api/loan_application/process', methods=['POST'], endpoint='toggle_process_application')
 @utils.server_return_500_if_errors
 @roles_accepted("Maintainer", "Admin")
@@ -232,11 +200,11 @@ def toggle_process_application():
     assert application, "Application is not existed!"
 
     processed_at = datetime.datetime.now()
-    stmt = update(Application).where(Application.id == applicaton_id) \
-            .values(processed = not application.processed, processed_at=processed_at)
-
     # stmt = update(Application).where(Application.id == applicaton_id) \
-    #         .values(processed = True, processed_at=processed_at, process_result=result)
+    #         .values(processed = not application.processed, processed_at=processed_at)
+
+    stmt = update(Application).where(Application.id == applicaton_id) \
+            .values(processed = True, processed_at=processed_at, process_result=(int(result) == 1))
     db_session.execute(stmt)
     db_session.commit()
 
