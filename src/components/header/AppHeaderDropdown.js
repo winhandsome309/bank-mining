@@ -113,7 +113,7 @@ const AppHeaderDropdown = () => {
         </CDropdownToggle>
         <CDropdownMenu className="pt-0" placement="bottom-end">
           <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
-          <CDropdownItem href="#">
+          {/* <CDropdownItem href="#">
             <CIcon icon={cilBell} className="me-2" />
             Updates
           </CDropdownItem>
@@ -129,7 +129,7 @@ const AppHeaderDropdown = () => {
           <CDropdownItem href="#">
             <CIcon icon={cilUser} className="me-2" />
             Profile
-          </CDropdownItem>
+          </CDropdownItem> */}
           <CDropdownItem onClick={() => setVisibleResetPassword(!visibleResetPassword)}>
             <CIcon icon={cilSettings} className="me-2" />
             Reset password

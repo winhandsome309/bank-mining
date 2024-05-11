@@ -7,6 +7,8 @@ import 'simplebar-react/dist/simplebar.min.css'
 
 import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
 
+const listGroup = ['Loan Application', 'Marketing', 'Fraud Transaction', 'Management']
+
 export const AppSidebarNav = ({ items }) => {
   const navLink = (name, icon, badge, indent = false) => {
     return (
@@ -18,7 +20,12 @@ export const AppSidebarNav = ({ items }) => {
                 <span className="nav-icon-bullet"></span>
               </span>
             )}
-        {name && name}
+        {/* {name && name} */}
+        {listGroup.includes(name) ? (
+          <span style={{ color: '#EAEAEA', fontWeight: '800' }}>{name}</span>
+        ) : (
+          name
+        )}
         {badge && (
           <CBadge color={badge.color} className="ms-auto">
             {badge.text}

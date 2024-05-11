@@ -101,6 +101,7 @@ const CreateFunction = (props) => {
       backdrop="static"
       onClose={() => props.setVisibleCreate(false)}
       alignment="center"
+      size="lg"
     >
       <CModalHeader>
         <CModalTitle>Create {props.nameCreate}</CModalTitle>
@@ -108,13 +109,17 @@ const CreateFunction = (props) => {
       <CModalBody>
         <CCol>
           <CRow>
-            <CCol />
-            <CCol xs={8}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
               <CButton color="primary" onClick={() => setVisibleMultipleApp(!visibleMultipleApp)}>
                 List of {props.nameCreate}
               </CButton>
-              <CCol />
-            </CCol>
+            </div>
           </CRow>
           <CRow className="mb-3">
             <CCollapse visible={visibleMultipleApp}>
@@ -148,79 +153,45 @@ const CreateFunction = (props) => {
             </CCollapse>
           </CRow>
           <CRow>
-            <CCol />
-            <CCol xs={8}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
               <CButton color="primary" onClick={() => setVisibleSingleApp(!visibleSingleApp)}>
                 Single {props.nameCreate}
               </CButton>
-            </CCol>
+            </div>
           </CRow>
           <CCollapse visible={visibleSingleApp}>
-            <CCard className="mt-3">
-              <CCardBody>
-                <CForm
-                  className="row g-3 needs-validation mt-2"
-                  noValidate
-                  validated={validated}
-                  onSubmit={handleSubmit}
-                >
-                  {props.listParams.map(
-                    (params, index) =>
-                      index % 2 == 0 && (
-                        <CRow className="mb-3">
-                          <CCol>
-                            <CTooltip placement="left" content={params[1]}>
-                              {params[2] == 'normal' ? (
-                                <CFormInput
-                                  required
-                                  feedbackValid="Looks good!"
-                                  floatingLabel={params[0]}
-                                  id={params[0]}
-                                  placeholder={params[0]}
-                                  onChange={(e) => {
-                                    props.setForm({
-                                      ...props.form,
-                                      [params[0]]: e.target.value,
-                                    })
-                                  }}
-                                />
-                              ) : (
-                                <CFormSelect
-                                  required
-                                  feedbackValid="Looks good!"
-                                  floatingLabel={params[0]}
-                                  aria-label="Default"
-                                  onChange={(e) => {
-                                    props.setForm({
-                                      ...props.form,
-                                      [params[0]]: e.target.value,
-                                    })
-                                  }}
-                                >
-                                  <option selected="" value="">
-                                    Select
-                                  </option>
-                                  {params[3].map((value, i) => (
-                                    <option value={params[4][i]}>{value}</option>
-                                  ))}
-                                </CFormSelect>
-                              )}
-                            </CTooltip>
-                          </CCol>
-                          {index + 1 < props.listParams.length ? (
+            <CForm
+              className="row g-3 needs-validation mt-2"
+              noValidate
+              validated={validated}
+              onSubmit={handleSubmit}
+            >
+              <div>
+                <CCard className="mt-3">
+                  <CCardBody>
+                    {props.listParams.map(
+                      (params, index) =>
+                        index % 2 == 0 && (
+                          <CRow className="mb-3">
                             <CCol>
-                              <CTooltip placement="left" content={props.listParams[index + 1][1]}>
-                                {props.listParams[index + 1][2] == 'normal' ? (
+                              <CTooltip placement="left" content={params[1]}>
+                                {params[2] == 'normal' ? (
                                   <CFormInput
                                     required
                                     feedbackValid="Looks good!"
-                                    floatingLabel={props.listParams[index + 1][0]}
-                                    id={props.listParams[index + 1][0]}
-                                    placeholder={props.listParams[index + 1][0]}
+                                    floatingLabel={params[0]}
+                                    id={params[0]}
+                                    placeholder={params[0]}
                                     onChange={(e) => {
                                       props.setForm({
                                         ...props.form,
-                                        [props.listParams[index + 1][0]]: e.target.value,
+                                        [params[0]]: e.target.value,
                                       })
                                     }}
                                   />
@@ -228,52 +199,82 @@ const CreateFunction = (props) => {
                                   <CFormSelect
                                     required
                                     feedbackValid="Looks good!"
-                                    floatingLabel={props.listParams[index + 1][0]}
+                                    floatingLabel={params[0]}
                                     aria-label="Default"
                                     onChange={(e) => {
                                       props.setForm({
                                         ...props.form,
-                                        [props.listParams[index + 1][0]]: e.target.value,
+                                        [params[0]]: e.target.value,
                                       })
                                     }}
                                   >
                                     <option selected="" value="">
                                       Select
                                     </option>
-                                    {props.listParams[index + 1][3].map((value, i) => (
-                                      <option value={props.listParams[index + 1][4][i]}>
-                                        {value}
-                                      </option>
+                                    {params[3].map((value, i) => (
+                                      <option value={params[4][i]}>{value}</option>
                                     ))}
                                   </CFormSelect>
                                 )}
                               </CTooltip>
                             </CCol>
-                          ) : (
-                            <CCol></CCol>
-                          )}
-                        </CRow>
-                      ),
-                  )}
-                  <CButton type="submit" color="primary">
-                    Create
-                  </CButton>
-                </CForm>
-              </CCardBody>
-              {/* <CCardFooter>
-                <CButton
-                  color="primary"
-                  onClick={() => {
-                    setVisibleMultipleApp(false)
-                    setVisibleSingleApp(false)
-                    setSelectedFile(IconNumber0Small)
-                    props.createSingle()
-                  }}
-                >
-                  Create
-                </CButton>
-              </CCardFooter> */}
-            </CCard>
+                            {index + 1 < props.listParams.length ? (
+                              <CCol>
+                                <CTooltip placement="left" content={props.listParams[index + 1][1]}>
+                                  {props.listParams[index + 1][2] == 'normal' ? (
+                                    <CFormInput
+                                      required
+                                      feedbackValid="Looks good!"
+                                      floatingLabel={props.listParams[index + 1][0]}
+                                      id={props.listParams[index + 1][0]}
+                                      placeholder={props.listParams[index + 1][0]}
+                                      onChange={(e) => {
+                                        props.setForm({
+                                          ...props.form,
+                                          [props.listParams[index + 1][0]]: e.target.value,
+                                        })
+                                      }}
+                                    />
+                                  ) : (
+                                    <CFormSelect
+                                      required
+                                      feedbackValid="Looks good!"
+                                      floatingLabel={props.listParams[index + 1][0]}
+                                      aria-label="Default"
+                                      onChange={(e) => {
+                                        props.setForm({
+                                          ...props.form,
+                                          [props.listParams[index + 1][0]]: e.target.value,
+                                        })
+                                      }}
+                                    >
+                                      <option selected="" value="">
+                                        Select
+                                      </option>
+                                      {props.listParams[index + 1][3].map((value, i) => (
+                                        <option value={props.listParams[index + 1][4][i]}>
+                                          {value}
+                                        </option>
+                                      ))}
+                                    </CFormSelect>
+                                  )}
+                                </CTooltip>
+                              </CCol>
+                            ) : (
+                              <CCol></CCol>
+                            )}
+                          </CRow>
+                        ),
+                    )}
+                  </CCardBody>
+                  <CCardFooter>
+                    <CButton color="primary" type="submit">
+                      Create
+                    </CButton>
+                  </CCardFooter>
+                </CCard>
+              </div>
+            </CForm>
           </CCollapse>
         </CCol>
       </CModalBody>

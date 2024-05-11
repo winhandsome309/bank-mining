@@ -19,6 +19,9 @@ const MarketingModels = React.lazy(() => import('./views/marketing/models/Models
 const MarketingAboutData = React.lazy(() => import('./views/marketing/about-data/AboutData'))
 
 // Fraud
+const Transaction = React.lazy(() => import('./views/credit-card/Transaction/Transaction'))
+const FraudModel = React.lazy(() => import('./views/credit-card/models/Models'))
+const FraudAboutData = React.lazy(() => import('./views/credit-card/about-data/AboutData'))
 
 // Staff Management
 const StaffManagement = React.lazy(() => import('./views/management/StaffManagement'))
@@ -83,7 +86,9 @@ const routes = [
   { path: '/marketing/models', name: 'Models', element: MarketingModels },
   { path: '/marketing/about-data', name: 'AboutData', element: MarketingAboutData },
   // Fraud
-
+  { path: '/fraud/transaction', name: 'Transaction', element: Transaction },
+  { path: '/fraud/models', name: 'Models', element: FraudModel },
+  { path: '/fraud/about-data', name: 'AboutData', element: FraudAboutData },
   // Management
   { path: '/management/staff', name: 'Management', element: StaffManagement },
   { path: '/management/customer', name: 'Management', element: CustomerManagement },

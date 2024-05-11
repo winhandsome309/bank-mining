@@ -23,6 +23,7 @@ import {
   CDropdownMenu,
   CDropdownItem,
   CWidgetStatsD,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -85,6 +86,19 @@ const Models = () => {
     fetchModelInfo()
   }, [])
 
+  function sleep(time) {
+    return new Promise((resolve) => setTimeout(resolve, time))
+  }
+
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    return async () => {
+      setLoading(true)
+      await sleep(200)
+      setLoading(false)
+    }
+  }, [indexModel])
+
   return (
     <>
       <CRow>
@@ -129,29 +143,33 @@ const Models = () => {
               </div>
             </CCardHeader>
             <CCardBody>
-              <CRow>
-                {modelInfo.length > 0 &&
-                  Object.entries(modelInfo[indexModel]).map(
-                    (item, index) =>
-                      nameMetricModel.includes(item[0]) && (
-                        <CCol>
-                          <CChartDoughnut
-                            height={50}
-                            width={50}
-                            data={{
-                              labels: [item[0]],
-                              datasets: [
-                                {
-                                  backgroundColor: [colorModel[item[0]], '#E7E9ED'],
-                                  data: [item[1], 1 - item[1]],
-                                },
-                              ],
-                            }}
-                          />
-                        </CCol>
-                      ),
-                  )}
-              </CRow>
+              {loading ? (
+                <CSpinner />
+              ) : (
+                <CRow>
+                  {modelInfo.length > 0 &&
+                    Object.entries(modelInfo[indexModel]).map(
+                      (item, index) =>
+                        nameMetricModel.includes(item[0]) && (
+                          <CCol>
+                            <CChartDoughnut
+                              height={50}
+                              width={50}
+                              data={{
+                                labels: [item[0]],
+                                datasets: [
+                                  {
+                                    backgroundColor: [colorModel[item[0]], '#E7E9ED'],
+                                    data: [item[1], 1 - item[1]],
+                                  },
+                                ],
+                              }}
+                            />
+                          </CCol>
+                        ),
+                    )}
+                </CRow>
+              )}
             </CCardBody>
           </CCard>
         </CCol>

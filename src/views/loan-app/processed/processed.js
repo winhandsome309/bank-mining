@@ -72,7 +72,7 @@ import {
 } from '@coreui/icons'
 import axios from 'axios'
 import client from '../../../hooks/useApi'
-import listLoanParams from '../ListParams'
+import listLoanParams from '../../credit-card/ListParams'
 
 const Processed = () => {
   const [uploadFile, setUploadFile] = useState(true)

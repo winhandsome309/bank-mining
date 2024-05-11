@@ -117,8 +117,8 @@ const _nav = [
   //   items: [
   {
     component: CNavItem,
-    name: 'Processed',
-    to: '/fraud/processed',
+    name: 'Transaction',
+    to: '/fraud/transaction',
     icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
   },
   {

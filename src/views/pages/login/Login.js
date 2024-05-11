@@ -42,7 +42,9 @@ const Login = () => {
   const [toast, setToast] = useState(0)
   const toaster = useRef()
 
-  const afterLogin = () => {
+  const afterLogin = async () => {
+    setToast(successToast('Login successully'))
+    await sleep(500)
     client
       .post(
         process.env.REACT_APP_API_ENDPOINT + '/api/login',
@@ -64,6 +66,10 @@ const Login = () => {
       })
   }
 
+  function sleep(time) {
+    return new Promise((resolve) => setTimeout(resolve, time))
+  }
+
   const login = () => {
     client
       .post(
@@ -83,7 +89,6 @@ const Login = () => {
       .then((res) => {
         setLoadingButton(false)
         if (res.status === 200) {
-          setToast(successToast('Login successully'))
           afterLogin()
         }
       })

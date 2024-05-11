@@ -79,15 +79,16 @@ const infoAttr = {
 const nameMetricModel = ['accuracy', 'precision', 'recall', 'auc', 'f1_score']
 
 const Models = () => {
-  const [model, setModel] = useState('Logistic regression')
+  const [model, setModel] = useState('Decision Tree')
   const [modelInfo, setModelInfo] = useState([])
   const [indexModel, setIndexModel] = useState(0)
+  const [loading, setLoading] = useState(false)
 
   const fetchModelInfo = async () => {
     client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/model-info', {
         params: {
-          feature: 'loan',
+          feature: 'credit_card',
         },
       })
       .then((res) => {
@@ -116,7 +117,6 @@ const Models = () => {
     return new Promise((resolve) => setTimeout(resolve, time))
   }
 
-  const [loading, setLoading] = useState(false)
   useEffect(() => {
     return async () => {
       setLoading(true)
@@ -138,25 +138,22 @@ const Models = () => {
                   </CDropdownToggle>
                   <CDropdownMenu>
                     <CDropdownItem
-                      // href="#/loan-app/models"
                       onClick={() => {
-                        setModel('Logistic regression - Feature selected')
+                        setModel('Decision Tree')
                         setIndexModel(0)
                       }}
                     >
-                      Logistic regression - Feature selected
+                      Decision Tree
                     </CDropdownItem>
                     <CDropdownItem
-                      // href="#/loan-app/models"
                       onClick={() => {
-                        setModel('Logistic Regression - Improve')
+                        setModel('K-Nearest Neighbors')
                         setIndexModel(1)
                       }}
                     >
-                      Logistic Regression - Improve
+                      K-Nearest Neighbors
                     </CDropdownItem>
                     <CDropdownItem
-                      // href="#/loan-app/models"
                       onClick={() => {
                         setModel('Random Forest')
                         setIndexModel(2)

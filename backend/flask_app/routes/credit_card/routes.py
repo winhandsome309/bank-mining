@@ -36,7 +36,16 @@ def credit_card_transaction():
       res = db_session.execute(stmt).all()
       db_session.commit()
 
-      return utils.parse_output(res)
+      resp = utils.parse_output(res)
+      for i in range(len(resp)):
+         stmt = select(PredictResult).where(PredictResult.id == resp[i]["id"])
+         res = db_session.execute(stmt).all()
+         temp = utils.parse_output(res)
+
+         resp[i]["predict"] = temp[0]["predict"]
+         db_session.commit()
+
+      return resp
    if request.method == 'POST':
       form = request.form
       distance_from_home = float(form.get('distance_from_home'))
