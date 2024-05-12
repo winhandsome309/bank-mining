@@ -12,12 +12,10 @@ class Utils:
       row_lst = list()
       for row in result:
          row = row._asdict()
-         print(row)
          for key, value in row.items():
             if isinstance(value, Base):
                row_item_dict = value.as_dict()
                row.update({key: row_item_dict})
-         print(row)
          row_lst.append(row)
       return row_lst
 
