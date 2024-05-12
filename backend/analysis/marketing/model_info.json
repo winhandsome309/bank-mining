@@ -1,1 +1,30 @@
-[]
+[
+   {
+      "Model": "GradientBoostingClassifier",
+      "Accuracy": 0.8463949843260188,
+      "Precision": 0.8200537153088631,
+      "Recall": 0.8657844990548205,
+      "AUC": 0.8473603346337933
+   },
+   {
+      "Model": "GaussianNB",
+      "Accuracy": 0.7514554411106136,
+      "Precision": 0.7215859030837004,
+      "Recall": 0.774102079395085,
+      "AUC": 0.7525829545911595
+   },
+   {
+      "Model": "MLPClassifier",
+      "Accuracy": 0.7348858038513211,
+      "Precision": 0.7437238493723849,
+      "Recall": 0.6720226843100189,
+      "AUC": 0.7317560230060733
+   },
+   {
+      "Model": "VotingClassifier",
+      "Accuracy": 0.8092252575011196,
+      "Precision": 0.7457231726283048,
+      "Recall": 0.9064272211720227,
+      "AUC": 0.8140646744157987
+   }
+]
