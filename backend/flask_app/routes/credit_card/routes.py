@@ -186,6 +186,7 @@ def get_detailed_describe_credit():
             if not found_pos:
                 info["value"].append(-1)
             info["value"].append(round(value - avg, 2))
+            info["value"].append(round(avg, 2))
 
         detailed.append(info)
    
