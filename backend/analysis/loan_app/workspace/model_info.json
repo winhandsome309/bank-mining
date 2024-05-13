@@ -3,13 +3,15 @@
       "Model": "Logistic regression (feature selected)",
       "Accuracy": 0.84186,
       "Precision": 0.42857,
+      "F1_Score": 0.0381,
       "Recall": 0.01993,
       "AUC": 0.50749
    },
    {
       "Model": "Logistic Regression (improved)",
-      "Accuracy": 0.67053,
+      "Accuracy": 0.67052,
       "Precision": 0.23172,
+      "F1_Score": 0.33755,
       "Recall": 0.62126,
       "AUC": 0.61868
    },

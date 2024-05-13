@@ -169,6 +169,7 @@ class AppWorker():
             else:
                db_session.add(new_model)
                db_session.commit()
+            db_session.close()
       except Exception as e:
          print(f">> ERROR: {e}")
 

@@ -5,7 +5,8 @@ from flask_app.models import PredictResult
 from flask_app.models import ClientID
 from flask_app.models import Customer
 from flask_app.database import db_session
-from sqlalchemy import select, null, update, delete
+from sqlalchemy import select, null, update, delete, desc
+from sqlalchemy import func, text, inspect
 from flask_app import app
 from flask import request, make_response, render_template_string
 import datetime
@@ -208,4 +209,61 @@ def toggle_process_application():
     db_session.commit()
 
     body = utils.create_response_body(200, False, toggle_process_application.__name__, data={"message": "Toggle process application successfully!"})
+    return make_response(body, 200)
+
+@app.route('/api/loan_application/detail', methods=['GET'], endpoint='get_detailed_describe_loan')
+@utils.server_return_500_if_errors
+@roles_accepted("Maintainer", "Admin")
+def get_detailed_describe_loan():
+    detailed = []
+    columns = [column.name for column in inspect(HistoryApps).c]
+    application_id = request.args.get('id')
+    this_application = db_session.get(Application, application_id)
+    for key in columns:
+        if key == 'not_fully_paid': continue
+        value = this_application.as_dict().get(key)
+        info = {'name': key, 'type': "", 'value': []}
+        if key in ['credit_policy', 'purpose']:
+            info['type'] = 'category'
+            stmt1 = text(f"""
+                SELECT COUNT(*)
+                FROM {HistoryApps.__tablename__} t
+                WHERE t.{key} = '{value}' AND t.not_fully_paid = '1';
+            """)
+            stmt2 = select(HistoryApps.credit_policy)
+            (len1,) = db_session.execute(stmt1).first() # (val,)
+
+            rate = len1 / len(db_session.execute(stmt2).all())
+            info['value'].append(round(rate, 2) * 100)
+        else:
+            info["type"] = 'number'
+            stmt1 = text(f"""
+                SELECT {key}
+                FROM {HistoryApps.__tablename__}
+                ORDER BY {key} DESC
+            """)
+
+            stmt2 = text(f"""
+                SELECT AVG({key})
+                FROM {HistoryApps.__tablename__}
+            """)
+
+            value_lst = [float(val) for (val,) in  db_session.execute(stmt1).all()]
+            (avg,) = db_session.execute(stmt2).first()
+            found_pos = False
+            for idx, vl in enumerate(value_lst):
+                if value >= vl:
+                    info["value"].append(round(idx / len(value_lst), 2) * 100)
+                    found_pos = True
+                    break
+                if value < vl:
+                    continue
+            if not found_pos:
+                info["value"].append(-1)
+            info["value"].append(round(value - avg, 2))
+    
+        detailed.append(info)
+
+    db_session.flush()
+    body = utils.create_response_body(200, False, get_detailed_describe_loan.__name__, detailed)
     return make_response(body, 200)
