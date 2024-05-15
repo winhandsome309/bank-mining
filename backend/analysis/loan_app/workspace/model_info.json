@@ -19,6 +19,7 @@
       "Model": "Random forest (improved)",
       "Accuracy": 0.64317,
       "Precision": 0.226,
+      "F1_Score": 0.33096,
       "Recall": 0.61794,
       "AUC": 0.61176
    }
