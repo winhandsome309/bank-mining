@@ -68,7 +68,7 @@ const Voting = (props) => {
 
   const fetchVoting = () => {
     client
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/voting', {
+      .get( '/api/voting', {
         params: {
           id: props.applicationId,
         },

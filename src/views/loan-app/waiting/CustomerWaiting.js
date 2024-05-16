@@ -214,7 +214,7 @@ const CustomerWaiting = () => {
   const isMounted = useRef(false)
 
   const fetchApplication = async () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/user/application').then((res) => {
+    client.get( '/api/user/application').then((res) => {
       if (res.status == 200) setTableData(res.data)
     })
   }
@@ -225,7 +225,7 @@ const CustomerWaiting = () => {
       formData.append(key, form[key])
     })
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', formData)
+      .post( '/api/loan_application/waiting-list', formData)
       .then((res) => {
         if (res.status === 201) {
           setVisibleCreate(false)

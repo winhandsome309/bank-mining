@@ -47,7 +47,7 @@ const Login = () => {
     await sleep(500)
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/login',
+         '/api/login',
         {
           email: userName,
           password: password,
@@ -73,7 +73,7 @@ const Login = () => {
   const login = () => {
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/login',
+         '/login',
         {
           email: userName,
           password: password,
@@ -127,7 +127,7 @@ const Login = () => {
     formData.append('oldPassword', oldPasswordResetPassword)
     formData.append('newPassword', newPasswordResetPassword)
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/reset-password', formData)
+      .post( '/api/customer/reset-password', formData)
       .then((res) => {
         if (res.status === 200) {
           setLoadingButton(false)

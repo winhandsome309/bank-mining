@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from flask_app.helper.config import DevConfig
 from flask_app.database import init_db, db_session
@@ -6,11 +6,16 @@ from flask_app.models import User, Role
 from flask_security import Security, SQLAlchemySessionUserDatastore, hash_password
 from flask_mailman import Mail
 import flask_wtf
-# from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.middleware.proxy_fix import ProxyFix
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='/home/thanhdxn/Documents/bank-mining/build', static_url_path='/')
 app.config.from_object(DevConfig)
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+CORS(app, 
+    supports_credentials=True,
+    origins=["http://localhost:3000", "https://hsbanking.com", "hsbanking.com", "https://hsbanking.com/#/login"],
+    expose_headers=['x-xsrf-Token', 'X-Csrf-Token'],
+    send_wildcard=True
+)
 flask_wtf.CSRFProtect(app)
 
 # manage sessions per request - make sure connections are closed and returned
@@ -61,8 +66,9 @@ with app.app_context():
         db_session.commit()
 
 # Config for apache reverse proxy
-# app.wsgi_app = ProxyFix(
-#     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
-# )
+app.wsgi_app = ProxyFix(
+    app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+)
+
 
 from . import routes

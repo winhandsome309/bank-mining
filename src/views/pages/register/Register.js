@@ -64,7 +64,7 @@ const Register = () => {
     formData.append('password', password)
 
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/create-account', formData)
+      .post( '/api/create-account', formData)
       .then((res) => {
         if (res.status === 201) {
           successCreate()

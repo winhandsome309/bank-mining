@@ -10,7 +10,7 @@ from sqlalchemy import select, null, update, delete
 from flask_app import models
 import os
 
-ANALYSIS_DIR = os.environ.get('ANALYSIS_DIR', 'analysis')
+ANALYSIS_DIR = os.environ.get('ANALYSIS_DIR_LOCAL', 'analysis')
 
 class FeatureName():
    Loan_Application        = 'Loan Application'

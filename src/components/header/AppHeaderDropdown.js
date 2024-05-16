@@ -54,7 +54,7 @@ const AppHeaderDropdown = () => {
   const logout = () => {
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/logout',
+         '/logout',
         {},
         {
           data: null,
@@ -95,7 +95,7 @@ const AppHeaderDropdown = () => {
     formData.append('oldPassword', oldPasswordResetPassword)
     formData.append('newPassword', newPasswordResetPassword)
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/reset-password', formData)
+      .post( '/api/customer/reset-password', formData)
       .then((res) => {
         if (res.status === 200) {
           setLoadingButton(false)

@@ -108,7 +108,7 @@ const CustomerManagement = () => {
   const [checkRenderInfo, setCheckRenderInfo] = useState({})
 
   const fetchCustomer = () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/customers').then((res) => {
+    client.get( '/api/admin/customers').then((res) => {
       if (res.status === 200) {
         setTableData(res.data['data'])
       }
@@ -121,7 +121,7 @@ const CustomerManagement = () => {
       formData.append(key, form[key])
     })
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/create', formData)
+      .post( '/api/customer/create', formData)
       .then((res) => {
         if (res.status === 201) {
           setVisibleCreate(false)
@@ -151,7 +151,7 @@ const CustomerManagement = () => {
   const deleteCustomer = (item) => {
     const formData = new FormData()
     formData.append('email', item.email)
-    client.post(process.env.REACT_APP_API_ENDPOINT + '/api/user/delete', formData).then((res) => {
+    client.post( '/api/user/delete', formData).then((res) => {
       if (res.status === 201) {
         setVisibleCreate(false)
         fetchCustomer()

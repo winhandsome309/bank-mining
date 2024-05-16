@@ -56,7 +56,7 @@ const AboutData = () => {
 
   const getToken = async (id) => {
     client
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/metabase/get-token', {
+      .get( '/api/metabase/get-token', {
         params: {
           id: id,
         },

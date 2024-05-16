@@ -5,16 +5,18 @@ const client = axios.create({
   // baseURL: 'http://localhost:5000',
   withCredentials: true,
   headers: {
-    'X-XSRF-Token': csrf_token,
+    'X-CSRF-Token': csrf_token,
   },
 })
 // Set withCredentials to true for all requests
 // Credit: https://www.dhiwise.com/post/managing-secure-cookies-via-axios-interceptors
 
 client.defaults.withCredentials = true
+console.log('Use apis at: ', process.env.REACT_APP_API_ENDPOINT);
 
 client
-  .get(process.env.REACT_APP_API_ENDPOINT + '/login', {
+  .get('/login', {
+  // .get('http://api-hsbanking.com' + '/login', {
     data: null,
     headers: { 'Content-Type': 'application/json' },
   })
@@ -26,7 +28,7 @@ client.interceptors.request.use(
   function (config) {
     if (['post', 'delete', 'patch', 'put'].includes(config['method'])) {
       if (csrf_token !== '') {
-        config.headers['X-XSRF-Token'] = csrf_token
+        config.headers['X-CSRF-Token'] = csrf_token
       }
     }
     return config
