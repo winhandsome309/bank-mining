@@ -75,6 +75,7 @@ import CommunicateFunction from '../../../components/CommunicateFunction'
 import Voting from '../../../components/Voting'
 import client from '../../../hooks/useApi'
 import listLoanParams from '../ListParams'
+import Insight from '../../../components/Insight'
 
 const Waiting = () => {
   const [uploadFile, setUploadFile] = useState(true)
@@ -244,7 +245,6 @@ const Waiting = () => {
 
   useEffect(() => {
     if (predictResult != -1) {
-      console.log(predictResult)
       setVisibleApp(true)
     }
   }, [appData, predictResult, checkFetchVote])
@@ -411,8 +411,9 @@ const Waiting = () => {
                 <div>
                   <CCard>
                     <CCardHeader>
-                      <div>
+                      <div className="d-none d-md-flex">
                         <strong>Detail</strong>
+                        {<Insight data={appData} api={'/api/loan_application/detail'} />}
                       </div>
                     </CCardHeader>
                     <CCardBody>
@@ -550,7 +551,7 @@ const Waiting = () => {
                 setVisibleRecheck(true)
               }}
             >
-              Reject
+              <span style={{ color: 'white' }}>Reject</span>
             </CButton>
             <CButton
               color="success"
@@ -560,7 +561,7 @@ const Waiting = () => {
                 setVisibleRecheck(true)
               }}
             >
-              Accept
+              <span style={{ color: 'white' }}>Accept</span>
             </CButton>
           </div>
         </CFooter>

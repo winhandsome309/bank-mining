@@ -212,6 +212,7 @@ const CustomerWaiting = () => {
   const [lastUpdate, setLastUpdate] = useState('')
   const [validated, setValidated] = useState(false)
   const isMounted = useRef(false)
+  const [result, setResult] = useState('')
 
   const fetchApplication = async () => {
     client.get(process.env.REACT_APP_API_ENDPOINT + '/api/user/application').then((res) => {
@@ -436,7 +437,7 @@ const CustomerWaiting = () => {
                   <CCardHeader>Application Status</CCardHeader>
                   <CCardBody>
                     <div className="mt-3 mb-3">
-                      <AppTimeline currentStep={currentStep} />
+                      <AppTimeline currentStep={currentStep} result={appData['process_result']} />
                     </div>
                     <div className="mb-2">
                       <b className="me-3">Last update: </b>

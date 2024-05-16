@@ -61,7 +61,6 @@ const AboutData = () => {
         },
       })
       .then((res) => {
-        console.log(res.data)
         setIframeUrl(res.data)
       })
   }

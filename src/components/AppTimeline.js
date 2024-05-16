@@ -9,13 +9,15 @@ const AppTimeline = (props) => {
         active={props.currentStep == -1 ? 3 : props.currentStep}
         allowNextStepsSelect={false}
       >
-        <Stepper.Step label="First step" description="Create an application" className="mb-2">
+        {/* <Stepper.Step label="First step" description="Create an application" className="mb-2">
           Step 1 content: Create an application
+        </Stepper.Step> */}
+        <Stepper.Step label="First step" description="Created and Waiting" className="mb-2">
+          <div>
+            <span style={{ color: 'blue' }}>Status:</span> Application is waiting to be examined
+          </div>
         </Stepper.Step>
-        <Stepper.Step label="Second step" description="Waiting" className="mb-2">
-          Step 2 content: Application is waiting to be examined
-        </Stepper.Step>
-        {props.currentStep == -1 ? (
+        {props.currentStep == 2 && props.result == false ? (
           <Stepper.Step
             label="Third step"
             description="Processed"
@@ -23,11 +25,11 @@ const AppTimeline = (props) => {
             color="red"
             completedIcon={<IconCircleX style={{ width: rem(20), height: rem(20) }} />}
           >
-            Step 3 content: Application is being examnied
+            Status: Application is being examnied
           </Stepper.Step>
         ) : (
-          <Stepper.Step label="Third step" description="Processed" className="mb-2">
-            Step 3 content: Application is being examnied
+          <Stepper.Step label="Second step" description="Processed" className="mb-2">
+            Status: Application is being examnied
           </Stepper.Step>
         )}
         {props.currentStep == -1 ? (
@@ -38,11 +40,11 @@ const AppTimeline = (props) => {
             color="red"
             progressIcon={<IconCircleX style={{ width: rem(20), height: rem(20) }} />}
           >
-            Step 4 content: Application was dinied. Stopped at step 3.
+            Status: Application was dinied. Stopped at step 3.
           </Stepper.Step>
         ) : (
           <Stepper.Step label="Final step" description="Done" className="mb-2">
-            Step 4 content: Application was approve. Waiting for future reponse.
+            Status: Application was approve. Waiting for future response.
           </Stepper.Step>
         )}
       </Stepper>

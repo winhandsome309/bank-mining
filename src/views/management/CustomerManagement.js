@@ -123,7 +123,7 @@ const CustomerManagement = () => {
     client
       .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/create', formData)
       .then((res) => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           setVisibleCreate(false)
           fetchCustomer()
           addToast(successToast('Customer is created successfully'))
@@ -152,7 +152,7 @@ const CustomerManagement = () => {
     const formData = new FormData()
     formData.append('email', item.email)
     client.post(process.env.REACT_APP_API_ENDPOINT + '/api/user/delete', formData).then((res) => {
-      if (res.status === 201) {
+      if (res.status === 200) {
         setVisibleCreate(false)
         fetchCustomer()
         addToast(warningToast('Customer is created successfully'))
