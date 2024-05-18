@@ -123,7 +123,7 @@ const CustomerManagement = () => {
     client
       .post( '/api/customer/create', formData)
       .then((res) => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           setVisibleCreate(false)
           fetchCustomer()
           addToast(successToast('Customer is created successfully'))

@@ -136,7 +136,6 @@ const StaffManagement = () => {
   const createUser = async () => {
     const formData = new FormData()
     Object.keys(form).forEach((key) => {
-      console.log(key, form[key])
       formData.append(key, form[key])
     })
     client.post( '/api/staff/create', formData).then((res) => {
