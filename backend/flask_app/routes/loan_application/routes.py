@@ -93,18 +93,18 @@ def waiting_list():
 
     
         try:
+            db_session.add(new_app)
+            db_session.commit()
+
             db_session.add(new_id)
             utils.assign_customer_to_application(customer_id=int(customer_id), application_id=id, db_session=db_session)
             db_session.commit()
 
-            db_session.add(new_app)
-            db_session.commit()
-
             db_session.add(new_predict_result)
             db_session.commit()
-        except:
+        except Exception as e:          
             db_session.rollback()
-            return make_response("ERROR", 401)
+            return make_response(str(e), 401)
         return make_response(predict, 201)
 
     if request.method == "DELETE":

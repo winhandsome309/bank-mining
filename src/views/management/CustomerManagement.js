@@ -83,7 +83,7 @@ const listCustomerParams = [
   // ['chat_token', 'abc', 'normal'],
   // ['customer_id', 'abc', 'normal'],
   ['fname', 'abc', 'normal'],
-  ['application_id', 'abc', 'normal'],
+  // ['application_id', 'abc', 'normal'],
 ]
 
 const CustomerManagement = () => {
