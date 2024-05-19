@@ -193,7 +193,7 @@ def get_detailed_describe_marketing():
             info["value"].append(round(avg, 2))
 
         detailed.append(info)
-    db_session.flush()
+    db_session.commit()
     body = utils.create_response_body(
         200, False, get_detailed_describe_marketing.__name__, detailed
     )
