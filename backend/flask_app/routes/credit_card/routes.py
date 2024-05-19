@@ -190,7 +190,7 @@ def get_detailed_describe_credit():
 
         detailed.append(info)
    
-    db_session.flush()
+    db_session.commit()
     body = utils.create_response_body(
         200, False, get_detailed_describe_credit.__name__, detailed
     )

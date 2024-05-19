@@ -265,6 +265,6 @@ def get_detailed_describe_loan():
     
         detailed.append(info)
 
-    db_session.flush()
+    db_session.commit()
     body = utils.create_response_body(200, False, get_detailed_describe_loan.__name__, detailed)
     return make_response(body, 200)
