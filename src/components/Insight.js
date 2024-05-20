@@ -146,7 +146,9 @@ const Insight = (props) => {
                                       fontWeight: '700',
                                     }}
                                   >
-                                    {value.value[0] == -1 ? '100%' : value.value[0] + '%'}
+                                    {value.value[0] == -1
+                                      ? '100%'
+                                      : Math.round(value.value[0] * 100) / 100 + '%'}
                                   </span>
                                 </CCol>
                                 <CCol xs={6}>

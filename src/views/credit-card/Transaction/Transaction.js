@@ -42,6 +42,7 @@ import {
   CFormSelect,
   CCollapse,
   CBadge,
+  CNavLink,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -76,6 +77,8 @@ import CommunicateFunction from '../../../components/CommunicateFunction'
 import Voting from '../../../components/Voting'
 import client from '../../../hooks/useApi'
 import listCreditCardParams from '../ListParams'
+import Insight from '../../../components/Insight'
+import Filter from '../../../components/Filter'
 
 const Transaction = () => {
   const [uploadFile, setUploadFile] = useState(true)
@@ -292,12 +295,12 @@ const Transaction = () => {
             <CCardHeader>
               <div className="d-none d-md-flex">
                 {'Transaction'}
-                <CIcon
-                  icon={cilPlus}
-                  size="lg"
-                  className="ms-auto focus:cursor-auto"
-                  onClick={() => setVisibleCreate(true)}
-                />
+                <div className="me-2 ms-auto focus:cursor-auto">
+                  <Filter />
+                  <CButton color="primary" onClick={() => {}} className="ms-4">
+                    Fetch
+                  </CButton>
+                </div>
               </div>
             </CCardHeader>
             <CCardBody>
@@ -410,8 +413,9 @@ const Transaction = () => {
                 <div>
                   <CCard>
                     <CCardHeader>
-                      <div>
+                      <div className="d-none d-md-flex">
                         <strong>Detail</strong>
+                        {<Insight data={appData} api={'/api/credit_card/detail'} />}
                       </div>
                     </CCardHeader>
                     <CCardBody>
@@ -442,7 +446,9 @@ const Transaction = () => {
                             }}
                           >
                             {' '}
-                            Decision Tree
+                            <div>
+                              <CNavLink href="#/fraud/model-information">Decision Tree:</CNavLink>
+                            </div>
                           </CCol>
                           <CCol
                             xs={4}
@@ -461,7 +467,11 @@ const Transaction = () => {
                               color: predictResult['kneighborsclassifier'] == 0 ? 'green' : 'red',
                             }}
                           >
-                            K-Nearest Neighbors
+                            <div>
+                              <CNavLink href="#/fraud/model-information">
+                                K-Nearest Neighbors:
+                              </CNavLink>
+                            </div>
                           </CCol>
                           <CCol
                             xs={4}
@@ -480,7 +490,9 @@ const Transaction = () => {
                               color: predictResult['randomforestclassifier'] == 0 ? 'green' : 'red',
                             }}
                           >
-                            Random Forest:
+                            <div>
+                              <CNavLink href="#/fraud/model-information">Random Forest:</CNavLink>
+                            </div>
                           </CCol>
                           <CCol
                             xs={4}

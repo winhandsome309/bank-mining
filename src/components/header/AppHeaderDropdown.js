@@ -22,6 +22,7 @@ import {
   CButton,
   CForm,
   CCol,
+  CRow,
 } from '@coreui/react'
 import {
   cilBell,
@@ -48,6 +49,7 @@ const AppHeaderDropdown = () => {
   const [newPasswordResetPassword, setNewPasswordResetPassword] = useState('')
   const [loadingButton, setLoadingButton] = useState(false)
   const [visibleResetPassword, setVisibleResetPassword] = useState(false)
+  const [visibleProfile, setVisibleProfile] = useState(false)
   const [toast, setToast] = useState(0)
   const toaster = useRef()
 
@@ -130,6 +132,15 @@ const AppHeaderDropdown = () => {
             <CIcon icon={cilUser} className="me-2" />
             Profile
           </CDropdownItem> */}
+
+          <CDropdownItem
+            onClick={() => {
+              setVisibleProfile(true)
+            }}
+          >
+            <CIcon icon={cilUser} className="me-2" />
+            Profile
+          </CDropdownItem>
           <CDropdownItem onClick={() => setVisibleResetPassword(!visibleResetPassword)}>
             <CIcon icon={cilSettings} className="me-2" />
             Reset password
@@ -193,6 +204,59 @@ const AppHeaderDropdown = () => {
           ) : (
             <CSpinner />
           )}
+        </CModalFooter>
+      </CModal>
+
+      <CModal
+        scrollable
+        visible={visibleProfile}
+        backdrop="static"
+        onClose={() => setVisibleProfile(false)}
+        alignment="center"
+      >
+        <CModalHeader>
+          <CModalTitle>Your Profile</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow className="ms-3">
+            <CCol xs={3} className="mt-4">
+              <CAvatar src={avatar10} size="xl" />
+            </CCol>
+            <CCol xs={9}>
+              <CRow className="mb-2">
+                <span>
+                  {'Email: '}
+                  <span style={{ fontWeight: '600' }}>xuanthangnguyen@banking.com</span>
+                </span>
+              </CRow>
+
+              <CRow className="mb-2">
+                <span>
+                  {'Username: '}
+                  <span style={{ fontWeight: '600' }}>thangnguyen</span>
+                </span>
+              </CRow>
+
+              <CRow className="mb-2">
+                <span>
+                  {'Full Name: '}
+                  <span style={{ fontWeight: '600' }}>Nguyen Xuan Thang</span>
+                </span>
+              </CRow>
+
+              <CRow className="mb-2">
+                <span>
+                  {'Role: '}
+                  <span style={{ fontWeight: '600', color: '#5856d6' }}>Admin</span>
+                </span>
+              </CRow>
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="primary" onClick={() => {}}>
+            Edit
+          </CButton>
         </CModalFooter>
       </CModal>
       <CToaster ref={toaster} push={toast} placement="top-end" />
