@@ -76,22 +76,46 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   // Loan Application
-  { path: '/loan-app/waiting', name: 'Waiting', element: LoanWaiting },
-  { path: '/loan-app/processed', name: 'Processed', element: LoanProcessed },
-  { path: '/loan-app/models', name: 'Models', element: LoanModels },
-  { path: '/loan-app/about-data', name: 'AboutData', element: LoanAboutData },
+  {
+    path: '/application-management/waiting-application',
+    name: 'Waiting Application',
+    element: LoanWaiting,
+  },
+  {
+    path: '/application-management/processed-application',
+    name: 'Processed Application',
+    element: LoanProcessed,
+  },
+  {
+    path: '/application-management/model-information',
+    name: 'Model Information',
+    element: LoanModels,
+  },
+  { path: '/application-management/about-data', name: 'About Data', element: LoanAboutData },
   // Marketing
-  { path: '/marketing/potential-customer', name: 'PotentialCustomer', element: PotentialCustomer },
-  { path: '/marketing/old-customer', name: 'OldCustomer', element: OldCustomer },
-  { path: '/marketing/models', name: 'Models', element: MarketingModels },
-  { path: '/marketing/about-data', name: 'AboutData', element: MarketingAboutData },
+  { path: '/potential-customer-management/customer', name: 'Customer', element: PotentialCustomer },
+  {
+    path: '/potential-customer-management/old-customer',
+    name: 'Old Customer',
+    element: OldCustomer,
+  },
+  {
+    path: '/potential-customer-management/model-information',
+    name: 'Model Information',
+    element: MarketingModels,
+  },
+  {
+    path: '/potential-customer-management/about-data',
+    name: 'About Data',
+    element: MarketingAboutData,
+  },
   // Fraud
   { path: '/fraud/transaction', name: 'Transaction', element: Transaction },
-  { path: '/fraud/models', name: 'Models', element: FraudModel },
-  { path: '/fraud/about-data', name: 'AboutData', element: FraudAboutData },
+  { path: '/fraud/model-information', name: 'Model Information', element: FraudModel },
+  { path: '/fraud/about-data', name: 'About Data', element: FraudAboutData },
   // Management
-  { path: '/management/staff', name: 'Management', element: StaffManagement },
-  { path: '/management/customer', name: 'Management', element: CustomerManagement },
+  { path: '/management/staff', name: 'Staff Management', element: StaffManagement },
+  { path: '/management/customer', name: 'Customer Management', element: CustomerManagement },
   //Other
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },

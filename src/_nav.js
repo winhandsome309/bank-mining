@@ -38,42 +38,42 @@ const _nav = [
   // },
   {
     component: CNavTitle,
-    name: 'Loan Application',
+    name: 'Application Management',
   },
   // {
   // component: CNavGroup,
   // name: 'Loan Application',
-  // to: '/loan-app',
+  // to: '/application-management',
   // items: [
   {
     component: CNavItem,
     name: 'Waiting Application',
-    to: '/loan-app/waiting',
+    to: '/application-management/waiting-application',
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Processed Application',
-    to: '/loan-app/processed',
+    to: '/application-management/processed-application',
     icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Model Infomation',
-    to: '/loan-app/models',
+    name: 'Model Information',
+    to: '/application-management/model-information',
     icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'About Data',
-    to: '/loan-app/about-data',
+    to: '/application-management/about-data',
     icon: <CIcon icon={cilFindInPage} customClassName="nav-icon" />,
   },
   //   ],
   // },
   {
     component: CNavTitle,
-    name: 'Marketing',
+    name: 'Potential Customer Management',
   },
   // {
   //   component: CNavGroup,
@@ -82,33 +82,33 @@ const _nav = [
   //   items: [
   {
     component: CNavItem,
-    name: 'Potential Customer',
-    to: '/marketing/potential-customer',
+    name: 'Customer',
+    to: '/potential-customer-management/customer',
     icon: <CIcon icon={cilUserPlus} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Old Customer',
-    to: '/marketing/old-customer',
+    to: '/potential-customer-management/old-customer',
     icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Model Infomation',
-    to: '/marketing/models',
+    name: 'Model Information',
+    to: '/potential-customer-management/model-information',
     icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'About Data',
-    to: '/marketing/about-data',
+    to: '/potential-customer-management/about-data',
     icon: <CIcon icon={cilFindInPage} customClassName="nav-icon" />,
   },
   //   ],
   // },
   {
     component: CNavTitle,
-    name: 'Fraud Transaction',
+    name: 'Transaction Management',
   },
   // {
   //   component: CNavGroup,
@@ -123,8 +123,8 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Model Infomation',
-    to: '/fraud/models',
+    name: 'Model Information',
+    to: '/fraud/model-information',
     icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
   },
   {
@@ -135,7 +135,7 @@ const _nav = [
   },
   {
     component: CNavTitle,
-    name: 'Management',
+    name: 'User Management',
   },
   {
     component: CNavItem,

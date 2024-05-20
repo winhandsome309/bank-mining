@@ -41,6 +41,7 @@ import {
   CFooter,
   CFormSelect,
   CDropdown,
+  CNavLink,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCheck, cilX, cilPlus, cilUserPlus } from '@coreui/icons'
@@ -49,6 +50,8 @@ import CommunicateFunction from '../../../components/CommunicateFunction'
 import Voting from '../../../components/Voting'
 import CreateFunction from '../../../components/CreateFunction'
 import client from '../../../hooks/useApi'
+import Insight from '../../../components/Insight'
+import Filter from '../../../components/Filter'
 
 const listMarketingParams = [
   // ['id', 'abc', 'normal'],
@@ -346,12 +349,15 @@ const PotentialCustomer = (props) => {
             <CCardHeader>
               <div className="d-none d-md-flex">
                 {'Customer'}
-                <CIcon
-                  icon={cilUserPlus}
-                  size="lg"
-                  className="ms-auto focus:cursor-auto"
-                  onClick={() => setVisibleCreate(true)}
-                />
+                <div className="ms-auto focus:cursor-auto">
+                  <CIcon
+                    icon={cilUserPlus}
+                    size="lg"
+                    className="me-3"
+                    onClick={() => setVisibleCreate(true)}
+                  />
+                  <Filter />
+                </div>
               </div>
             </CCardHeader>
             <CCardBody>
@@ -474,8 +480,9 @@ const PotentialCustomer = (props) => {
                 <div>
                   <CCard>
                     <CCardHeader>
-                      <div>
+                      <div className="d-none d-md-flex">
                         <strong>Detail</strong>
+                        {<Insight data={appData} api={'/api/marketing/detail'} />}
                       </div>
                     </CCardHeader>
                     <CCardBody>
@@ -504,7 +511,11 @@ const PotentialCustomer = (props) => {
                               color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
                             }}
                           >
-                            gaussiannb:
+                            <div>
+                              <CNavLink href="#/potential-customer-management/model-information">
+                                gaussiannb:
+                              </CNavLink>
+                            </div>
                           </CCol>
                           <CCol
                             className="text-end"
@@ -524,7 +535,11 @@ const PotentialCustomer = (props) => {
                                   : 'red',
                             }}
                           >
-                            gradientboostingclassifier:
+                            <div>
+                              <CNavLink href="#/potential-customer-management/model-information">
+                                gradientboostingclassifier:
+                              </CNavLink>
+                            </div>
                           </CCol>
                           <CCol
                             className="text-end"
@@ -546,7 +561,11 @@ const PotentialCustomer = (props) => {
                               color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
                             }}
                           >
-                            mlpclassifier:
+                            <div>
+                              <CNavLink href="#/potential-customer-management/model-information">
+                                mlpclassifier:
+                              </CNavLink>
+                            </div>
                           </CCol>
                           <CCol
                             className="text-end"

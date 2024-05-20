@@ -28,6 +28,7 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import NotificationFunction from './NotificationFunction'
 
 const AppHeader = (props) => {
   const headerRef = useRef()
@@ -76,18 +77,18 @@ const AppHeader = (props) => {
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
           <CNavItem>
-            <CNavLink href="#">
-              {/* <CIcon icon={cilBell} size="lg" /> */}
+            <CNavLink>
               <CBadge color={colorUser()} shape="rounded-pill">
                 {props.role.charAt(0).toUpperCase() + props.role.slice(1)}
               </CBadge>
             </CNavLink>
           </CNavItem>
-          {/* <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
+          <CNavItem>
+            <CNavLink>
+              {/* <CIcon icon={cilBell} size="lg"/> */}
+              <NotificationFunction />
             </CNavLink>
-          </CNavItem> */}
+          </CNavItem>
           {/* <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilEnvelopeOpen} size="lg" />

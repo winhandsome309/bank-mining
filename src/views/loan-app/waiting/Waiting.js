@@ -41,6 +41,7 @@ import {
   CFooter,
   CFormSelect,
   CCollapse,
+  CNavLink,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -68,6 +69,7 @@ import {
   cilCheck,
   cilX,
   cilPlus,
+  cilSearch,
 } from '@coreui/icons'
 import axios, { formToJSON } from 'axios'
 import CreateFunction from '../../../components/CreateFunction'
@@ -76,6 +78,7 @@ import Voting from '../../../components/Voting'
 import client from '../../../hooks/useApi'
 import listLoanParams from '../ListParams'
 import Insight from '../../../components/Insight'
+import Filter from '../../../components/Filter'
 
 const Waiting = () => {
   const [uploadFile, setUploadFile] = useState(true)
@@ -279,12 +282,15 @@ const Waiting = () => {
             <CCardHeader>
               <div className="d-none d-md-flex">
                 {'Application'}
-                <CIcon
-                  icon={cilPlus}
-                  size="lg"
-                  className="ms-auto focus:cursor-auto"
-                  onClick={() => setVisibleCreate(true)}
-                />
+                <div className="ms-auto focus:cursor-auto">
+                  <CIcon
+                    icon={cilPlus}
+                    size="lg"
+                    className="me-3"
+                    onClick={() => setVisibleCreate(true)}
+                  />
+                  <Filter params={listLoanParams} />
+                </div>
               </div>
             </CCardHeader>
             <CCardBody>
@@ -295,6 +301,7 @@ const Waiting = () => {
                   <CTableHead className="text-nowrap">
                     <CTableRow>
                       <CTableHeaderCell className="bg-body-tertiary text-center">
+                        <div></div>
                         ID
                       </CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">Purpose</CTableHeaderCell>
@@ -450,7 +457,11 @@ const Waiting = () => {
                               placement="left"
                               content={'Logistic Regression using Feature Selection method'}
                             >
-                              <div> Logistic Regression (A): </div>
+                              <div>
+                                <CNavLink href="#/application-management/model-information">
+                                  Logistic Regression (A):
+                                </CNavLink>
+                              </div>
                             </CTooltip>
                           </CCol>
                           <CCol
@@ -479,7 +490,11 @@ const Waiting = () => {
                             }}
                           >
                             <CTooltip placement="left" content={'Logistic Regression is improved'}>
-                              <div> Logistic Regression (B): </div>
+                              <div>
+                                <CNavLink href="#/application-management/model-information">
+                                  Logistic Regression (B):
+                                </CNavLink>
+                              </div>
                             </CTooltip>
                           </CCol>
                           <CCol
@@ -505,7 +520,11 @@ const Waiting = () => {
                                 predictResult['random_forest_(improved)'] == 0 ? 'green' : 'red',
                             }}
                           >
-                            Random Forest:
+                            <div>
+                              <CNavLink href="#/application-management/model-information">
+                                Random Forest:
+                              </CNavLink>
+                            </div>
                           </CCol>
                           <CCol
                             xs={4}

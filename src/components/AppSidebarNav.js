@@ -7,7 +7,12 @@ import 'simplebar-react/dist/simplebar.min.css'
 
 import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
 
-const listGroup = ['Loan Application', 'Marketing', 'Fraud Transaction', 'Management']
+const listGroup = [
+  'Application Management',
+  'Potential Customer Management',
+  'Transaction Management',
+  'User Management',
+]
 
 export const AppSidebarNav = ({ items }) => {
   const navLink = (name, icon, badge, indent = false) => {

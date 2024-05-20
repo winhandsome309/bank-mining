@@ -207,7 +207,7 @@ const Login = () => {
                           <CSpinner />
                         )}
                       </CCol>
-                      <CCol xs={4} className="text-right">
+                      {/* <CCol xs={4} className="text-right">
                         <CButton
                           color="link"
                           className="px-0"
@@ -215,7 +215,7 @@ const Login = () => {
                         >
                           Reset password?
                         </CButton>
-                      </CCol>
+                      </CCol> */}
                     </CRow>
                   </CForm>
                 </CCardBody>
