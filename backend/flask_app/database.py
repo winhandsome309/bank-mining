@@ -5,7 +5,7 @@ from sqlalchemy.orm import DeclarativeBase
 from contextlib import contextmanager
 import os
 
-engine = create_engine(os.environ.get('SQLALCHEMY_DATABASE_URI'))
+engine = create_engine(os.environ.get('SQLALCHEMY_DATABASE_URI_LOCAL'))
 db_session = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=False))
 
 Base = declarative_base()

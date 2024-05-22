@@ -33,3 +33,4 @@ analysis/
 
 # Secret
 secret*
+*.db
