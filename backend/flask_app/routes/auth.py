@@ -46,5 +46,5 @@ def getMetabaseToken():
         }
         token = jwt.encode(payload, appconfig.METABASE_SECRET_KEY, algorithm="HS256")
 
-        iframeUrl = appconfig.METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=true&titled=true"
+        iframeUrl = appconfig.METABASE_SITE_URL + "/embed/dashboard/" + token + "#theme=transparent&bordered=false&titled=false"
         return iframeUrl
