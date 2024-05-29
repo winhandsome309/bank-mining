@@ -177,7 +177,7 @@ const Waiting = () => {
           setVisibleCreate(false)
           setLoadingMultipleCreation(false)
           fetchApplication()
-          addToast(successToast('Application is created successfully'))
+          addToast(successToast('Applications are created successfully'))
         }
       })
   }
@@ -274,6 +274,8 @@ const Waiting = () => {
     </CToast>
   )
 
+  const [filteredData, setFilteredData] = useState([])
+
   return (
     <>
       <CRow>
@@ -289,12 +291,16 @@ const Waiting = () => {
                     className="me-3"
                     onClick={() => setVisibleCreate(true)}
                   />
-                  <Filter params={listLoanParams} />
+                  <Filter
+                    params={listLoanParams}
+                    data={tableData}
+                    setFilteredData={setFilteredData}
+                  />
                 </div>
               </div>
             </CCardHeader>
             <CCardBody>
-              {tableData.length == 0 ? (
+              {tableData.length == 0 || filteredData == -1 ? (
                 <div>There is nothing to show</div>
               ) : (
                 <CTable align="middle" className="mb-0 border" hover responsive>
@@ -319,8 +325,9 @@ const Waiting = () => {
                       </CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
+
                   <CTableBody>
-                    {tableData.map((item, index) => (
+                    {(filteredData.length == 0 ? tableData : filteredData).map((item, index) => (
                       <CTableRow
                         v-for="item in tableItems"
                         key={index}

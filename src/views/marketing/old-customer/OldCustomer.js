@@ -134,8 +134,14 @@ const OldCustomer = () => {
   const [searched, setSearched] = useState('')
 
   const fetchApplication = async () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/old_client').then((res) => {
-      setTableData(res.data)
+    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/history_data').then((res) => {
+      let temp = []
+      for (let i = 0; i < res.data.length; i++) {
+        let p = res.data[i]['HistoryMarketingClients']
+        p['id'] = i + 1
+        temp.push(p)
+      }
+      setTableData(temp)
     })
   }
 

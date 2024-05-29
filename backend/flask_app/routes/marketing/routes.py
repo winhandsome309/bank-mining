@@ -10,6 +10,7 @@ import datetime
 import flask_app.helper.utils as utils
 from flask_app.helper import worker as wk
 from flask_security import roles_accepted
+import pandas
 import time
 
 model_info = wk.ModelInfo.create("Marketing Campaign")
@@ -128,6 +129,60 @@ def marketing_client():
 
         return make_response("Deleted", 200)
 
+@app.route(
+    "/api/marketing/list",
+    methods=["POST"],
+    endpoint="marketing_list_client",
+)
+@utils.server_return_500_if_errors
+def marketing_client():
+    file = request.files['file']
+    if file.filename.endswith('.csv'):
+        # Read file
+        df = pandas.read_csv(file)
+        listData = df.to_dict(orient="records")
+        for data in listData:
+            data["id"] = str(int(time.time()))
+            id = str(int(time.time())) 
+            new_id = ClientID(id=id)
+
+            new_client = MarketingClient(
+                id=id,
+                age = data["age"],
+                job = data["job"],
+                marital = data["marital"],
+                education = data["education"],
+                default = data["default"],
+                balance = data["balance"],
+                housing = data["housing"],
+                loan = data["loan"],
+                contact = data["contact"],
+                day = data["day"],
+                month = data["month"],
+                duration = data["duration"],
+                campaign = data["campaign"],
+                pdays = data["pdays"],
+                previous = data["previous"],
+                poutcome = data["poutcome"],
+            )
+            predict = worker.predict(new_client.as_dict())
+
+            new_predict_result = PredictResult(
+                id=id, predict=predict.__str__(), feature="marketing"
+            )
+            try:
+                db_session.add(new_id)
+                db_session.commit()
+
+                db_session.add(new_client)
+                db_session.commit()
+
+                db_session.add(new_predict_result)
+                db_session.commit()
+            except:
+                pass
+            time.sleep(1)
+    return make_response("SUCCESS", 201)
 
 @app.route(
     "/api/marketing/detail", methods=["GET"], endpoint="get_detailed_describe_marketing"
