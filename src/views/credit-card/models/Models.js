@@ -93,18 +93,18 @@ const Models = () => {
       })
       .then((res) => {
         if (res.status === 200) {
-          var temp = res.data
-          for (var i = 0; i < temp.length; i++) {
-            delete temp[i]['feature']
-            delete temp[i]['model']
-            temp[i]['f1_score'] =
-              Math.round(
-                ((temp[i]['precision'] * temp[i]['recall']) /
-                  (temp[i]['precision'] + temp[i]['recall'])) *
-                  10000,
-              ) / 10000
-          }
-          setModelInfo(temp)
+          // var temp = res.data
+          // for (var i = 0; i < temp.length; i++) {
+          //   delete temp[i]['feature']
+          //   delete temp[i]['model']
+          //   temp[i]['f1_score'] =
+          //     Math.round(
+          //       ((temp[i]['precision'] * temp[i]['recall']) /
+          //         (temp[i]['precision'] + temp[i]['recall'])) *
+          //         10000,
+          //     ) / 10000
+          // }
+          setModelInfo(res.data)
         }
       })
   }

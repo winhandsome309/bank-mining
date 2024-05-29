@@ -79,7 +79,9 @@ import client from '../../hooks/useApi'
 const listStaffParams = [
   ['email', 'abc', 'normal'],
   ['username', 'abc', 'normal'],
-  ['role', 'abc', 'select', ['admin', 'staff'], ['admin', 'staff']],
+  ['fname', 'abc', 'normal'],
+  ['position', 'abc', 'normal'],
+  ['role_names', 'abc', 'select', ['admin', 'moderator'], ['admin', 'moderator']],
   // ['permission', 'abc', 'select', ['read', 'write', 'all'], ['read', 'write', 'all']],
   ['chat_token', 'abc', 'normal'],
 ]
