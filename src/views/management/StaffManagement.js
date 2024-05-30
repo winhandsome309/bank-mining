@@ -81,7 +81,7 @@ const listStaffParams = [
   ['username', 'abc', 'normal'],
   ['fname', 'abc', 'normal'],
   ['position', 'abc', 'normal'],
-  ['role_names', 'abc', 'select', ['admin', 'moderator'], ['admin', 'moderator']],
+  ['role_names', 'abc', 'select', ['Admin', 'Moderator'], ['Admin', 'Moderator']],
   // ['permission', 'abc', 'select', ['read', 'write', 'all'], ['read', 'write', 'all']],
   ['chat_token', 'abc', 'normal'],
 ]
@@ -108,6 +108,7 @@ const StaffManagement = () => {
   const toaster = useRef()
   const [checkRenderInfo, setCheckRenderInfo] = useState({})
   const [role, setRole] = useState('')
+  const [showPassword, setShowPassword] = useState('')
 
   const handleSubmit = (event, item) => {
     const form = event.currentTarget
@@ -140,10 +141,12 @@ const StaffManagement = () => {
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key])
     })
-    client.post(process.env.REACT_APP_API_ENDPOINT + '/api/staff/create', formData).then((res) => {
-      if (res.status === 201) {
+    form['role_names'] = [form['role_names']]
+    client.post(process.env.REACT_APP_API_ENDPOINT + '/api/staff/create', form).then((res) => {
+      if (res.status === 200) {
         setVisibleCreate(false)
-        fetchStaff()
+        setShowPassword(res.data['response']['password'])
+        // fetchStaff()
         addToast(successToast('Customer is created successfully'))
       }
     })
@@ -381,6 +384,34 @@ const StaffManagement = () => {
         </CModalFooter>
       </CModal>
       <CToaster ref={toaster} push={toast} placement="top-end" />
+
+      <CModal
+        scrollable
+        visible={showPassword != ''}
+        backdrop="static"
+        onClose={() => {
+          setShowPassword('')
+          fetchStaff()
+        }}
+      >
+        <CModalHeader>
+          <CModalTitle>Your Password</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <div>{showPassword}</div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() => {
+              setShowPassword('')
+              fetchStaff()
+            }}
+          >
+            Close
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </>
   )
 }

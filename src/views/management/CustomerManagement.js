@@ -115,6 +115,8 @@ const CustomerManagement = () => {
     })
   }
 
+  const [showPassword, setShowPassword] = useState('')
+
   const createUser = async () => {
     const formData = new FormData()
     Object.keys(form).forEach((key) => {
@@ -125,7 +127,8 @@ const CustomerManagement = () => {
       .then((res) => {
         if (res.status === 200) {
           setVisibleCreate(false)
-          fetchCustomer()
+          setShowPassword(res.data['response']['password'])
+          // fetchCustomer()
           addToast(successToast('Customer is created successfully'))
         }
       })
@@ -358,6 +361,34 @@ const CustomerManagement = () => {
         </CModalFooter>
       </CModal>
       <CToaster ref={toaster} push={toast} placement="top-end" />
+
+      <CModal
+        scrollable
+        visible={showPassword != ''}
+        backdrop="static"
+        onClose={() => {
+          setShowPassword('')
+          fetchCustomer()
+        }}
+      >
+        <CModalHeader>
+          <CModalTitle>Your Password</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <div>{showPassword}</div>
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() => {
+              setShowPassword('')
+              fetchCustomer()
+            }}
+          >
+            Close
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </>
   )
 }

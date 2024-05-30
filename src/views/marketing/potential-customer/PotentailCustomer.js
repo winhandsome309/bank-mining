@@ -619,7 +619,7 @@ const PotentialCustomer = (props) => {
               className="me-2"
               onClick={() => {
                 setVisibleApp(false)
-                if (props.role == 'staff') {
+                if (props.role == 'moderator') {
                   setMsgRecheck('DISLIKE')
                 } else {
                   setMsgRecheck('REJECT')
@@ -633,7 +633,7 @@ const PotentialCustomer = (props) => {
               color="success"
               onClick={() => {
                 setVisibleApp(false)
-                if (props.role == 'staff') {
+                if (props.role == 'moderator') {
                   setMsgRecheck('LIKE')
                 } else {
                   setMsgRecheck('ACCEPT')
