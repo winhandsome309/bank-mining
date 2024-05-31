@@ -9,6 +9,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY ./flask_app flask_app
 COPY ./flask_run.py flask_run.py
+COPY ./build html
 COPY ./analysis analysis
 COPY ./gunicorn_starter.sh ./start.sh
 RUN chmod +x start.sh

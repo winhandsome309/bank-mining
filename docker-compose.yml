@@ -1,6 +1,51 @@
 version: "2"
 
 services:
+  hsbanking-api:
+    # build:
+    #   context: backend
+    #   dockerfile: Dockerfile
+    image: bank-mining-hsbanking-api
+    container_name: hsbanking
+    depends_on:
+      - postgres
+    hostname: hsbanking
+    ports:
+     - "5000:8000"
+    environment:
+    - FLASK_ENV=development
+    - FLASK_APP=flask_run.py
+    - DEBUG=True
+    - FLASK_DEBUG=1
+    - LOAN_DASHBOARD=1
+    - MARKETING_DASHBOARD=2
+    - CREDITCARD_DASHBOARD=5
+    - REACT_APP_REMARK_URL=http://remark42:8080
+    - REACT_APP_REMARK_SITE_ID=remark
+    # Model dirs
+    - HTML_BUILD_DIR=html
+    - ANALYSIS_DIR=analysis
+    - SQLALCHEMY_DATABASE_URI_LOCAL=postgresql://bankadmin:admin@webdb:5432/banking
+    - POSTGRE_HOST=webdb
+    - POSTGRE_USER=bankadmin
+    - POSTGRE_PASSWORD=admin
+    - POSTGRE_DB=banking
+
+    - METABASE_SITE_URL=http://localhost:3002
+    - METABASE_SECRET_KEY=f3eb3529dfb6ff9578f0b7b747d3776d0efcbb019ee84b7d00ef6528c7bf7a94
+    - BANK_MAINTAINER_REMARK_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJyZW1hcmsiLCJleHAiOjE3MTQzNjQ3NzIsImlzcyI6InJlbWFyazQyIiwibmJmIjoxNzE0MzYyOTEyLCJoYW5kc2hha2UiOnsiaWQiOiJUaGFuaDo6dGhhbmguZGF1eHVhbjI0MDJAaGNtdXQuZWR1LnZuIn19.ye_jmlNzKbvqqUimc3VvOwThkP4Aa2nuWxkaHC88QDo
+    # Mail settings
+    - SENDGRID_API_KEY=''
+    - MAIL_SERVER=smtp.sendgrid.net
+    - MAIL_PORT=587
+    - MAIL_USE_TLS=True
+
+    - MAIL_USERNAME=apikey
+    - MAIL_PASSWORD=''
+    - MAIL_DEFAULT_SENDER=thanh.dauxuan2402@hcmut.edu.vn
+    networks:
+      - metanet1
+
   remark:
     build: remark
     image: umputun/remark42:latest
@@ -61,10 +106,10 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
-      
+
   metabase-pg:
     image: postgres:latest
-    container_name: postgres-1
+    container_name: postgres-metabase
     hostname: metadb
     environment:
       POSTGRES_DB: metabasedb
@@ -78,8 +123,11 @@ services:
       - "5433:5432"
 
   postgres:
-    image: postgres:latest
-    container_name: postgres-2
+    # build:
+    #   context: db
+    #   dockerfile: Dockerfile
+    image: bank-mining-postgres
+    container_name: postgres-web
     hostname: webdb
     environment:
       POSTGRES_DB: banking

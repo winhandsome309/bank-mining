@@ -215,7 +215,7 @@ const PotentialCustomer = (props) => {
     const formData = new FormData()
     formData.append('file', file)
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/list', formData)
+      .post('/api/marketing/list', formData)
       .then((res) => {
         if (res.status == 201) {
           setVisibleCreate(false)

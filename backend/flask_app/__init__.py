@@ -7,10 +7,16 @@ from flask_security import Security, SQLAlchemySessionUserDatastore, hash_passwo
 from flask_mailman import Mail
 import flask_wtf
 from werkzeug.middleware.proxy_fix import ProxyFix
+import os
 
-app = Flask(__name__, static_folder='/home/thanhdxn/Documents/bank-mining/build', static_url_path='/')
+HTML_BUILD_DIR=os.environ.get("HTML_BUILD_DIR", 'build')
+DB_URI = os.environ.get('SQLALCHEMY_DATABASE_URI_LOCAL', 'postgresql://bankadmin:admin@127.0.0.1:5434/banking')
+
+app = Flask(__name__, static_folder=os.path.abspath(HTML_BUILD_DIR), static_url_path='/')
+app.logger.info(f"Using build file at: {os.path.abspath(HTML_BUILD_DIR)}")
 app.config.from_object(DevConfig)
-CORS(app, 
+
+CORS(app,
     supports_credentials=True,
     origins=["http://localhost:3000", "https://hsbanking.com", "hsbanking.com", "https://hsbanking.com/#/login"],
     expose_headers=['x-xsrf-Token', 'X-Csrf-Token'],
@@ -27,6 +33,8 @@ app.security = Security(app, user_datastore)
 mail = Mail(app)
 
 with app.app_context():
+
+    app.logger.info(f"Trying create connection to {DB_URI} ...")
     init_db()
 
 	# Create all roles

@@ -5,8 +5,9 @@ from sqlalchemy.orm import DeclarativeBase
 from contextlib import contextmanager
 import os
 
+DB_URI = os.environ.get('SQLALCHEMY_DATABASE_URI_LOCAL', 'postgresql://bankadmin:admin@127.0.0.1:5434/banking')
 DATA_URL='/home'
-engine = create_engine(os.environ.get('SQLALCHEMY_DATABASE_URI_LOCAL'))
+engine = create_engine(DB_URI)
 db_session = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=False))
 
 Base = declarative_base()
@@ -24,7 +25,7 @@ def init_db():
     stmt2 = select(md.HistoryApps)
     stmt3 = select(md.HistoryCreditCardTransaction)
     stmt4 = select(md.HistoryMarketingClients)
-    
+
     if not db_session.execute(stmt1).first():
         f1 = md.Feature(name='loan')
         f3 = md.Feature(name='marketing')
@@ -39,13 +40,13 @@ def init_db():
         loan_data_dir = os.path.join(DATA_URL, 'loan_data.csv')
         stmt = text(f"""
             COPY history_loan_data
-            (credit_policy, purpose, int_rate, installment, log_annual_inc, dti, fico, days_with_cr_line, revol_bal, revol_util, inq_last_6mths, delinq_2yrs, pub_rec, not_fully_paid) 
+            (credit_policy, purpose, int_rate, installment, log_annual_inc, dti, fico, days_with_cr_line, revol_bal, revol_util, inq_last_6mths, delinq_2yrs, pub_rec, not_fully_paid)
             FROM '{loan_data_dir}' DELIMITER ',' CSV HEADER;
             COMMIT;
             """)
         db_session.execute(stmt)
         db_session.commit()
-            
+
     if not db_session.execute(stmt3).first():
         credit_data_dir = os.path.join(DATA_URL, 'card_transdata.csv')
         print("Adding history credit data ... ")
