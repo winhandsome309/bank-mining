@@ -54,11 +54,11 @@ import client from '../../../hooks/useApi'
 const AboutData = () => {
   const [iframeUrl, setIframeUrl] = useState('')
 
-  const getToken = async (id) => {
+  const getToken = async (type) => {
     client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/metabase/get-token', {
         params: {
-          id: id,
+          type: type,
         },
       })
       .then((res) => {
@@ -67,7 +67,7 @@ const AboutData = () => {
   }
 
   useEffect(() => {
-    getToken(process.env.REACT_APP_LOAN_DASHBOARD)
+    getToken('loan')
   }, [])
 
   return (
