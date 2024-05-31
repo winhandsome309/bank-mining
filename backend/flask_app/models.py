@@ -29,7 +29,8 @@ timestamp = Annotated[
 class HistoryApps(Base):
     __tablename__ = 'history_loan_data'
 
-    credit_policy:  Mapped[int] = mapped_column(primary_key=True)
+    id             :Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
+    credit_policy:  Mapped[int]
     purpose:        Mapped[str]
     int_rate:       Mapped[float]
     installment:    Mapped[float]
@@ -80,7 +81,8 @@ class Application(Base):
 class HistoryMarketingClients(Base):
     __tablename__ = 'history_marketing_clients'
     
-    age: Mapped[int]        = mapped_column(nullable=True, primary_key=True)
+    id: Mapped[int]         = mapped_column(autoincrement=True, primary_key=True)
+    age: Mapped[int]        = mapped_column(nullable=True)
     job: Mapped[str]        = mapped_column(nullable=True)
     marital: Mapped[str]    = mapped_column(nullable=True)
     education: Mapped[str]  = mapped_column(nullable=True)
@@ -127,8 +129,8 @@ class MarketingClient(Base):
 class HistoryCreditCardTransaction(Base):
     __tablename__ = 'history_credit_card_transaction'
 
-    # id: Mapped[int]                                 = mapped_column(autoincrement=True, primary_key=True) #Drop after initialation
-    distance_from_home: Mapped[float]               = mapped_column(nullable=True, primary_key=True)
+    id: Mapped[int]                                 = mapped_column(autoincrement=True, primary_key=True) #Drop after initialation
+    distance_from_home: Mapped[float]               = mapped_column(nullable=True)
     distance_from_last_transaction: Mapped[float]   = mapped_column(nullable=True)
     ratio_to_median_purchase_price: Mapped[float]   = mapped_column(nullable=True)
     repeat_retailer: Mapped[float]                   = mapped_column(nullable=True)
