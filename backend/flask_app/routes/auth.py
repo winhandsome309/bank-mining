@@ -13,6 +13,13 @@ from flask_security import hash_password, verify_password, auth_required, curren
 
 appconfig = DevConfig
 
+def getMetabaseDashboardId(typ):
+    if typ == 'loan':
+        return int(appconfig.LOAN_DASHBOARD)
+    if typ == 'marketing':
+        return int(appconfig.MARKETING_DASHBOARD)
+    if typ == 'credit_card':
+        return int(appconfig.CREDITCARD_DASHBOARD)
 
 @app.route("/")
 @cross_origin()
@@ -36,9 +43,10 @@ def afterLogin():
 @roles_accepted('Maintainer', 'Admin', 'Moderator')
 def getMetabaseToken():
     if request.method == "GET":
-        idDashboard = int(request.args.get("id"))
+        typ = request.args.get("type")
+        did = getMetabaseDashboardId(typ=typ)
         payload = {
-        "resource": {"dashboard": idDashboard},
+        "resource": {"dashboard": did},
         "params": {
             
         },
@@ -47,4 +55,5 @@ def getMetabaseToken():
         token = jwt.encode(payload, appconfig.METABASE_SECRET_KEY, algorithm="HS256")
 
         iframeUrl = appconfig.METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=true&titled=true"
+        app.logger.info(f"View {typ} dashboard - id: {did} - with key: {appconfig.METABASE_SECRET_KEY}")
         return iframeUrl
