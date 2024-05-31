@@ -47,7 +47,7 @@ const AppHeader = (props) => {
   const colorUser = () => {
     if (props.role == 'admin') {
       return 'primary'
-    } else if (props.role == 'staff') {
+    } else if (props.role == 'moderator') {
       return 'info'
     }
     return 'secondary'

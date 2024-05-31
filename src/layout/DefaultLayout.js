@@ -10,7 +10,7 @@ const DefaultLayout = () => {
 
   var userRole = getCookie('role')
   if (userRole == 'Customer') userRole = 'customer'
-  else if (userRole == 'Moderator') userRole = 'staff'
+  else if (userRole == 'Moderator') userRole = 'moderator'
   else userRole = 'admin'
 
   return (

@@ -67,7 +67,7 @@ const AboutData = () => {
   }
 
   useEffect(() => {
-    getToken(process.env.REACT_APP_LOAN_DASHBOARD)
+    getToken(process.env.REACT_APP_CREDITCARD_DASHBOARD)
   }, [])
 
   return (

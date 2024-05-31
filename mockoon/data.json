@@ -9,102 +9,15 @@
   "folders": [],
   "routes": [
     {
-      "uuid": "fbb2360d-8b3d-4465-9ee2-88809a645667",
+      "uuid": "73b5e9df-95f4-4826-9e60-6bf58ff64dfe",
       "type": "http",
       "documentation": "",
       "method": "get",
-      "endpoint": "loan-app/waiting",
+      "endpoint": "",
       "responses": [
         {
-          "uuid": "e562680d-3d15-4d99-bea0-55fa8cbd200c",
-          "body": "[\n  {\n    \"id\": \"1\",\n    \"credit_policy\": \"true\",\n    \"purpose\": \"debt_consolidation\",\n    \"int_rate\": \"0.1189\",\n    \"installment\": \"829.1\",\n    \"log_annual_inc\": \"11.35040654\",\n    \"dti\": \"19.48\",\n    \"fico\": \"737\",\n    \"days_with_cr_line\": \"5639.958333\",\n    \"revol_bal\": \"28854\",\n    \"revol_util\": \"52.1\",\n    \"inq_last_6mths\": \"0\",\n    \"delinq_2yrs\": \"0\",\n    \"pub_rec\": \"0\"\n  },\n  {\n    \"id\": \"2\",\n    \"credit_policy\": \"true\",\n    \"purpose\": \"debt_consolidation\",\n    \"int_rate\": \"0.1189\",\n    \"installment\": \"829.1\",\n    \"log_annual_inc\": \"11.35040654\",\n    \"dti\": \"19.48\",\n    \"fico\": \"737\",\n    \"days_with_cr_line\": \"5639.958333\",\n    \"revol_bal\": \"28854\",\n    \"revol_util\": \"52.1\",\n    \"inq_last_6mths\": \"0\",\n    \"delinq_2yrs\": \"0\",\n    \"pub_rec\": \"0\"\n  },\n  {\n    \"id\": \"3\",\n    \"credit_policy\": \"true\",\n    \"purpose\": \"debt_consolidation\",\n    \"int_rate\": \"0.1189\",\n    \"installment\": \"829.1\",\n    \"log_annual_inc\": \"11.35040654\",\n    \"dti\": \"19.48\",\n    \"fico\": \"737\",\n    \"days_with_cr_line\": \"5639.958333\",\n    \"revol_bal\": \"28854\",\n    \"revol_util\": \"52.1\",\n    \"inq_last_6mths\": \"0\",\n    \"delinq_2yrs\": \"0\",\n    \"pub_rec\": \"0\"\n  },\n  {\n    \"id\": \"4\",\n    \"credit_policy\": \"true\",\n    \"purpose\": \"debt_consolidation\",\n    \"int_rate\": \"0.1189\",\n    \"installment\": \"829.1\",\n    \"log_annual_inc\": \"11.35040654\",\n    \"dti\": \"19.48\",\n    \"fico\": \"737\",\n    \"days_with_cr_line\": \"5639.958333\",\n    \"revol_bal\": \"28854\",\n    \"revol_util\": \"52.1\",\n    \"inq_last_6mths\": \"0\",\n    \"delinq_2yrs\": \"0\",\n    \"pub_rec\": \"0\"\n  },\n  {\n    \"id\": \"5\",\n    \"credit_policy\": \"true\",\n    \"purpose\": \"debt_consolidation\",\n    \"int_rate\": \"0.1189\",\n    \"installment\": \"829.1\",\n    \"log_annual_inc\": \"11.35040654\",\n    \"dti\": \"19.48\",\n    \"fico\": \"737\",\n    \"days_with_cr_line\": \"5639.958333\",\n    \"revol_bal\": \"28854\",\n    \"revol_util\": \"52.1\",\n    \"inq_last_6mths\": \"0\",\n    \"delinq_2yrs\": \"0\",\n    \"pub_rec\": \"0\"\n  }\n]",
-          "latency": 0,
-          "statusCode": 200,
-          "label": "",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": true,
-          "crudKey": "id",
-          "callbacks": []
-        }
-      ],
-      "responseMode": null
-    },
-    {
-      "uuid": "bdaefef6-e3b2-404f-b118-b1ba5acb9d77",
-      "type": "http",
-      "documentation": "",
-      "method": "get",
-      "endpoint": "api/loan_application/waiting-list",
-      "responses": [
-        {
-          "uuid": "87f1e4f9-66f4-416e-9954-28e058949584",
-          "body": "[\n  {\n    \"data\": {\n      \"created\": \"Thu, 25 Apr 2024 08:34:45 GMT\",\n      \"credit_policy\": 0,\n      \"days_with_cr_line\": 1.0,\n      \"delinq_2yrs\": 1,\n      \"dti\": 1.0,\n      \"fico\": 1,\n      \"id\": \"1714008885\",\n      \"inq_last_6mths\": 1,\n      \"installment\": 1.0,\n      \"int_rate\": 1.0,\n      \"log_annual_inc\": 1.0,\n      \"processed\": false,\n      \"processed_at\": null,\n      \"pub_rec\": 1,\n      \"purpose\": \"credit_card\",\n      \"revol_bal\": 1,\n      \"revol_util\": 1.0\n    },\n    \"step\": \"4\",\n    \"last_update\": \"01/05/2024 17:06:00\"\n  }\n]",
-          "latency": 0,
-          "statusCode": 200,
-          "label": "",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": true,
-          "rules": [],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": true,
-          "crudKey": "id",
-          "callbacks": []
-        }
-      ],
-      "responseMode": null
-    },
-    {
-      "uuid": "7dd01296-8a96-47a2-b55e-e0d05a2444db",
-      "type": "http",
-      "documentation": "",
-      "method": "get",
-      "endpoint": "plot-simple",
-      "responses": [
-        {
-          "uuid": "fa097f80-ae26-4f91-b34a-bfbf2e9f94bd",
-          "body": "<!DOCTYPE html>\n      <html>\n      <head>\n          <title>Simple HTML Page</title>\n      </head>\n      <body>\n          <h1>Hello, World!</h1>\n          <p>This is a simple HTML page.</p>\n      </body>\n      </html>",
-          "latency": 0,
-          "statusCode": 200,
-          "label": "",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": true,
-          "crudKey": "id",
-          "callbacks": []
-        }
-      ],
-      "responseMode": null
-    },
-    {
-      "uuid": "47b6ca81-9875-4978-829f-8331111fae97",
-      "type": "http",
-      "documentation": "",
-      "method": "get",
-      "endpoint": "api/user",
-      "responses": [
-        {
-          "uuid": "4ea7bf84-ac1c-43f1-b81d-dd1f0c3be903",
-          "body": "[\n  {\n    \"id\": \"1\",\n    \"email\": \"test1@me.com\",\n    \"username\": \"abc\",\n    \"role\": \"admin\",\n    \"permission\": \"read\"\n  },\n  {\n    \"id\": \"2\",\n    \"email\": \"test2@me.com\",\n    \"username\": \"xyz\",\n    \"role\": \"admin\",\n    \"permission\": \"write\"\n  }\n]",
+          "uuid": "ea886a5d-8b05-45a2-b888-62d788c4f3e4",
+          "body": "[\n  {\n    \"created\": \"Sun, 28 Apr 2024 18:17:13 GMT\",\n    \"distance_from_home\": 57.87785658389723,\n    \"distance_from_last_transaction\": 0.3111400080477545,\n    \"id\": \"1714303033\",\n    \"online_order\": 0.0,\n    \"predict\": \"{'decisiontreeclassifier': 0.0, 'kneighborsclassifier': 0.0, 'randomforestclassifier': 0.0}\",\n    \"processed\": false,\n    \"processed_at\": null,\n    \"ratio_to_median_purchase_price\": 1.9459399775518593,\n    \"repeat_retailer\": 1.0,\n    \"used_chip\": 1.0,\n    \"used_pin_number\": 0.0\n  },\n  {\n    \"created\": \"Sat, 11 May 2024 11:00:54 GMT\",\n    \"distance_from_home\": 57.87785658389723,\n    \"distance_from_last_transaction\": 0.3111400080477545,\n    \"id\": \"1715400054\",\n    \"online_order\": 0.0,\n    \"predict\": \"{'decisiontreeclassifier': 0.0, 'kneighborsclassifier': 0.0, 'randomforestclassifier': 0.0}\",\n    \"processed\": false,\n    \"processed_at\": null,\n    \"ratio_to_median_purchase_price\": 1.9459399775518593,\n    \"repeat_retailer\": 1.0,\n    \"used_chip\": 1.0,\n    \"used_pin_number\": 0.0\n  }\n]\n",
           "latency": 0,
           "statusCode": 200,
           "label": "",
@@ -128,19 +41,7 @@
   "rootChildren": [
     {
       "type": "route",
-      "uuid": "fbb2360d-8b3d-4465-9ee2-88809a645667"
-    },
-    {
-      "type": "route",
-      "uuid": "bdaefef6-e3b2-404f-b118-b1ba5acb9d77"
-    },
-    {
-      "type": "route",
-      "uuid": "7dd01296-8a96-47a2-b55e-e0d05a2444db"
-    },
-    {
-      "type": "route",
-      "uuid": "47b6ca81-9875-4978-829f-8331111fae97"
+      "uuid": "73b5e9df-95f4-4826-9e60-6bf58ff64dfe"
     }
   ],
   "proxyMode": false,

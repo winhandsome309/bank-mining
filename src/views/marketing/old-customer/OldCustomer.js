@@ -73,24 +73,110 @@ import {
 import axios from 'axios'
 import client from '../../../hooks/useApi'
 
+// const listMarketingParams = [
+//   ['id', 'abc'],
+//   ['age', 'abc'],
+//   ['job', 'abc'],
+//   ['marital', 'abc'],
+//   ['education', 'abc'],
+//   ['default', 'abc'],
+//   ['balance', 'abc'],
+//   ['housing', 'abc'],
+//   ['loan', 'abc'],
+//   ['contact', 'abc'],
+//   ['day', 'abc'],
+//   ['month', 'abc'],
+//   ['duration', 'abc'],
+//   ['campaign', 'abc'],
+//   ['pdays', 'abc'],
+//   ['previous', 'abc'],
+//   ['poutcome', 'abc'],
+// ]
+
 const listMarketingParams = [
-  ['id', 'abc'],
-  ['age', 'abc'],
-  ['job', 'abc'],
-  ['marital', 'abc'],
-  ['education', 'abc'],
-  ['default', 'abc'],
-  ['balance', 'abc'],
-  ['housing', 'abc'],
-  ['loan', 'abc'],
-  ['contact', 'abc'],
-  ['day', 'abc'],
-  ['month', 'abc'],
-  ['duration', 'abc'],
-  ['campaign', 'abc'],
-  ['pdays', 'abc'],
-  ['previous', 'abc'],
-  ['poutcome', 'abc'],
+  // ['id', 'abc', 'normal'],
+  ['age', 'Age of customer', 'normal'],
+  [
+    'job',
+    'Job of customer',
+    'select',
+    [
+      'retired',
+      'housemaid',
+      'admin',
+      'management',
+      'entrepreneur',
+      'blue-collar',
+      'services',
+      'technician',
+      'unknown',
+      'self-employed',
+      'student',
+      'unemployed',
+    ],
+    [
+      'retired',
+      'housemaid',
+      'admin',
+      'management',
+      'entrepreneur',
+      'blue-collar',
+      'services',
+      'technician',
+      'unknown',
+      'self-employed',
+      'student',
+      'unemployed',
+    ],
+  ],
+  [
+    'marital',
+    'Martial status of customer',
+    'select',
+    ['single', 'married', 'divorced'],
+    ['single', 'married', 'divorced'],
+  ],
+  [
+    'education',
+    'Customer education level',
+    'select',
+    ['primary', 'secondary', 'tertiary'],
+    ['primary', 'secondary', 'tertiary'],
+  ],
+  ['default', 'Has credit in default?', 'select', ['yes', 'no'], ['1', '0']],
+  ['balance', "Customer's individual balance", 'normal'],
+  ['housing', 'If costumer has housing loan', 'select', ['yes', 'no'], ['1', '0']],
+  ['loan', 'Has Personal Loan', 'select', ['yes', 'no'], ['1', '0']],
+  [
+    'contact',
+    'Communication type',
+    'select',
+    ['cellular', 'telephone', 'unknown'],
+    ['cellular', 'telephone', 'unknown'],
+  ],
+  ['day', 'Last contact day of the week', 'normal'],
+  [
+    'month',
+    'Last contact month of year',
+    'select',
+    ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'],
+    ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'],
+  ],
+  ['duration', 'Last contact duration, in seconds', 'normal'],
+  ['campaign', 'Number of contacts performed during this campaign and for this client', 'normal'],
+  [
+    'pdays',
+    'Number of days that passed by after the client was last contacted from a previous campaign',
+    'normal',
+  ],
+  ['previous', 'Number of contacts performed before this campaign and for this client', 'normal'],
+  [
+    'poutcome',
+    'outcome of the previous marketing campaign',
+    'select',
+    ['success', 'failure', 'other', 'unknown'],
+    ['success', 'failure', 'other', 'unknown'],
+  ],
 ]
 
 const OldCustomer = () => {
@@ -134,8 +220,14 @@ const OldCustomer = () => {
   const [searched, setSearched] = useState('')
 
   const fetchApplication = async () => {
-    client.get( '/api/marketing/old_client').then((res) => {
-      setTableData(res.data)
+    client.get( '/api/marketing/history_data').then((res) => {
+      let temp = []
+      for (let i = 0; i < res.data.length; i++) {
+        let p = res.data[i]['HistoryMarketingClients']
+        p['id'] = i + 1
+        temp.push(p)
+      }
+      setTableData(temp)
     })
   }
 

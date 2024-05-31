@@ -33,4 +33,7 @@ analysis/
 
 # Secret
 secret*
+postgres-*/
+var/
+
 *.db

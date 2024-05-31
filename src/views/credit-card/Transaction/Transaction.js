@@ -43,6 +43,7 @@ import {
   CCollapse,
   CBadge,
   CNavLink,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -287,24 +288,57 @@ const Transaction = () => {
     return Math.round(num * 100) / 100
   }
 
+  const [loadingButton, setLoadingButton] = useState(false)
+
+  useEffect(() => {
+    if (loadingButton) {
+      setTimeout(() => {
+        setLoadingButton(false)
+      }, 1000)
+    }
+  }, [loadingButton])
+
+  const [filteredData, setFilteredData] = useState([])
+
   return (
     <>
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
             <CCardHeader>
-              <div className="d-none d-md-flex">
-                {'Transaction'}
-                <div className="me-2 ms-auto focus:cursor-auto">
-                  <Filter />
-                  <CButton color="primary" onClick={() => {}} className="ms-4">
-                    Fetch
-                  </CButton>
+              <div className="d-none d-md-flex ">
+                <div className="mt-2">{'Transaction'}</div>
+                <div className="me-2 ms-auto">
+                  <CRow>
+                    <CCol />
+                    <CCol className="mt-2">
+                      <Filter
+                        params={listCreditCardParams}
+                        data={tableData}
+                        setFilteredData={setFilteredData}
+                      />
+                    </CCol>
+                    <CCol>
+                      {!loadingButton ? (
+                        <CButton
+                          color="primary"
+                          onClick={() => {
+                            setLoadingButton(true)
+                          }}
+                          className="ms-4"
+                        >
+                          Fetch
+                        </CButton>
+                      ) : (
+                        <CSpinner className="ms-4 me-4" />
+                      )}
+                    </CCol>
+                  </CRow>
                 </div>
               </div>
             </CCardHeader>
             <CCardBody>
-              {tableData.length == 0 ? (
+              {tableData.length == 0 || filteredData == -1 ? (
                 <div>There is nothing to show</div>
               ) : (
                 <CTable align="middle" className="mb-0 border" hover responsive>
@@ -335,7 +369,7 @@ const Transaction = () => {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {tableData.map((item, index) => (
+                    {(filteredData.length == 0 ? tableData : filteredData).map((item, index) => (
                       <CTableRow
                         v-for="item in tableItems"
                         key={index}

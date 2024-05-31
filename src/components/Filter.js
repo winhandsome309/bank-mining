@@ -45,6 +45,7 @@ import {
   CCollapse,
   CForm,
   CSpinner,
+  CBadge,
 } from '@coreui/react'
 import { Doughnut } from 'react-chartjs-2'
 import CIcon from '@coreui/icons-react'
@@ -85,6 +86,7 @@ const Filter = (props) => {
   const [open, setOpen] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [visible, setVisible] = useState(false)
+  const [numberOfFilter, setNumberOfFilter] = useState(0)
   var temp = []
   for (var i = 0; i < 20; i++) temp.push(false)
   const [visibleFilter, setVisibleFilter] = useState(temp)
@@ -108,16 +110,68 @@ const Filter = (props) => {
     if (open) fetchInsight()
   }, [open])
 
+  var filterValueTemp = {}
+
+  props.params != undefined &&
+    props.params.map((item, index) => {
+      filterValueTemp[item[0]] = [item[2], false, '', '']
+    })
+
+  const [filterValue, setFilterValue] = useState(filterValueTemp)
+
+  const searchByFilter = (filterValue, reset) => {
+    if (reset == true) {
+      setNumberOfFilter(0)
+      props.setFilteredData(props.data)
+
+      return
+    }
+
+    var temp = []
+
+    for (const item of props.data) {
+      for (const [key, value] of Object.entries(item)) {
+        // Filter
+        if (key in filterValue) {
+          if (filterValue[key][1] == true) {
+            if (
+              filterValue[key][0] == 'normal' &&
+              filterValue[key][2] != '' &&
+              filterValue[key][3] != ''
+            ) {
+              if (filterValue[key][2] <= value && value <= filterValue[key][3]) {
+                temp.push(item)
+              }
+            } else {
+              if (value == filterValue[key][2] && filterValue[key][2] != '') {
+                temp.push(item)
+              }
+            }
+          }
+        }
+      }
+    }
+    if (temp.length == 0) props.setFilteredData(-1)
+    else {
+      props.setFilteredData(temp)
+    }
+  }
+
   return (
     <>
-      <CIcon icon={cilSearch} size="lg" onClick={() => setVisible(true)} />
+      <CIcon
+        icon={cilSearch}
+        size="lg"
+        onClick={() => setVisible(true)}
+        style={{ color: numberOfFilter ? 'red' : 'black' }}
+      />
 
       <COffcanvas
         className="w-25"
         placement="end"
         visible={visible}
         onHide={() => setVisible(false)}
-        backdrop="static"
+        // backdrop="static"
       >
         <COffcanvasHeader>
           <COffcanvasTitle>Filter</COffcanvasTitle>
@@ -149,7 +203,17 @@ const Filter = (props) => {
                                     type="text"
                                     placeholder="From"
                                     aria-label="readonly input example"
-                                    readOnly
+                                    onChange={(e) => {
+                                      var arr = filterValue
+                                      arr[item[0]][1] = true
+                                      arr[item[0]][2] = e.target.value
+                                      setFilterValue(arr)
+                                      if (e.target.value == '') {
+                                        setNumberOfFilter(numberOfFilter - 1)
+                                      } else {
+                                        setNumberOfFilter(numberOfFilter + 1)
+                                      }
+                                    }}
                                   />
                                 </CCol>
                                 {/* <CCol xs={2}>-</CCol> */}
@@ -158,7 +222,17 @@ const Filter = (props) => {
                                     type="text"
                                     placeholder="To"
                                     aria-label="readonly input example"
-                                    readOnly
+                                    onChange={(e) => {
+                                      var arr = filterValue
+                                      arr[item[0]][1] = true
+                                      arr[item[0]][3] = e.target.value
+                                      setFilterValue(arr)
+                                      if (e.target.value == '') {
+                                        setNumberOfFilter(numberOfFilter - 1)
+                                      } else {
+                                        setNumberOfFilter(numberOfFilter + 1)
+                                      }
+                                    }}
                                   />
                                 </CCol>
                               </CRow>
@@ -170,7 +244,17 @@ const Filter = (props) => {
                                 feedbackValid="Looks good!"
                                 //   floatingLabel={params[0]}
                                 aria-label="Default"
-                                onChange={(e) => {}}
+                                onChange={(e) => {
+                                  var arr = filterValue
+                                  arr[item[0]][1] = true
+                                  arr[item[0]][2] = e.target.value
+                                  setFilterValue(arr)
+                                  if (e.target.value == '') {
+                                    setNumberOfFilter(numberOfFilter - 1)
+                                  } else {
+                                    setNumberOfFilter(numberOfFilter + 1)
+                                  }
+                                }}
                               >
                                 <option selected="" value="">
                                   Select
@@ -191,9 +275,24 @@ const Filter = (props) => {
           </CCol>
         </COffcanvasBody>
         <CFooter>
-          <div></div>
           <div>
-            <CButton color="success" onClick={() => {}}>
+            <CButton
+              color="secondary"
+              onClick={() => {
+                setFilterValue(filterValueTemp)
+                searchByFilter(filterValueTemp, true)
+              }}
+            >
+              <span style={{ color: 'white' }}>Reset</span>
+            </CButton>
+          </div>
+          <div>
+            <CButton
+              color="success"
+              onClick={() => {
+                searchByFilter(filterValue, false)
+              }}
+            >
               <span style={{ color: 'white' }}>Search</span>
             </CButton>
           </div>

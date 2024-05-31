@@ -186,6 +186,7 @@ const PotentialCustomer = (props) => {
   const [msgRecheck, setMsgRecheck] = useState('')
   const [predictResult, setPredictResult] = useState(false)
   const [changeApp, setChangeApp] = useState(false)
+  const [loadingMultipleCreation, setLoadingMultipleCreation] = useState(false)
   const isMounted = useRef(false)
 
   const fetchCustomer = async () => {
@@ -211,7 +212,18 @@ const PotentialCustomer = (props) => {
   }
 
   const createMultipleCustomer = (file) => {
-    console.log(file)
+    const formData = new FormData()
+    formData.append('file', file)
+    client
+      .post(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/list', formData)
+      .then((res) => {
+        if (res.status == 201) {
+          setVisibleCreate(false)
+          setLoadingMultipleCreation(false)
+          fetchCustomer()
+          addToast(successToast('Customers are created successfully'))
+        }
+      })
   }
 
   const deleteCustomer = async (id) => {
@@ -247,7 +259,7 @@ const PotentialCustomer = (props) => {
   const acceptCustomer = async (id) => {
     client
       .post(
-         '/api/marketing/old_client',
+         '/api/marketing/history_data',
         {},
         {
           params: {
@@ -341,6 +353,8 @@ const PotentialCustomer = (props) => {
     </CToast>
   )
 
+  const [filteredData, setFilteredData] = useState([])
+
   return (
     <>
       <CRow>
@@ -356,12 +370,16 @@ const PotentialCustomer = (props) => {
                     className="me-3"
                     onClick={() => setVisibleCreate(true)}
                   />
-                  <Filter />
+                  <Filter
+                    params={listMarketingParams}
+                    data={tableData}
+                    setFilteredData={setFilteredData}
+                  />
                 </div>
               </div>
             </CCardHeader>
             <CCardBody>
-              {tableData.length == 0 ? (
+              {tableData.length == 0 || filteredData == -1 ? (
                 <div>There is nothing to show</div>
               ) : (
                 <CTable align="middle" className="mb-0 border" hover responsive>
@@ -383,7 +401,7 @@ const PotentialCustomer = (props) => {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {tableData.map((item, index) => (
+                    {(filteredData.length == 0 ? tableData : filteredData).map((item, index) => (
                       <CTableRow
                         v-for="item in tableItems"
                         key={index}
@@ -450,6 +468,8 @@ const PotentialCustomer = (props) => {
       </CRow>
 
       <CreateFunction
+        loadingMultipleCreation={loadingMultipleCreation}
+        setLoadingMultipleCreation={setLoadingMultipleCreation}
         visibleCreate={visibleCreate}
         setVisibleCreate={setVisibleCreate}
         listParams={listMarketingParams}
@@ -599,7 +619,7 @@ const PotentialCustomer = (props) => {
               className="me-2"
               onClick={() => {
                 setVisibleApp(false)
-                if (props.role == 'staff') {
+                if (props.role == 'moderator') {
                   setMsgRecheck('DISLIKE')
                 } else {
                   setMsgRecheck('REJECT')
@@ -613,7 +633,7 @@ const PotentialCustomer = (props) => {
               color="success"
               onClick={() => {
                 setVisibleApp(false)
-                if (props.role == 'staff') {
+                if (props.role == 'moderator') {
                   setMsgRecheck('LIKE')
                 } else {
                   setMsgRecheck('ACCEPT')
