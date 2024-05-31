@@ -220,7 +220,7 @@ def get_detailed_describe_loan():
     application_id = request.args.get('id')
     this_application = db_session.get(Application, application_id)
     for key in columns:
-        if key == 'not_fully_paid': continue
+        if key in ['id', 'not_fully_paid']: continue
         value = this_application.as_dict().get(key)
         info = {'name': key, 'type': "", 'value': []}
         if key in ['credit_policy', 'purpose']:
@@ -252,12 +252,15 @@ def get_detailed_describe_loan():
             (avg,) = db_session.execute(stmt2).first()
             found_pos = False
             for idx, vl in enumerate(value_lst):
-                if value >= vl:
-                    info["value"].append(round(idx / len(value_lst), 2) * 100)
-                    found_pos = True
-                    break
-                if value < vl:
-                    continue
+                try:
+                    if value >= vl:
+                        info["value"].append(round(idx / len(value_lst), 2) * 100)
+                        found_pos = True
+                        break
+                    if value < vl:
+                        continue
+                except Exception as e:
+                    app.logger.info(f"{e} -- {value, vl}")
             if not found_pos:
                 info["value"].append(-1)
             info["value"].append(round(value - avg, 2))
