@@ -143,7 +143,7 @@ def marketing_client():
         listData = df.to_dict(orient="records")
         for data in listData:
             data["id"] = str(int(time.time()))
-            id = str(int(time.time())) 
+            id = str(int(time.time()))
             new_id = ClientID(id=id)
 
             new_client = MarketingClient(
@@ -196,7 +196,7 @@ def get_detailed_describe_marketing():
     this_marketing_client = db_session.get(MarketingClient, marketing_client_id)
     categorical_vars = worker.categorical_to_number.keys()
     for key in columns:
-        if key == "deposit":
+        if key in ["id", "deposit"]:
             continue
         value = this_marketing_client.as_dict().get(key)
         info = {"name": key, "type": "", "value": []}
