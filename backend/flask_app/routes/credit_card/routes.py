@@ -138,7 +138,7 @@ def get_detailed_describe_credit():
         "online_order",
     ]
     for key in columns:
-        if key == "deposit":
+        if key in ["id", "fraud"]:
             continue
         value = this_cc_trans.as_dict().get(key)
         info = {"name": key, "type": "", "value": []}
@@ -189,7 +189,7 @@ def get_detailed_describe_credit():
             info["value"].append(round(avg, 2))
 
         detailed.append(info)
-   
+
     db_session.commit()
     body = utils.create_response_body(
         200, False, get_detailed_describe_credit.__name__, detailed

@@ -67,7 +67,7 @@ def waiting_list():
         new_id = ClientID(id=id)
         new_app = Application(
                     id=id,
-                    credit_policy=credit_policy, 
+                    credit_policy=credit_policy,
                     purpose=purpose,
                     int_rate=int_rate,
                     installment=installment,
@@ -91,7 +91,7 @@ def waiting_list():
                     feature='loan'
         )
 
-    
+
         try:
             db_session.add(new_app)
             db_session.commit()
@@ -102,7 +102,7 @@ def waiting_list():
 
             db_session.add(new_predict_result)
             db_session.commit()
-        except Exception as e:          
+        except Exception as e:
             db_session.rollback()
             return make_response(str(e), 401)
         return make_response(predict, 201)
@@ -123,7 +123,7 @@ def waiting_list():
         db_session.commit()
 
         return make_response("Deleted", 200)
-    
+
 @app.route("/api/loan_application/list/waiting-list", methods=["POST"], endpoint='list_waiting_list')
 @utils.server_return_500_if_errors
 @roles_accepted("Maintainer", "Admin")
@@ -136,7 +136,7 @@ def list_waiting_list():
             listData = df.to_dict(orient="records")
             for data in listData:
                 data["id"] = str(int(time.time()))
-                id = str(int(time.time())) 
+                id = str(int(time.time()))
                 new_id = ClientID(id=id)
 
                 new_app = Application(
@@ -187,13 +187,13 @@ def processed_list():
             res = db_session.execute(stmt).all()
             db_session.commit()
             return utils.parse_output(res)
-        
+
 @app.route('/api/loan_application/process', methods=['POST'], endpoint='toggle_process_application')
 @utils.server_return_500_if_errors
 @roles_accepted("Maintainer", "Admin")
 def toggle_process_application():
     form = request.form
-    applicaton_id = str(form.get('application_id'))    
+    applicaton_id = str(form.get('application_id'))
     result = form.get('result')
 
     application = db_session.get(Application, applicaton_id)
@@ -265,7 +265,7 @@ def get_detailed_describe_loan():
                 info["value"].append(-1)
             info["value"].append(round(value - avg, 2))
             info["value"].append(round(avg, 2))
-    
+
         detailed.append(info)
 
     db_session.commit()
