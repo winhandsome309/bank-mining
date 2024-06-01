@@ -1,11 +1,11 @@
-version: "2"
+version: "3"
 
 services:
   hsbanking-api:
     # build:
     #   context: backend
     #   dockerfile: Dockerfile
-    image: bank-mining-hsbanking-api
+    image: thanhdxuan/hsbanking.com
     container_name: hsbanking
     depends_on:
       - postgres
@@ -17,8 +17,8 @@ services:
     - FLASK_APP=flask_run.py
     - DEBUG=True
     - FLASK_DEBUG=1
-    - LOAN_DASHBOARD=1
-    - MARKETING_DASHBOARD=2
+    - LOAN_DASHBOARD_ID=7
+    - MARKETING_DASHBOARD=8
     - CREDITCARD_DASHBOARD=5
     - REACT_APP_REMARK_URL=http://remark42:8080
     - REACT_APP_REMARK_SITE_ID=remark
