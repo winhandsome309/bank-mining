@@ -14,4 +14,3 @@ COPY ./analysis analysis
 COPY ./gunicorn_starter.sh ./start.sh
 RUN chmod +x start.sh
 EXPOSE 8000
-ENTRYPOINT ["./start.sh"]

@@ -2,16 +2,17 @@ version: "3"
 
 services:
   hsbanking-api:
-    # build:
-    #   context: backend
-    #   dockerfile: Dockerfile
-    image: thanhdxuan/hsbanking.com
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    #image: thanhdxuan/hsbanking.com
     container_name: hsbanking
     depends_on:
       - postgres
     hostname: hsbanking
     ports:
      - "5000:8000"
+    command: gunicorn flask_run:"app" --log-level=debug -w 2 --threads 60 -b 0.0.0.0:8000
     environment:
     - FLASK_ENV=development
     - FLASK_APP=flask_run.py
@@ -35,13 +36,13 @@ services:
     - METABASE_SECRET_KEY=f3eb3529dfb6ff9578f0b7b747d3776d0efcbb019ee84b7d00ef6528c7bf7a94
     - BANK_MAINTAINER_REMARK_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJyZW1hcmsiLCJleHAiOjE3MTQzNjQ3NzIsImlzcyI6InJlbWFyazQyIiwibmJmIjoxNzE0MzYyOTEyLCJoYW5kc2hha2UiOnsiaWQiOiJUaGFuaDo6dGhhbmguZGF1eHVhbjI0MDJAaGNtdXQuZWR1LnZuIn19.ye_jmlNzKbvqqUimc3VvOwThkP4Aa2nuWxkaHC88QDo
     # Mail settings
-    - SENDGRID_API_KEY=''
+    - SENDGRID_API_KEY=####
     - MAIL_SERVER=smtp.sendgrid.net
     - MAIL_PORT=587
     - MAIL_USE_TLS=True
 
     - MAIL_USERNAME=apikey
-    - MAIL_PASSWORD=''
+    - MAIL_PASSWORD=###
     - MAIL_DEFAULT_SENDER=thanh.dauxuan2402@hcmut.edu.vn
     networks:
       - metanet1
@@ -75,12 +76,12 @@ services:
       - SMTP_PORT=465
       - SMTP_TLS=true
       - SMTP_USERNAME=apikey
-      - SMTP_PASSWORD=####
+      - SMTP_PASSWORD=###
       # Config auth with email
       - AUTH_EMAIL_SUBJ=remark42 confirmation
       - AUTH_EMAIL_CONTENT_TYPE=text/html
       - AUTH_EMAIL_ENABLE=true
-      - AUTH_EMAIL_FROM=xuanthangnguyen2002@gmail.com
+      - AUTH_EMAIL_FROM=thanh.dauxuan2402@hcmut.edu.vn
     volumes:
       - ./var:/srv/var
 
