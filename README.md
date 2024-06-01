@@ -24,9 +24,14 @@ Docker image available at: https://hub.docker.com/r/thanhdxuan/hsbanking.com
 
 ### Using Docker Compose
 
-- Download [Docker Compose File](./docker-compose.yml).
+- Download [Docker Compose File](./docker-compose.yml) and (database folder)[./db] to a directory.
 - `docker compose up`
-*NOTE:* 
+
+
+**NOTE:**
   - Admin Account: email `admin@banking.com` - password: `admin`
-  - You required to create Metabase Dashboard and change environment variables in [Docker Compose File](./docker-compose.yml)
+  - Metabase config for data visualization:
+    - Create a dashboard for each function - [Instructions](https://www.metabase.com/docs/latest/dashboards/introduction#how-to-create-a-dashboard)
+    - Publish the dashboard - [Instructions](https://www.metabase.com/learn/customer-facing-analytics/embedding-charts-and-dashboards)
+  - Collects the dashboard id and changes it in [Docker Compose File](./docker-compose.yml)
 
