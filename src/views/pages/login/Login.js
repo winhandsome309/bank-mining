@@ -47,7 +47,7 @@ const Login = () => {
     await sleep(500)
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/login',
+         '/api/login',
         {
           email: userName,
           password: password,
@@ -67,14 +67,15 @@ const Login = () => {
   }
 
   const commentHandle = async () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/remark/get-token', {
+    client.get('/api/remark/get-token', {
       params: {
         email: userName
       }
     }).then((res) => {
         console.log(res.data.token)
         if (res.status === 200) {
-          client.get(process.env.REACT_APP_REMARK_URL + '/auth/email/login', {
+          const remarkURL = res.url
+          client.get(remarkURL + '/auth/email/login', {
             params: {
               site: 'remark',
               token: res.data.token
@@ -95,7 +96,7 @@ const Login = () => {
   const login = () => {
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/login',
+         '/login',
         {
           email: userName,
           password: password,
@@ -150,7 +151,7 @@ const Login = () => {
     formData.append('oldPassword', oldPasswordResetPassword)
     formData.append('newPassword', newPasswordResetPassword)
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/reset-password', formData)
+      .post( '/api/customer/reset-password', formData)
       .then((res) => {
         if (res.status === 200) {
           setLoadingButton(false)

@@ -141,7 +141,7 @@ const Waiting = () => {
 
   const fetchApplication = async () => {
     client
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list')
+      .get( '/api/loan_application/waiting-list')
       .then((res) => {
         setTableData(res.data)
       })
@@ -153,7 +153,7 @@ const Waiting = () => {
       formData.append(key, form[key])
     })
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', formData)
+      .post( '/api/loan_application/waiting-list', formData)
       .then((res) => {
         if (res.status === 201) {
           setLoadingMultipleCreation(false)
@@ -169,7 +169,7 @@ const Waiting = () => {
     formData.append('file', file)
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/list/waiting-list',
+         '/api/loan_application/list/waiting-list',
         formData,
       )
       .then((res) => {
@@ -187,7 +187,7 @@ const Waiting = () => {
     formData.append('application_id', id)
     formData.append('result', 0)
     client
-      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/process', {
+      .delete( '/api/loan_application/process', {
         data: formData,
       })
       .then((res) => {
@@ -200,7 +200,7 @@ const Waiting = () => {
 
   const fetchPredictResult = async () => {
     client
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/predict-result', {
+      .get( '/api/predict-result', {
         params: {
           application_id: appData.id,
         },
@@ -227,7 +227,7 @@ const Waiting = () => {
     formData.append('application_id', id)
     formData.append('result', 1)
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/process', formData)
+      .post( '/api/loan_application/process', formData)
       .then((res) => {
         if (res.status === 200) {
           addToast(successToast('Accepted successully'))

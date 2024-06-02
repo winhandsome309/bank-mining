@@ -1,13 +1,57 @@
-version: "2"
+version: "3"
 
 services:
+  hsbanking-api:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    #image: thanhdxuan/hsbanking.com
+    container_name: hsbanking
+    depends_on:
+      - postgres
+    hostname: hsbanking
+    ports:
+     - "5000:8000"
+    command: gunicorn flask_run:"app" --log-level=debug -w 2 --threads 60 -b 0.0.0.0:8000
+    environment:
+    - FLASK_ENV=development
+    - FLASK_APP=flask_run.py
+    - DEBUG=True
+    - FLASK_DEBUG=1
+    - LOAN_DASHBOARD_ID=7
+    - MARKETING_DASHBOARD=8
+    - CREDITCARD_DASHBOARD=5
+    - REACT_APP_REMARK_URL=http://remark42:8080
+    - REACT_APP_REMARK_SITE_ID=remark
+    # Model dirs
+    - HTML_BUILD_DIR=html
+    - ANALYSIS_DIR=analysis
+    - SQLALCHEMY_DATABASE_URI_LOCAL=postgresql://bankadmin:admin@webdb:5432/banking
+    - POSTGRE_HOST=webdb
+    - POSTGRE_USER=bankadmin
+    - POSTGRE_PASSWORD=admin
+    - POSTGRE_DB=banking
+
+    - METABASE_SITE_URL=http://localhost:3002
+    - METABASE_SECRET_KEY=f3eb3529dfb6ff9578f0b7b747d3776d0efcbb019ee84b7d00ef6528c7bf7a94
+    - BANK_MAINTAINER_REMARK_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJyZW1hcmsiLCJleHAiOjE3MTQzNjQ3NzIsImlzcyI6InJlbWFyazQyIiwibmJmIjoxNzE0MzYyOTEyLCJoYW5kc2hha2UiOnsiaWQiOiJUaGFuaDo6dGhhbmguZGF1eHVhbjI0MDJAaGNtdXQuZWR1LnZuIn19.ye_jmlNzKbvqqUimc3VvOwThkP4Aa2nuWxkaHC88QDo
+    # Mail settings
+    - SENDGRID_API_KEY=####
+    - MAIL_SERVER=smtp.sendgrid.net
+    - MAIL_PORT=587
+    - MAIL_USE_TLS=True
+
+    - MAIL_USERNAME=apikey
+    - MAIL_PASSWORD=###
+    - MAIL_DEFAULT_SENDER=thanh.dauxuan2402@hcmut.edu.vn
+    networks:
+      - metanet1
+
   remark:
-    # remove the next line in case you want to use this docker-compose separately
-    # as otherwise it would complain for absence of Dockerfile
-    build: .
+    build: remark
     image: umputun/remark42:latest
     container_name: "remark42"
-    hostname: "remark42"
+    hostname: remark42
     restart: always
 
     logging:
@@ -16,7 +60,6 @@ services:
         max-size: "10m"
         max-file: "5"
 
-    # uncomment to expose directly (no proxy)
     ports:
      - "8080:8080"
 
@@ -33,22 +76,18 @@ services:
       - SMTP_PORT=465
       - SMTP_TLS=true
       - SMTP_USERNAME=apikey
-      - SMTP_PASSWORD=####
+      - SMTP_PASSWORD=###
       # Config auth with email
       - AUTH_EMAIL_SUBJ=remark42 confirmation
       - AUTH_EMAIL_CONTENT_TYPE=text/html
       - AUTH_EMAIL_ENABLE=true
-      - AUTH_EMAIL_FROM=xuanthangnguyen2002@gmail.com
-      # Enable it only for the initial comment import or for manual backups.
-      # Do not leave the server running with the ADMIN_PASSWD set if you don't have an intention
-      # to keep creating backups manually!
-      # - ADMIN_PASSWD
+      - AUTH_EMAIL_FROM=thanh.dauxuan2402@hcmut.edu.vn
     volumes:
       - ./var:/srv/var
 
-  metabase-main:
+  metabase:
     image: metabase/metabase:latest
-    container_name: metabase-main
+    container_name: metabase
     hostname: metabase
     volumes:
     - /dev/urandom:/dev/random:ro
@@ -56,11 +95,11 @@ services:
       - 3002:3000
     environment:
       MB_DB_TYPE: postgres
-      MB_DB_DBNAME: banking_db_4ebh
+      MB_DB_DBNAME: metabasedb
       MB_DB_PORT: 5432
-      MB_DB_USER: banking_db_4ebh_user
-      MB_DB_PASS: h8cggpsHBl0E6KRdCuOxNnuL7OkX4BgV
-      MB_DB_HOST: dpg-co4o7bcf7o1s738upj3g-a.singapore-postgres.render.com
+      MB_DB_USER: metabase
+      MB_DB_PASS: metabase
+      MB_DB_HOST: metadb
     networks:
       - metanet1
     healthcheck:
@@ -68,17 +107,39 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
-      
-  postgres:
+
+  metabase-pg:
     image: postgres:latest
-    container_name: postgres
-    hostname: postgres
+    container_name: postgres-metabase
+    hostname: metadb
     environment:
-      POSTGRES_USER: banking_db_4ebh_user
-      POSTGRES_DB: banking_db_4ebh
-      POSTGRES_PASSWORD: h8cggpsHBl0E6KRdCuOxNnuL7OkX4BgV
+      POSTGRES_DB: metabasedb
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: metabase
     networks:
       - metanet1
+    volumes:
+    - ./postgres-metabase/data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  postgres:
+    # build:
+    #   context: db
+    #   dockerfile: Dockerfile
+    image: bank-mining-postgres
+    container_name: postgres-web
+    hostname: webdb
+    environment:
+      POSTGRES_DB: banking
+      POSTGRES_USER: bankadmin
+      POSTGRES_PASSWORD: admin
+    networks:
+      - metanet1
+    volumes:
+    - ./postgres-web/data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
 networks:
   metanet1:
     driver: bridge

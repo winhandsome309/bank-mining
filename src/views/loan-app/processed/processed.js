@@ -116,7 +116,7 @@ const Processed = () => {
 
   const fetchApplication = async () => {
     client
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/processed-list')
+      .get( '/api/loan_application/processed-list')
       .then((res) => {
         setTableData(res.data)
       })

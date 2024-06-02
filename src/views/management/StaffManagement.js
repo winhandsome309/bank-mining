@@ -122,7 +122,7 @@ const StaffManagement = () => {
   }
 
   const fetchStaff = () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/admin/staffs').then((res) => {
+    client.get( '/api/admin/staffs').then((res) => {
       if (res.status === 200) {
         var data = res.data['data']
         var temp = []
@@ -142,7 +142,7 @@ const StaffManagement = () => {
       formData.append(key, form[key])
     })
     form['role_names'] = [form['role_names']]
-    client.post(process.env.REACT_APP_API_ENDPOINT + '/api/staff/create', form).then((res) => {
+    client.post( '/api/staff/create', form).then((res) => {
       if (res.status === 200) {
         setVisibleCreate(false)
         setShowPassword(res.data['response']['password'])
@@ -173,7 +173,7 @@ const StaffManagement = () => {
     const formData = new FormData()
     formData.append('email', item.email)
     formData.append('role_name', role)
-    client.post(process.env.REACT_APP_API_ENDPOINT + '/api/role/change', formData).then((res) => {
+    client.post( '/api/role/change', formData).then((res) => {
       if (res.status === 201) {
         setVisibleCreate(false)
         fetchStaff()

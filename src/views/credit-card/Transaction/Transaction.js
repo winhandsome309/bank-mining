@@ -142,7 +142,7 @@ const Transaction = () => {
   const [result, setResult] = useState(0)
 
   const fetchApplication = async () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/credit_card/transaction').then((res) => {
+    client.get( '/api/credit_card/transaction').then((res) => {
       if (res.status == 200) {
         var data = res.data
         for (var i = 0; i < data.length; i++) {
@@ -161,7 +161,7 @@ const Transaction = () => {
       formData.append(key, form[key])
     })
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/credit_card/transaction', formData)
+      .post( '/api/credit_card/transaction', formData)
       .then((res) => {
         if (res.status === 201) {
           setLoadingMultipleCreation(false)
@@ -177,7 +177,7 @@ const Transaction = () => {
     formData.append('file', file)
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/list/waiting-list',
+         '/api/loan_application/list/waiting-list',
         formData,
       )
       .then((res) => {
@@ -195,7 +195,7 @@ const Transaction = () => {
     formData.append('application_id', id)
     formData.append('result', 0)
     client
-      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/credit_card/transaction', {
+      .delete( '/api/credit_card/transaction', {
         data: formData,
       })
       .then((res) => {
@@ -208,7 +208,7 @@ const Transaction = () => {
 
   const fetchPredictResult = async () => {
     client
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/predict-result', {
+      .get( '/api/predict-result', {
         params: {
           application_id: appData.id,
         },
@@ -237,7 +237,7 @@ const Transaction = () => {
     formData.append('application_id', id)
     formData.append('result', 1)
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/process', formData)
+      .post( '/api/loan_application/process', formData)
       .then((res) => {
         if (res.status === 200) {
           addToast(successToast('Accepted successully'))

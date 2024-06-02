@@ -85,7 +85,7 @@ const Models = () => {
 
   const fetchModelInfo = async () => {
     client
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/model-info', {
+      .get( '/api/model-info', {
         params: {
           feature: 'loan',
         },

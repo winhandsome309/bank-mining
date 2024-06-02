@@ -190,7 +190,7 @@ const PotentialCustomer = (props) => {
   const isMounted = useRef(false)
 
   const fetchCustomer = async () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client').then((res) => {
+    client.get( '/api/marketing/client').then((res) => {
       setTableData(res.data)
     })
   }
@@ -201,7 +201,7 @@ const PotentialCustomer = (props) => {
       formData.append(key, form[key])
     })
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client', formData)
+      .post( '/api/marketing/client', formData)
       .then((res) => {
         if (res.status === 201) {
           setVisibleCreate(false)
@@ -215,7 +215,7 @@ const PotentialCustomer = (props) => {
     const formData = new FormData()
     formData.append('file', file)
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/list', formData)
+      .post('/api/marketing/list', formData)
       .then((res) => {
         if (res.status == 201) {
           setVisibleCreate(false)
@@ -230,7 +230,7 @@ const PotentialCustomer = (props) => {
     const formData = new FormData()
     formData.append('id', id)
     client
-      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client', {
+      .delete( '/api/marketing/client', {
         data: formData,
       })
       .then((res) => {
@@ -243,7 +243,7 @@ const PotentialCustomer = (props) => {
 
   const fetchPredictResult = async () => {
     client
-      .get(process.env.REACT_APP_API_ENDPOINT + '/api/predict-result', {
+      .get( '/api/predict-result', {
         params: {
           application_id: appData.id,
         },
@@ -259,7 +259,7 @@ const PotentialCustomer = (props) => {
   const acceptCustomer = async (id) => {
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/marketing/history_data',
+         '/api/marketing/history_data',
         {},
         {
           params: {
@@ -278,7 +278,7 @@ const PotentialCustomer = (props) => {
   const likeCustomer = async (id) => {
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/voting',
+         '/api/voting',
         {},
         {
           params: {
@@ -298,7 +298,7 @@ const PotentialCustomer = (props) => {
   const dislikeCustomer = async (id) => {
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/voting',
+         '/api/voting',
         {},
         {
           params: {

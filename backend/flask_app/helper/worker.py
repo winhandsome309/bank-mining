@@ -9,8 +9,9 @@ from typing import NamedTuple
 from sqlalchemy import select, null, update, delete
 from flask_app import models
 import os
+from flask_app import app
 
-ANALYSIS_DIR = os.environ.get('ANALYSIS_DIR', 'analysis')
+ANALYSIS_DIR = os.environ.get('ANALYSIS_DIR_LOCAL', 'analysis')
 
 class FeatureName():
    Loan_Application        = 'Loan Application'
@@ -133,9 +134,9 @@ class AppWorker():
             try:
                clf = pickle.load(f)
                self.models[name] = clf
-               print(f">> {self.__class__.__name__} - INFO: Load {name} successfully")
+               app.logger.info(f"Load {name} successfully")
             except Exception as e:
-               print(f">> {self.__class__.__name__} - WARNING: Failed to load - {name} in {path} \n {e}")
+               app.logger.warning(f">> {self.__class__.__name__} Failed to load - {name} in {path} \n {e}")
 
    def get_model_info(self) -> dict:
       return utils.load_from_json(self.model_info.get_model_info_path())
@@ -197,9 +198,9 @@ class LoanWorker(AppWorker):
       try:
          path = model_info.get_scaler_path()
          self.scaler = joblib.load(path)
-         print(f">> LOAN: Load scaler successfully")
+         app.logger.info(f"LOAN: Load scaler successfully")
       except:
-         print(f">> LOAN: Failed to load scaler in {path}")
+         app.logger.warning(f"LOAN: Failed to load scaler in {path}")
  
    def load_model_info(self, db_session: object):
       return super().load_model_info(db_session, feature='loan')
@@ -278,9 +279,9 @@ class CreditCardWorker(AppWorker):
       try:
          path = model_info.get_scaler_path()
          self.scaler = joblib.load(path)
-         print(f">> CREDIT: Load scaler successfully")
+         app.logger.info(f"CREDIT: Load scaler successfully")
       except:
-         print(f">> CREDIT: Failed to load scaler in {path}")
+         app.logger.warning(f"CREDIT: Failed to load scaler in {path}")
 
    def load_model_info(self, db_session: object):
       return super().load_model_info(db_session, feature='credit_card')

@@ -9,7 +9,7 @@ from flask_app.models import User, RolesUsers, Role
 from flask_app.database import db_session
 import flask_app.helper.utils as utils
 import json
-from flask_security import hash_password, verify_password, auth_required, current_user, logout_user, roles_accepted
+from flask_security import hash_password, verify_password, auth_required, current_user, logout_user, roles_accepted, unauth_csrf
 
 appconfig = DevConfig
 
@@ -24,7 +24,7 @@ def getMetabaseDashboardId(typ):
 @app.route("/")
 @cross_origin()
 def index():
-    return "<p>This is index file</p>"
+    return app.send_static_file('index.html')
 
 @app.route("/api/login", methods=["POST"], endpoint='afterLogin')
 @utils.server_return_500_if_errors
@@ -54,7 +54,7 @@ def getMetabaseToken():
         }
         token = jwt.encode(payload, appconfig.METABASE_SECRET_KEY, algorithm="HS256")
 
-        iframeUrl = appconfig.METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=true&titled=true"
+        iframeUrl = appconfig.METABASE_SITE_URL + "/embed/dashboard/" + token + "#theme=transparent&bordered=false&titled=false"
         app.logger.info(f"View {typ} dashboard - id: {did} - with key: {appconfig.METABASE_SECRET_KEY}")
         return iframeUrl
 

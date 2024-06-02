@@ -1,0 +1,17 @@
+FROM node:alpine
+ENV NODE_ENV development
+WORKDIR /opt/services/react-hsbanking
+COPY ./package*.json /opt/services/react-hsbanking
+RUN apk add --no-cache bash
+RUN apk add --no-cache tzdata
+RUN cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
+RUN echo "Asia/Ho_Chi_Minh" > /etc/timezone
+
+RUN npm install
+COPY ./public public
+COPY ./src  src
+COPY ./var var
+COPY ./mockoon mockoon
+COPY ./vite.config.mjs vite.config.mjs
+
+CMD ["npm","start"]

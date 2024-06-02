@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from flask_app.helper.config import DevConfig
 from flask_app.database import init_db, db_session
@@ -6,11 +6,22 @@ from flask_app.models import User, Role
 from flask_security import Security, SQLAlchemySessionUserDatastore, hash_password
 from flask_mailman import Mail
 import flask_wtf
-# from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.middleware.proxy_fix import ProxyFix
+import os
 
-app = Flask(__name__)
+HTML_BUILD_DIR=os.environ.get("HTML_BUILD_DIR", 'build')
+DB_URI = os.environ.get('SQLALCHEMY_DATABASE_URI_LOCAL', 'postgresql://bankadmin:admin@127.0.0.1:5434/banking')
+
+app = Flask(__name__, static_folder=os.path.abspath(HTML_BUILD_DIR), static_url_path='/')
+app.logger.info(f"Using build file at: {os.path.abspath(HTML_BUILD_DIR)}")
 app.config.from_object(DevConfig)
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+
+CORS(app,
+    supports_credentials=True,
+    origins=["http://localhost:3000", "https://hsbanking.com", "hsbanking.com", "https://hsbanking.com/#/login"],
+    expose_headers=['x-xsrf-Token', 'X-Csrf-Token'],
+    send_wildcard=True
+)
 flask_wtf.CSRFProtect(app)
 
 # manage sessions per request - make sure connections are closed and returned
@@ -22,6 +33,8 @@ app.security = Security(app, user_datastore)
 mail = Mail(app)
 
 with app.app_context():
+
+    app.logger.info(f"Trying create connection to {DB_URI} ...")
     init_db()
 
 	# Create all roles
@@ -61,8 +74,9 @@ with app.app_context():
         db_session.commit()
 
 # Config for apache reverse proxy
-# app.wsgi_app = ProxyFix(
-#     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
-# )
+app.wsgi_app = ProxyFix(
+    app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+)
+
 
 from . import routes
