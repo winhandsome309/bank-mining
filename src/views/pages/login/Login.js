@@ -67,15 +67,15 @@ const Login = () => {
   }
 
   const commentHandle = async () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/remark/get-token', {
+    client.get('/api/remark/get-token', {
       params: {
         email: userName
       }
     }).then((res) => {
         console.log(res.data.token)
         if (res.status === 200) {
-          setRemarkToken(res.data.token)
-          client.get(process.env.REACT_APP_REMARK_URL + '/auth/email/login', {
+          const remarkURL = res.url
+          client.get(remarkURL + '/auth/email/login', {
             params: {
               site: 'remark',
               token: res.data.token
