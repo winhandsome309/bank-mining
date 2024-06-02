@@ -28,3 +28,4 @@ class DevConfig(object):
     MAIL_DEFAULT_SENDER         = os.environ.get("MAIL_DEFAULT_SENDER")
     # MAIL_BACKEND                = 'file'
     # MAIL_FILE_PATH              = 'backend/flask_app/temp/app-messages'
+    REACT_APP_REMARK_URL        = os.environ.get("http://localhost:8080")

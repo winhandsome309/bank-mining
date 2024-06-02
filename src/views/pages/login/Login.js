@@ -74,7 +74,6 @@ const Login = () => {
     }).then((res) => {
         console.log(res.data.token)
         if (res.status === 200) {
-          setRemarkToken(res.data.token)
           client.get(process.env.REACT_APP_REMARK_URL + '/auth/email/login', {
             params: {
               site: 'remark',
