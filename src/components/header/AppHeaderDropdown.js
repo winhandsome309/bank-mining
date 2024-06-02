@@ -70,6 +70,12 @@ const AppHeaderDropdown = () => {
         document.cookie = 'role=admin; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
         window.location.replace('')
       })
+
+      client.get(process.env.REACT_APP_REMARK_URL + '/auth/logout', {
+        params: {
+          site: 'remark'
+        }
+      })
   }
 
   const successToast = (msg) => (
