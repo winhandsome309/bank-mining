@@ -57,3 +57,14 @@ def getMetabaseToken():
         iframeUrl = appconfig.METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=true&titled=true"
         app.logger.info(f"View {typ} dashboard - id: {did} - with key: {appconfig.METABASE_SECRET_KEY}")
         return iframeUrl
+
+@app.route("/api/remark/get-token", methods=["GET"], endpoint='get_remark_token')
+@utils.server_return_500_if_errors
+@roles_accepted('Maintainer', 'Admin', 'Moderator')
+def get_remark_token():
+    if request.method == "GET":
+        email = request.args.get("email")
+        stmt = select(User.username).where(User.email == email)
+        res = db_session.execute(stmt).first()
+        username = res[0]
+        return {"token": utils.generate_remark_token(username, email)}

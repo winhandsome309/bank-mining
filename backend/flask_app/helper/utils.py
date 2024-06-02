@@ -5,6 +5,9 @@ from functools import reduce
 from flask_app.models import Base, CustomersApplications, Application, User, Customer
 from sqlalchemy import select, update
 from flask import jsonify, make_response
+import jwt
+import time
+
 class Utils:
 
    @staticmethod
@@ -66,7 +69,7 @@ def assign_customer_to_application(customer_id, application_id, db_session):
 
    new_cus_app = CustomersApplications.create(customer_id, application_id)
    db_session.add(new_cus_app)
-      
+
 def update_customer_application(customer_id, application_id, db_session):
 
    stmt = select(CustomersApplications).where(CustomersApplications.application_id == application_id)
@@ -108,3 +111,18 @@ def server_return_500_if_errors(f):
             return make_response(body, 500)
     return wrapper
 
+def generate_remark_token(username, email):
+   nbf = int(time.time())
+   exp = int(time.time()) + 18000
+
+   payload = {
+      "aud": "remark",
+      "exp": exp,
+      "iss": "remark42",
+      "nbf": nbf,
+      "handshake": {
+         "id": f"{username}::{email}"
+      }
+   }
+
+   return jwt.encode(payload, "12345", algorithm="HS256")
