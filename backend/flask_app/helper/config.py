@@ -18,7 +18,7 @@ class DevConfig(object):
     BANK_MAINTAINER_USERNAME    = os.environ.get("BANK_MAINTAINER_USERNAME", 'admin')
     BANK_MAINTAINER_EMAIL       = os.environ.get("BANK_MAINTAINER_EMAIL", 'admin@banking.com')
     SECURITY_CHANGEABLE         = os.environ.get("SECURITY_CHANGEABLE", True)
-    
+
     # Maill. ...
     MAIL_SERVER                 = os.environ.get("MAIL_SERVER")
     MAIL_PORT                   = os.environ.get("MAIL_PORT")
@@ -28,4 +28,4 @@ class DevConfig(object):
     MAIL_DEFAULT_SENDER         = os.environ.get("MAIL_DEFAULT_SENDER")
     # MAIL_BACKEND                = 'file'
     # MAIL_FILE_PATH              = 'backend/flask_app/temp/app-messages'
-    REACT_APP_REMARK_URL        = os.environ.get("http://localhost:8080")
+    REACT_APP_REMARK_URL        = os.environ.get("REACT_APP_REMARK_URL","http://localhost:8080")
