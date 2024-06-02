@@ -32,7 +32,7 @@ def index():
 def afterLogin():
     for role in ['Maintainer', 'Admin', 'Moderator', 'Customer']:
         if current_user.has_role(role):
-           resp = make_response("SET ROLE SUCCESS", 200) 
+           resp = make_response("SET ROLE SUCCESS", 200)
            resp.set_cookie('role', role)
            return resp
     logout_user()
@@ -48,7 +48,7 @@ def getMetabaseToken():
         payload = {
         "resource": {"dashboard": did},
         "params": {
-            
+
         },
         "exp": round(time.time()) + (60 * 10) # 10 minute expiration
         }
@@ -66,5 +66,6 @@ def get_remark_token():
         email = request.args.get("email")
         stmt = select(User.username).where(User.email == email)
         res = db_session.execute(stmt).first()
+        app.logger.info(f"Using comment service in {appconfig.REACT_APP_REMARK_URL}")
         username = res[0]
         return {"url": appconfig.REACT_APP_REMARK_URL, "token": utils.generate_remark_token(username, email)}
