@@ -71,9 +71,9 @@ const AppHeaderDropdown = () => {
         window.location.replace('')
       })
 
-      client.get(process.env.REACT_APP_REMARK_URL + '/auth/logout', {
+      client.get('/remark42/auth/logout', {
         params: {
-          site: 'remark'
+          site: 'hsbanking'
         }
       })
   }

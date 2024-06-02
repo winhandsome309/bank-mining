@@ -68,4 +68,4 @@ def get_remark_token():
         res = db_session.execute(stmt).first()
         app.logger.info(f"Using comment service in {appconfig.REACT_APP_REMARK_URL}")
         username = res[0]
-        return {"url": appconfig.REACT_APP_REMARK_URL, "token": utils.generate_remark_token(username, email)}
+        return {"url": appconfig.REACT_APP_REMARK_URL, "token": utils.generate_remark_token(username, email, appconfig.REACT_APP_REMARK_SITE_ID)}

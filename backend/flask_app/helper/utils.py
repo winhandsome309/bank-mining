@@ -111,12 +111,12 @@ def server_return_500_if_errors(f):
             return make_response(body, 500)
     return wrapper
 
-def generate_remark_token(username, email):
+def generate_remark_token(username, email, site):
    nbf = int(time.time())
    exp = int(time.time()) + 18000
 
    payload = {
-      "aud": "remark",
+      "aud": site,
       "exp": exp,
       "iss": "remark42",
       "nbf": nbf,

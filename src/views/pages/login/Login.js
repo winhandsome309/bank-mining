@@ -74,15 +74,14 @@ const Login = () => {
     }).then((res) => {
         console.log(res.data.token)
         if (res.status === 200) {
-          const remarkURL = res.url
-          client.get(remarkURL + '/auth/email/login', {
+          client.get('/remark42/auth/email/login', {
             params: {
-              site: 'remark',
+              site: 'hsbanking',
               token: res.data.token
             }
           }).then((res) => {
             if (res.status === 200) {
-              window.location.replace('')
+              // window.location.replace('')
             }
           })
         }

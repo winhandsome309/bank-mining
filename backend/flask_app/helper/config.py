@@ -28,7 +28,8 @@ class DevConfig(object):
     MAIL_DEFAULT_SENDER         = os.environ.get("MAIL_DEFAULT_SENDER")
     # MAIL_BACKEND                = 'file'
     # MAIL_FILE_PATH              = 'backend/flask_app/temp/app-messages'
-    REACT_APP_REMARK_URL        = os.environ.get("REACT_APP_REMARK_URL", "http://localhost:8080")
+    REACT_APP_REMARK_URL        = os.environ.get("REACT_APP_REMARK_URL", "https://hsbanking.com/remark42")
+    REACT_APP_REMARK_SITE_ID    = os.environ.get("REACT_APP_REMARK_SITE_ID", "hsbanking")
 
 
     LOAN_DASHBOARD              = os.environ.get("LOAN_DASHBOARD_ID")

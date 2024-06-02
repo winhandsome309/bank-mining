@@ -60,8 +60,8 @@ const CommunicateFunction = (props) => {
   const [comFunction, setComFunction] = React.useState('Comment')
 
   var remark_config = {
-    host: 'http://localhost:8080',
-    site_id: 'remark',
+    host: 'https://hsbanking.com/remark42',
+    site_id: 'hsbanking',
     components: ['embed', 'last-comments', 'counter'],
     max_shown_comments: 100,
     theme: 'light',
@@ -91,8 +91,8 @@ const CommunicateFunction = (props) => {
     }
     script.innerHTML = `
       var remark_config = {
-        host: "http://localhost:8080",
-        site_id: "remark",
+        host: "https://hsbanking.com/remark42",
+        site_id: "hsbanking",
         theme: "light",
         components: ['embed', 'last-comments', 'counter'],
         no_footer: true,
