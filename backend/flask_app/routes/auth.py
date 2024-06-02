@@ -67,4 +67,4 @@ def get_remark_token():
         stmt = select(User.username).where(User.email == email)
         res = db_session.execute(stmt).first()
         username = res[0]
-        return {"token": utils.generate_remark_token(username, email)}
+        return {"url": appconfig.REACT_APP_REMARK_URL, "token": utils.generate_remark_token(username, email)}
