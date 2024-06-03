@@ -262,3 +262,43 @@ def delete_user():
       body = utils.create_response_body(400, True, delete_user.__name__, data={'exception': str(e)}) 
 
    return make_response(body, 400)
+
+@app.route('/api/user/profile', methods=['GET'], endpoint='get_profile')
+@utils.server_return_500_if_errors
+@roles_accepted('Maintainer', 'Admin', 'Moderator', 'Customer')
+def get_user_profile():
+   user_id = current_user.id
+   email = current_user.email
+   username = current_user.username
+   role = ""
+
+   app.logger.debug(f"GET user profile - {user_id} - {email} - {username}")
+   if current_user.has_role('Maintainer') or current_user.has_role('Moderator') or current_user.has_role('Admin'):
+      stmt = select(Staff.fname).where(Staff.user_id == user_id)
+      if current_user.has_role('Maintainer'):
+         role = "Maintainer"
+      elif current_user.has_role('Admin'):
+         role = "Admin"
+      elif current_user.has_role('Moderator'):
+         role = "Moderator"
+   else:
+      stmt = select(Customer.fname).where(Customer.user_id == user_id)
+      role = "Customer"
+   
+   res = db_session.execute(stmt).first()
+
+   fname = ""
+   if res is not None:
+      fname = res[0]
+
+   profile = {
+      'user_id': user_id,
+      'email': email,
+      'username': username,
+      'fname': fname,
+      'role': role
+   }
+   
+   body = utils.create_response_body(200, False, get_user_profile.__name__, profile)
+
+   return make_response(body, 200)

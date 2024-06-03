@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import {
   CAvatar,
   CBadge,
@@ -43,6 +43,52 @@ import avatar8 from './../../assets/images/avatars/8.jpg'
 import avatar10 from './../../assets/images/avatars/10.png'
 import client from '../../hooks//useApi'
 
+const Profile = (profile) => {
+  console.log(profile.profile)
+  console.log(profile.profile.data)
+  console.log(profile)
+  return (
+    <>
+      <CModalBody>
+        <CRow className="ms-3">
+          <CCol xs={3} className="mt-4">
+            <CAvatar src={avatar10} size="xl" />
+          </CCol>
+          <CCol xs={9}>
+            <CRow className="mb-2">
+              <span>
+                {'Email: '}
+                <span style={{ fontWeight: '600' }}>{profile.profile.data.email}</span>
+              </span>
+            </CRow>
+
+            <CRow className="mb-2">
+              <span>
+                {'Username: '}
+                <span style={{ fontWeight: '600' }}>{profile.profile.data.username}</span>
+              </span>
+            </CRow>
+
+            <CRow className="mb-2">
+              <span>
+                {'Full Name: '}
+                <span style={{ fontWeight: '600' }}>{profile.profile.data.fname}</span>
+              </span>
+            </CRow>
+
+            <CRow className="mb-2">
+              <span>
+                {'Role: '}
+                <span style={{ fontWeight: '600', color: '#5856d6' }}>{profile.profile.data.role}</span>
+              </span>
+            </CRow>
+          </CCol>
+        </CRow>
+      </CModalBody>
+    </>
+  )
+}
+
 const AppHeaderDropdown = () => {
   const [usernameResetPassword, setUsernameResetPassword] = useState('')
   const [oldPasswordResetPassword, setOldPasswordResetPassword] = useState('')
@@ -52,11 +98,18 @@ const AppHeaderDropdown = () => {
   const [visibleProfile, setVisibleProfile] = useState(false)
   const [toast, setToast] = useState(0)
   const toaster = useRef()
+  const [profile, setProfile] = useState({ "email": null, "fname": null, "username": null, "id": null })
+
+
+  const getProfile = useCallback( async() => {
+    return client.get('/api/user/profile')
+      .then((res) => res.data)
+  }, [profile])
 
   const logout = () => {
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/logout',
+        '/logout',
         {},
         {
           data: null,
@@ -71,13 +124,18 @@ const AppHeaderDropdown = () => {
         window.location.replace('')
       })
 
-      client.get(process.env.REACT_APP_REMARK_URL + '/auth/logout', {
-        params: {
-          site: 'remark'
-        }
-      })
+    client.get('/remark42/auth/logout', {
+      params: {
+        site: 'hsbanking'
+      }
+    })
   }
 
+  useEffect(
+    () => {
+      getProfile().then((data) => setProfile(data))
+    }, []
+  )
   const successToast = (msg) => (
     <CToast title="Success" color="success" className="d-flex">
       <CToastBody>{msg} !</CToastBody>
@@ -103,7 +161,7 @@ const AppHeaderDropdown = () => {
     formData.append('oldPassword', oldPasswordResetPassword)
     formData.append('newPassword', newPasswordResetPassword)
     client
-      .post(process.env.REACT_APP_API_ENDPOINT + '/api/customer/reset-password', formData)
+      .post('/api/customer/reset-password', formData)
       .then((res) => {
         if (res.status === 200) {
           setLoadingButton(false)
@@ -223,48 +281,14 @@ const AppHeaderDropdown = () => {
         <CModalHeader>
           <CModalTitle>Your Profile</CModalTitle>
         </CModalHeader>
-        <CModalBody>
-          <CRow className="ms-3">
-            <CCol xs={3} className="mt-4">
-              <CAvatar src={avatar10} size="xl" />
-            </CCol>
-            <CCol xs={9}>
-              <CRow className="mb-2">
-                <span>
-                  {'Email: '}
-                  <span style={{ fontWeight: '600' }}>xuanthangnguyen@banking.com</span>
-                </span>
-              </CRow>
-
-              <CRow className="mb-2">
-                <span>
-                  {'Username: '}
-                  <span style={{ fontWeight: '600' }}>thangnguyen</span>
-                </span>
-              </CRow>
-
-              <CRow className="mb-2">
-                <span>
-                  {'Full Name: '}
-                  <span style={{ fontWeight: '600' }}>Nguyen Xuan Thang</span>
-                </span>
-              </CRow>
-
-              <CRow className="mb-2">
-                <span>
-                  {'Role: '}
-                  <span style={{ fontWeight: '600', color: '#5856d6' }}>Admin</span>
-                </span>
-              </CRow>
-            </CCol>
-          </CRow>
-        </CModalBody>
+        <Profile profile={profile} />
         <CModalFooter>
-          <CButton color="primary" onClick={() => {}}>
+          <CButton color="primary" onClick={() => { }}>
             Edit
           </CButton>
         </CModalFooter>
       </CModal>
+      {/* <Profile profile={profile} visibleProfile={visibleProfile} /> */}
       <CToaster ref={toaster} push={toast} placement="top-end" />
     </>
   )
