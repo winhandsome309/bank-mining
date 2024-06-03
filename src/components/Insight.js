@@ -182,7 +182,7 @@ const Insight = (props) => {
                               >
                                 {value.value[0]}
                               </span>
-                              {' people are fraud with this value'}
+                              {' people are ' + props.msg + ' with this value'}
                             </>
                           )}
                         </CCardBody>

@@ -41,20 +41,25 @@ def waiting_list():
         stmt = select(Application).where(Application.processed == False)
         res = db_session.execute(stmt).all()
 
-        ans = utils.parse_output(res)
-        for app in ans:
-            stmt = select(PredictResult).where(PredictResult.id == app["id"])
-            resPredictResult = db_session.execute(stmt).all()
-            temp = utils.parse_output(resPredictResult)
+        try:
+            ans = utils.parse_output(res)
+            for app in ans:
+                stmt = select(PredictResult).where(PredictResult.id == app["id"])
+                resPredictResult = db_session.execute(stmt).all()
+                temp = utils.parse_output(resPredictResult)
 
-            count = 0
-            for _, modelPredict in ast.literal_eval(temp[0]["predict"]).items():
-                if modelPredict == 0:
-                    count += 1
-                    
-            app["num_model_accept"] = count
+                count = 0
+                if len(temp) != 0:
+                    for _, modelPredict in ast.literal_eval(temp[0]["predict"]).items():
+                        if modelPredict == 0:
+                            count += 1
+                        
+                app["num_model_accept"] = count
 
-        db_session.commit()
+            db_session.commit()
+        
+        except Exception as e:
+            print("aa", e)
 
         return ans
 
@@ -200,7 +205,7 @@ def list_waiting_list():
 @roles_accepted('Admin', 'Maintainer')
 def processed_list():
     if request.method == "GET":
-            stmt = select(Application).where(Application.processed == True)
+            stmt = select(Application).where(Application.processed == True).order_by(desc(Application.processed_at))
             res = db_session.execute(stmt).all()
             db_session.commit()
             return utils.parse_output(res)
@@ -221,7 +226,7 @@ def toggle_process_application():
     #         .values(processed = not application.processed, processed_at=processed_at)
 
     stmt = update(Application).where(Application.id == applicaton_id) \
-            .values(processed = True, processed_at=processed_at, process_result=(int(result) == 1))
+            .values(processed = ~(Application.processed), processed_at=processed_at, process_result=(int(result) == 1))
     db_session.execute(stmt)
     db_session.commit()
 

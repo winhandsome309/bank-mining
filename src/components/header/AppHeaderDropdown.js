@@ -79,7 +79,9 @@ const Profile = (profile) => {
             <CRow className="mb-2">
               <span>
                 {'Role: '}
-                <span style={{ fontWeight: '600', color: '#5856d6' }}>{profile.profile.data.role}</span>
+                <span style={{ fontWeight: '600', color: '#5856d6' }}>
+                  {profile.profile.data.role}
+                </span>
               </span>
             </CRow>
           </CCol>
@@ -98,18 +100,16 @@ const AppHeaderDropdown = () => {
   const [visibleProfile, setVisibleProfile] = useState(false)
   const [toast, setToast] = useState(0)
   const toaster = useRef()
-  const [profile, setProfile] = useState({ "email": null, "fname": null, "username": null, "id": null })
+  const [profile, setProfile] = useState({ email: null, fname: null, username: null, id: null })
 
-
-  const getProfile = useCallback( async() => {
-    return client.get('/api/user/profile')
-      .then((res) => res.data)
+  const getProfile = useCallback(async () => {
+    return client.get('/api/user/profile').then((res) => res.data)
   }, [profile])
 
   const logout = () => {
     client
       .post(
-        '/logout',
+        process.env.REACT_APP_API_ENDPOINT + '/logout',
         {},
         {
           data: null,
@@ -124,18 +124,16 @@ const AppHeaderDropdown = () => {
         window.location.replace('')
       })
 
-    client.get('/remark42/auth/logout', {
+    client.get(process.env.REACT_APP_REMARK_URL + '/auth/logout', {
       params: {
-        site: 'hsbanking'
-      }
+        site: 'remark',
+      },
     })
   }
 
-  useEffect(
-    () => {
-      getProfile().then((data) => setProfile(data))
-    }, []
-  )
+  useEffect(() => {
+    getProfile().then((data) => setProfile(data))
+  }, [])
   const successToast = (msg) => (
     <CToast title="Success" color="success" className="d-flex">
       <CToastBody>{msg} !</CToastBody>
@@ -160,15 +158,13 @@ const AppHeaderDropdown = () => {
     formData.append('email', usernameResetPassword)
     formData.append('oldPassword', oldPasswordResetPassword)
     formData.append('newPassword', newPasswordResetPassword)
-    client
-      .post('/api/customer/reset-password', formData)
-      .then((res) => {
-        if (res.status === 200) {
-          setLoadingButton(false)
-          setToast(successToast('Reset password successully'))
-          setVisibleResetPassword(false)
-        }
-      })
+    client.post('/api/customer/reset-password', formData).then((res) => {
+      if (res.status === 200) {
+        setLoadingButton(false)
+        setToast(successToast('Reset password successully'))
+        setVisibleResetPassword(false)
+      }
+    })
   }
 
   return (
@@ -281,9 +277,44 @@ const AppHeaderDropdown = () => {
         <CModalHeader>
           <CModalTitle>Your Profile</CModalTitle>
         </CModalHeader>
-        <Profile profile={profile} />
+        <CModalBody>
+          <CRow className="ms-3">
+            <CCol xs={3} className="mt-4">
+              <CAvatar src={avatar10} size="xl" />
+            </CCol>
+            <CCol xs={9}>
+              <CRow className="mb-2">
+                <span>
+                  {'Email: '}
+                  <span style={{ fontWeight: '600' }}>admin@banking.com</span>
+                </span>
+              </CRow>
+
+              <CRow className="mb-2">
+                <span>
+                  {'Username: '}
+                  <span style={{ fontWeight: '600' }}>admin</span>
+                </span>
+              </CRow>
+
+              <CRow className="mb-2">
+                <span>
+                  {'Full Name: '}
+                  <span style={{ fontWeight: '600' }}>Admin</span>
+                </span>
+              </CRow>
+
+              <CRow className="mb-2">
+                <span>
+                  {'Role: '}
+                  <span style={{ fontWeight: '600', color: '#5856d6' }}>Admin</span>
+                </span>
+              </CRow>
+            </CCol>
+          </CRow>
+        </CModalBody>
         <CModalFooter>
-          <CButton color="primary" onClick={() => { }}>
+          <CButton color="primary" onClick={() => {}}>
             Edit
           </CButton>
         </CModalFooter>

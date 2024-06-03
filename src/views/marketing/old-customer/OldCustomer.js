@@ -396,17 +396,17 @@ const OldCustomer = () => {
           <div></div>
           <div>
             <CButton
-              color="danger"
+              color="primary"
               className="me-2"
               onClick={() => {
-                setVisibleApp(false)
-                setMsgRecheck('CHURNED')
-                setVisibleRecheck(true)
+                // setVisibleApp(false)
+                // setMsgRecheck('CHURNED')
+                // setVisibleRecheck(true)
               }}
             >
-              Churned
+              Undo
             </CButton>
-            <CButton
+            {/* <CButton
               color="success"
               onClick={() => {
                 setVisibleApp(false)
@@ -415,7 +415,7 @@ const OldCustomer = () => {
               }}
             >
               Loyal
-            </CButton>
+            </CButton> */}
           </div>
         </CFooter>
       </COffcanvas>

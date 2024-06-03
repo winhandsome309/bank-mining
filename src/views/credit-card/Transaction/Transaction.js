@@ -542,7 +542,7 @@ const Transaction = () => {
                     <CCardHeader>
                       <div className="d-none d-md-flex">
                         <strong>Detail</strong>
-                        {<Insight data={appData} api={'/api/credit_card/detail'} />}
+                        {<Insight data={appData} api={'/api/credit_card/detail'} msg={'fraud'} />}
                       </div>
                     </CCardHeader>
                     <CCardBody>

@@ -188,12 +188,10 @@ const Waiting = (props) => {
 
   const deleteApplication = async (id) => {
     const formData = new FormData()
-    formData.append('id', id)
-    // formData.append('result', 0)
+    formData.append('application_id', id)
+    formData.append('result', 0)
     client
-      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', {
-        data: formData,
-      })
+      .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/process', formData)
       .then((res) => {
         if (res.status === 200) {
           addToast(warningToast('Rejected successfully'))
@@ -319,6 +317,10 @@ const Waiting = (props) => {
       })
   }
 
+  const normalLize = (temp) => {
+    return temp
+  }
+
   return (
     <>
       <CRow>
@@ -359,10 +361,14 @@ const Waiting = (props) => {
                       <CTableHeaderCell className="bg-body-tertiary ">
                         Credit Policy
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Int Rate</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">Installment</CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">
-                        Log Annual Inc
+                        Interest Rate (%)
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">
+                        Installment ($)
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">
+                        Annualy Income ($)
                       </CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">...</CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary text-center">
@@ -399,7 +405,7 @@ const Waiting = (props) => {
                           <div>{item.installment}</div>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div>{item.log_annual_inc}</div>
+                          <div>{Math.round(Math.exp(item.log_annual_inc) * 100) / 100}</div>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>...</div>
@@ -478,23 +484,38 @@ const Waiting = (props) => {
                     <CCardHeader>
                       <div className="d-none d-md-flex">
                         <strong>Detail</strong>
-                        {<Insight data={appData} api={'/api/loan_application/detail'} />}
+                        {
+                          <Insight
+                            data={appData}
+                            api={'/api/loan_application/detail'}
+                            msg={'not fully paid'}
+                          />
+                        }
                       </div>
                     </CCardHeader>
                     <CCardBody>
                       <CCol>
-                        {listLoanParams.map((params, index) => (
-                          <CRow className="mb-1">
-                            <CCol>
-                              <CContainer>
-                                <CTooltip placement="left" content={params[1]}>
-                                  <div> {params[0]} </div>
-                                </CTooltip>
-                              </CContainer>
-                            </CCol>
-                            <CCol>{appData[params[0]]}</CCol>
-                          </CRow>
-                        ))}
+                        {listLoanParams.map(
+                          (params, index) =>
+                            params[0] != 'dti' && (
+                              <CRow className="mb-1">
+                                <CCol>
+                                  <CContainer>
+                                    <CTooltip placement="left" content={params[1]}>
+                                      <div> {params[2] == 'normal' ? params[3] : params[5]} </div>
+                                    </CTooltip>
+                                  </CContainer>
+                                </CCol>
+                                <CCol>
+                                  {params[0] == 'customer_id'
+                                    ? '0017'
+                                    : params[0] == 'log_annual_inc'
+                                      ? Math.round(Math.exp(appData[params[0]]) * 100) / 100
+                                      : appData[params[0]]}
+                                </CCol>
+                              </CRow>
+                            ),
+                        )}
                       </CCol>
 
                       <hr />

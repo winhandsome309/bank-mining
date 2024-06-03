@@ -1,24 +1,25 @@
 const listLoanParams = [
-  // ['customer_id', 'ID of customer who submitted this application.', 'normal'],
+  ['customer_id', 'ID of customer who submitted this application.', 'normal', 'Customer ID'],
   [
     'credit_policy',
     '1 if the customer meets the credit underwriting criteria; 0 otherwise.',
     'select',
     ['yes', 'no'],
     [1, 0],
+    'Credit Policy',
   ],
   [
     'purpose',
     'The purpose of the loan.',
     'select',
     [
-      'debt_consolidation',
-      'educational',
-      'credit_card',
-      'major_purchase',
-      'home_improvement',
-      'small_business',
-      'all_other',
+      'Debt Consolidation',
+      'Educational',
+      'Credit Card',
+      'Major Purchase',
+      'Home Improvement',
+      'Small Business',
+      'Other',
     ],
     [
       'debt_consolidation',
@@ -29,34 +30,49 @@ const listLoanParams = [
       'small_business',
       'all_other',
     ],
+    'Purpose',
   ],
   [
     'int_rate',
     'The interest rate of the loan (more risky borrowers are assigned higher interest rates).',
     'normal',
+    'Interest Rate (%)',
   ],
-  ['installment', 'The monthly installments owed by the borrower if the loan is funded.', 'normal'],
+  [
+    'installment',
+    'The monthly installments owed by the borrower if the loan is funded.',
+    'normal',
+    'Installment ($)',
+  ],
   [
     'log_annual_inc',
     'The natural log of the self-reported annual income of the borrower.',
     'normal',
+    'Annualy Income ($)',
   ],
   [
     'dti',
     'The debt-to-income ratio of the borrower (amount of debt divided by annual income).',
     'normal',
   ],
-  ['fico', 'The FICO credit score of the borrower.', 'normal'],
-  ['days_with_cr_line', 'The number of days the borrower has had a credit line.', 'normal'],
+  ['fico', 'The FICO credit score of the borrower.', 'normal', 'Credit Score'],
+  [
+    'days_with_cr_line',
+    'The number of days the borrower has had a credit line.',
+    'normal',
+    'Day With Credit Line',
+  ],
   [
     'revol_bal',
     "The borrower's revolving balance (amount unpaid at the end of the credit card billing cycle).",
     'normal',
+    'Revoling Balance',
   ],
   [
     'revol_util',
     "The borrower's revolving line utilization rate (the amount of the credit line used relative to total credit available).",
     'normal',
+    'Revolving Utilization',
   ],
   [
     'inq_last_6mths',
@@ -64,6 +80,7 @@ const listLoanParams = [
     'select',
     ['yes', 'no'],
     [1, 0],
+    'Inquiries Last 6mths',
   ],
   [
     'delinq_2yrs',
@@ -71,6 +88,7 @@ const listLoanParams = [
     'select',
     ['yes', 'no'],
     [1, 0],
+    'Delinquent 2 years',
   ],
   [
     'pub_rec',
@@ -78,6 +96,7 @@ const listLoanParams = [
     'select',
     ['yes', 'no'],
     [1, 0],
+    'Bad Public Record',
   ],
 ]
 

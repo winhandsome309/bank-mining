@@ -515,7 +515,7 @@ const PotentialCustomer = (props) => {
                     <CCardHeader>
                       <div className="d-none d-md-flex">
                         <strong>Detail</strong>
-                        {<Insight data={appData} api={'/api/marketing/detail'} />}
+                        {<Insight data={appData} api={'/api/marketing/detail'} msg={'deposit'} />}
                       </div>
                     </CCardHeader>
                     <CCardBody>

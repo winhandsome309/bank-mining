@@ -41,6 +41,7 @@ import {
   CFooter,
   CForm,
   CSpinner,
+  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -163,6 +164,20 @@ const Processed = () => {
     </CToast>
   )
 
+  const undoApp = (id) => {
+    const formData = new FormData()
+    formData.append('application_id', id)
+    formData.append('result', 1)
+    client
+      .post(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/process', formData)
+      .then((res) => {
+        if (res.status === 200) {
+          addToast(successToast('Undo successully'))
+          fetchApplication()
+        }
+      })
+  }
+
   return (
     <>
       <CRow>
@@ -204,14 +219,16 @@ const Processed = () => {
                         ID
                       </CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">Purpose</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary ">
+                      <CTableHeaderCell className="bg-body-tertiary">
                         Credit Policy
                       </CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">Int Rate</CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">Installment</CTableHeaderCell>
-                      <CTableHeaderCell className="bg-body-tertiary">
+                      {/* <CTableHeaderCell className="bg-body-tertiary">
                         Log Annual Inc
-                      </CTableHeaderCell>
+                      </CTableHeaderCell> */}
+                      <CTableHeaderCell className="bg-body-tertiary">Processed At</CTableHeaderCell>
+                      <CTableHeaderCell className="bg-body-tertiary">Status</CTableHeaderCell>
                       <CTableHeaderCell className="bg-body-tertiary">...</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -241,8 +258,19 @@ const Processed = () => {
                         <CTableDataCell>
                           <div>{item.installment}</div>
                         </CTableDataCell>
-                        <CTableDataCell>
+                        {/* <CTableDataCell>
                           <div>{item.log_annual_inc}</div>
+                        </CTableDataCell> */}
+                        <CTableDataCell>
+                          <div>{item.processed_at}</div>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          <CBadge
+                            color={item.process_result == true ? 'success' : 'danger'}
+                            shape="rounded-pill"
+                          >
+                            {item.process_result == true ? 'Accepted' : 'Rejected'}
+                          </CBadge>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div>...</div>
@@ -288,6 +316,17 @@ const Processed = () => {
           <div></div>
           <div>
             <CButton
+              color="primary"
+              className="me-2"
+              onClick={() => {
+                setVisibleApp(false)
+                setMsgRecheck('UNDO')
+                setVisibleRecheck(true)
+              }}
+            >
+              Undo
+            </CButton>
+            {/* <CButton
               color="danger"
               className="me-2"
               onClick={() => {
@@ -307,7 +346,7 @@ const Processed = () => {
               }}
             >
               Solvent
-            </CButton>
+            </CButton> */}
           </div>
         </CFooter>
       </COffcanvas>
@@ -318,14 +357,10 @@ const Processed = () => {
         onClose={() => setVisibleRecheck(false)}
       >
         <CModalHeader>
-          <CModalTitle>Create Application</CModalTitle>
+          <CModalTitle>Undo Application</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <span>Application </span>
-          <span className="fw-semibold"> {appData['purpose']} </span>
-          <span>is </span>
-          <span style={{ color: msgRecheck === 'ACCEPT' ? 'green' : 'red' }}>{msgRecheck}</span>
-          <span>?</span>
+          <span>Are you sure ?</span>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setVisibleRecheck(false)}>
@@ -334,8 +369,7 @@ const Processed = () => {
           <CButton
             color="primary"
             onClick={() => {
-              if (msgRecheck == 'ACCEPT') addToast(successToast('Accepted successully'))
-              else addToast(warningToast('Rejected successfully'))
+              undoApp(appData.id)
               setVisibleRecheck(false)
             }}
           >

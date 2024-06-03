@@ -327,11 +327,16 @@ const CustomerWaiting = () => {
                           setAppData(item['Application'])
                           setVisibleApp(true)
                           setCurrentStep(item['step'])
-                          const myDate = new Date(item['Application'].id * 1000)
-                            .toISOString()
-                            .slice(0, 19)
-                            .replace('T', ' ')
-                          setLastUpdate(myDate)
+                          // const myDate = new Date(item['Application'].id * 1000)
+                          //   .toISOString()
+                          //   .slice(0, 19)
+                          //   .replace('T', ' ')
+                          if (item['Application']['processed']) {
+                            setLastUpdate(item['Application']['processed_at'])
+                          } else {
+                            setLastUpdate(item['Application']['created'])
+                          }
+
                           setChangeApp(!changeApp)
                         }}
                       >

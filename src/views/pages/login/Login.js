@@ -67,25 +67,29 @@ const Login = () => {
   }
 
   const commentHandle = async () => {
-    client.get(process.env.REACT_APP_API_ENDPOINT + '/api/remark/get-token', {
-      params: {
-        email: userName
-      }
-    }).then((res) => {
+    client
+      .get(process.env.REACT_APP_API_ENDPOINT + '/api/remark/get-token', {
+        params: {
+          email: userName,
+        },
+      })
+      .then((res) => {
         console.log(res.data.token)
         if (res.status === 200) {
-          client.get(process.env.REACT_APP_REMARK_URL + '/auth/email/login', {
-            params: {
-              site: 'remark',
-              token: res.data.token
-            }
-          }).then((res) => {
-            if (res.status === 200) {
-              window.location.replace('')
-            }
-          })
+          client
+            .get(process.env.REACT_APP_REMARK_URL + '/auth/email/login', {
+              params: {
+                site: 'remark',
+                token: res.data.token,
+              },
+            })
+            .then((res) => {
+              if (res.status === 200) {
+                window.location.replace('')
+              }
+            })
         }
-    })
+      })
   }
 
   function sleep(time) {
