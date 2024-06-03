@@ -70,7 +70,7 @@ const Voting = (props) => {
     client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/voting', {
         params: {
-          id: props.applicationId,
+          id: props.appData['id'],
         },
       })
       .then((res) => {
@@ -81,8 +81,10 @@ const Voting = (props) => {
           setLike(0)
           setDislike(0)
         } else {
-          setLike((likeVal * 100) / sum)
-          setDislike((dislikeVal * 100) / sum)
+          var a = (likeVal * 100) / sum
+          var b = (dislikeVal * 100) / sum
+          setLike(Math.round((a * 100) / 100))
+          setDislike(Math.round((b * 100) / 100))
           setNumberLike(likeVal)
           setNumberDislike(dislikeVal)
         }
@@ -91,8 +93,10 @@ const Voting = (props) => {
   }
 
   React.useEffect(() => {
-    fetchVoting()
-  }, [])
+    if (props.appData['id'] != '') {
+      fetchVoting()
+    }
+  }, [props.changeApp])
 
   return (
     <>

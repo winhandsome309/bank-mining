@@ -16,6 +16,7 @@ import time
 from flask_security import roles_accepted, auth_required, current_user, login_required
 import pandas
 import time
+import ast
 
 model_info = wk.ModelInfo.create("Loan Application")
 worker = wk.LoanWorker(model_info)
@@ -39,9 +40,23 @@ def waiting_list():
     if request.method == "GET":
         stmt = select(Application).where(Application.processed == False)
         res = db_session.execute(stmt).all()
+
+        ans = utils.parse_output(res)
+        for app in ans:
+            stmt = select(PredictResult).where(PredictResult.id == app["id"])
+            resPredictResult = db_session.execute(stmt).all()
+            temp = utils.parse_output(resPredictResult)
+
+            count = 0
+            for _, modelPredict in ast.literal_eval(temp[0]["predict"]).items():
+                if modelPredict == 0:
+                    count += 1
+                    
+            app["num_model_accept"] = count
+
         db_session.commit()
 
-        return utils.parse_output(res)
+        return ans
 
     if request.method == "POST":
         form = request.form
@@ -116,12 +131,14 @@ def waiting_list():
             return make_response("Record not found", 401)
         stmtDeletePredict = delete(PredictResult).where(PredictResult.id == id)
         stmtDeleteApp = delete(Application).where(Application.id == id)
-        _ = db_session.execute(stmtDeletePredict)
-        db_session.commit()
+        try:
+            _ = db_session.execute(stmtDeletePredict)
+            db_session.commit()
 
-        _ = db_session.execute(stmtDeleteApp)
-        db_session.commit()
-
+            _ = db_session.execute(stmtDeleteApp)
+            db_session.commit()
+        except Exception as e:
+            return make_response("Failed", 400)    
         return make_response("Deleted", 200)
 
 @app.route("/api/loan_application/list/waiting-list", methods=["POST"], endpoint='list_waiting_list')

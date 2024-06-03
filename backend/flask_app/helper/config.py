@@ -29,3 +29,7 @@ class DevConfig(object):
     # MAIL_BACKEND                = 'file'
     # MAIL_FILE_PATH              = 'backend/flask_app/temp/app-messages'
     REACT_APP_REMARK_URL        = os.environ.get("REACT_APP_REMARK_URL","http://localhost:8080")
+
+    LOAN_DASHBOARD              = os.environ.get("REACT_APP_LOAN_DASHBOARD")
+    MARKETING_DASHBOARD         = os.environ.get("REACT_APP_MARKETING_DASHBOARD")
+    CREDITCARD_DASHBOARD        = os.environ.get("REACT_APP_CREDITCARD_DASHBOARD")

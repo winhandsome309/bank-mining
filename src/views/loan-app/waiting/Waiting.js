@@ -42,6 +42,8 @@ import {
   CFormSelect,
   CCollapse,
   CNavLink,
+  CBadge,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -80,7 +82,7 @@ import listLoanParams from '../ListParams'
 import Insight from '../../../components/Insight'
 import Filter from '../../../components/Filter'
 
-const Waiting = () => {
+const Waiting = (props) => {
   const [uploadFile, setUploadFile] = useState(true)
   const [visibleCreate, setVisibleCreate] = useState(false)
   const [visibleApp, setVisibleApp] = useState(false)
@@ -138,11 +140,13 @@ const Waiting = () => {
   const [loadingMultipleCreation, setLoadingMultipleCreation] = useState(false)
   const isMounted = useRef(false)
   const [checkFetchVote, setCheckFetchVote] = useState(false)
+  const [loadingFetch, setLoadingFetch] = useState(true)
 
   const fetchApplication = async () => {
     client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list')
       .then((res) => {
+        setLoadingFetch(false)
         setTableData(res.data)
       })
   }
@@ -184,10 +188,10 @@ const Waiting = () => {
 
   const deleteApplication = async (id) => {
     const formData = new FormData()
-    formData.append('application_id', id)
-    formData.append('result', 0)
+    formData.append('id', id)
+    // formData.append('result', 0)
     client
-      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/process', {
+      .delete(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/waiting-list', {
         data: formData,
       })
       .then((res) => {
@@ -237,6 +241,7 @@ const Waiting = () => {
   }
 
   useEffect(() => {
+    setLoadingFetch(true)
     fetchApplication()
   }, [])
 
@@ -276,6 +281,44 @@ const Waiting = () => {
 
   const [filteredData, setFilteredData] = useState([])
 
+  const likeApp = async (id) => {
+    client
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/api/voting',
+        {},
+        {
+          params: {
+            id: id,
+            status: 'like',
+          },
+        },
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          addToast(successToast('Liked successully'))
+        }
+      })
+  }
+
+  const dislikeApp = async (id) => {
+    client
+      .post(
+        process.env.REACT_APP_API_ENDPOINT + '/api/voting',
+        {},
+        {
+          params: {
+            id: id,
+            status: 'dislike',
+          },
+        },
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          addToast(successToast('Disliked successully'))
+        }
+      })
+  }
+
   return (
     <>
       <CRow>
@@ -300,7 +343,9 @@ const Waiting = () => {
               </div>
             </CCardHeader>
             <CCardBody>
-              {tableData.length == 0 || filteredData == -1 ? (
+              {loadingFetch == true ? (
+                <CSpinner />
+              ) : tableData.length == 0 || filteredData == -1 ? (
                 <div>There is nothing to show</div>
               ) : (
                 <CTable align="middle" className="mb-0 border" hover responsive>
@@ -360,7 +405,13 @@ const Waiting = () => {
                           <div>...</div>
                         </CTableDataCell>
                         <CTableDataCell className="text-center space-between">
-                          <CIcon
+                          <CBadge
+                            color={item.num_model_accept >= 2 ? 'success' : 'danger'}
+                            shape="rounded-pill"
+                          >
+                            {item.num_model_accept + ' / 3'}
+                          </CBadge>
+                          {/* <CIcon
                             icon={cilCheck}
                             className="text-success"
                             onClick={(e) => {
@@ -380,7 +431,7 @@ const Waiting = () => {
                               setMsgRecheck('REJECT')
                               setVisibleRecheck(true)
                             }}
-                          />
+                          /> */}
                         </CTableDataCell>
                       </CTableRow>
                     ))}
@@ -552,11 +603,7 @@ const Waiting = () => {
               <CRow>
                 {changeApp && (
                   <div>
-                    <Voting
-                      applicationId={appData['id']}
-                      checkFetchVote={checkFetchVote}
-                      setCheckFetchVote={setCheckFetchVote}
-                    />
+                    <Voting appData={appData} changeApp={changeApp} />
                   </div>
                 )}
               </CRow>
@@ -573,21 +620,29 @@ const Waiting = () => {
               className="me-2"
               onClick={() => {
                 setVisibleApp(false)
-                setMsgRecheck('REJECT')
+                if (props.role == 'moderator') {
+                  setMsgRecheck('DISLIKE')
+                } else {
+                  setMsgRecheck('REJECT')
+                }
                 setVisibleRecheck(true)
               }}
             >
-              <span style={{ color: 'white' }}>Reject</span>
+              {props.role == 'admin' ? 'Reject' : 'Dislike'}
             </CButton>
             <CButton
               color="success"
               onClick={() => {
                 setVisibleApp(false)
-                setMsgRecheck('ACCEPT')
+                if (props.role == 'moderator') {
+                  setMsgRecheck('LIKE')
+                } else {
+                  setMsgRecheck('ACCEPT')
+                }
                 setVisibleRecheck(true)
               }}
             >
-              <span style={{ color: 'white' }}>Accept</span>
+              {props.role == 'admin' ? 'Accept' : 'Like'}
             </CButton>
           </div>
         </CFooter>
@@ -599,11 +654,15 @@ const Waiting = () => {
         onClose={() => setVisibleRecheck(false)}
       >
         <CModalHeader>
-          <CModalTitle>Create Application</CModalTitle>
+          <CModalTitle>Voting Application</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <span>Are you sure to want to </span>
-          <span style={{ color: msgRecheck === 'ACCEPT' ? 'green' : 'red' }}>{msgRecheck}</span>
+          <span
+            style={{ color: msgRecheck === 'ACCEPT' || msgRecheck === 'LIKE' ? 'green' : 'red' }}
+          >
+            {msgRecheck}
+          </span>
           <span>?</span>
         </CModalBody>
         <CModalFooter>
@@ -613,10 +672,18 @@ const Waiting = () => {
           <CButton
             color="primary"
             onClick={() => {
-              if (msgRecheck == 'ACCEPT') {
-                acceptApplication(appData.id)
+              if (msgRecheck == 'ACCEPT' || msgRecheck == 'LIKE') {
+                if (props.role == 'admin') {
+                  acceptApplication(appData.id)
+                } else {
+                  likeApp(appData.id)
+                }
               } else {
-                deleteApplication(appData.id)
+                if (props.role == 'admin') {
+                  deleteApplication(appData.id)
+                } else {
+                  dislikeApp(appData.id)
+                }
               }
               setVisibleRecheck(false)
             }}

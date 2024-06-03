@@ -27,6 +27,13 @@ import {
   CWidgetStatsD,
   CContainer,
   CSpinner,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
+  CListGroup,
+  CListGroupItem,
 } from '@coreui/react'
 import { Doughnut } from 'react-chartjs-2'
 import CIcon from '@coreui/icons-react'
@@ -54,6 +61,7 @@ import {
   cilBell,
   cilCheck,
   cilX,
+  cilPlus,
 } from '@coreui/icons'
 import axios from 'axios'
 import client from '../../../hooks/useApi'
@@ -82,6 +90,13 @@ const Models = () => {
   const [model, setModel] = useState('Logistic regression')
   const [modelInfo, setModelInfo] = useState([])
   const [indexModel, setIndexModel] = useState(0)
+  const [showCompare, setShowCompare] = useState(false)
+  const [rankingModel, setRankingModel] = useState({
+    accuracy: [],
+    precision: [],
+    recall: [],
+  })
+  const [loadingFetch, setLoadingFetch] = useState(true)
 
   const fetchModelInfo = async () => {
     client
@@ -103,12 +118,32 @@ const Models = () => {
           //         10000,
           //     ) / 10000
           // }
+          var temp = res.data
+          var arr = rankingModel
+          for (var i = 0; i < temp.length; i++) {
+            var a = [temp[i]['model'], temp[i]['accuracy']]
+            var b = [temp[i]['model'], temp[i]['precision']]
+            var c = [temp[i]['model'], temp[i]['recall']]
+            arr['accuracy'].push(a)
+            arr['precision'].push(b)
+            arr['recall'].push(c)
+          }
+
+          for (var key in arr) {
+            arr[key].sort(function (first, second) {
+              return second[1] - first[1]
+            })
+          }
+
+          setRankingModel(arr)
           setModelInfo(res.data)
+          setLoadingFetch(false)
         }
       })
   }
 
   useEffect(() => {
+    setLoadingFetch(true)
     fetchModelInfo()
   }, [])
 
@@ -167,9 +202,20 @@ const Models = () => {
                   </CDropdownMenu>
                 </CDropdown>
               </div>
+              <div className="ms-auto focus:cursor-auto">
+                <CButton
+                  color="primary"
+                  onClick={() => {
+                    setShowCompare(true)
+                  }}
+                  className="ms-4"
+                >
+                  Compare
+                </CButton>
+              </div>
             </CCardHeader>
             <CCardBody>
-              {loading ? (
+              {loading || loadingFetch ? (
                 <CSpinner />
               ) : (
                 <CCol>
@@ -228,6 +274,49 @@ const Models = () => {
           </CCard>
         </CCol>
       </CRow>
+
+      <CModal
+        scrollable
+        visible={showCompare}
+        backdrop="static"
+        alignment="center"
+        onClose={() => setShowCompare(false)}
+      >
+        <CModalHeader>
+          <CModalTitle>Ranking Model</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CListGroup>
+            <CListGroupItem>
+              <span style={{ fontWeight: '700' }}>Highest Accuracy</span>
+              {rankingModel['accuracy'].map((item, index) => (
+                <div className="ms-4">
+                  {index + 1}. {item[0]}: {item[1]}
+                </div>
+              ))}
+            </CListGroupItem>
+            <CListGroupItem>
+              <span style={{ fontWeight: '700' }}>Highest Precision</span>
+              {rankingModel['precision'].map((item, index) => (
+                <div className="ms-4">
+                  {index + 1}. {item[0]}: {item[1]}
+                </div>
+              ))}
+            </CListGroupItem>
+            <CListGroupItem>
+              <span style={{ fontWeight: '700' }}>Highest Recall</span>
+              {rankingModel['recall'].map((item, index) => (
+                <div className="ms-4">
+                  {index + 1}. {item[0]}: {item[1]}
+                </div>
+              ))}
+            </CListGroupItem>
+          </CListGroup>
+          {/* <div>Highest Accuracy</div>
+          <div>Highest Precision</div>
+          <div>Highest Recall</div> */}
+        </CModalBody>
+      </CModal>
     </>
   )
 }

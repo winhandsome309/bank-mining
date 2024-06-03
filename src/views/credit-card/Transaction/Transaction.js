@@ -145,6 +145,98 @@ const Transaction = () => {
     client.get(process.env.REACT_APP_API_ENDPOINT + '/api/credit_card/transaction').then((res) => {
       if (res.status == 200) {
         var data = res.data
+        // data = [
+        //   {
+        //     created: 'Sun, 28 Apr 2024 18:17:13 GMT',
+        //     distance_from_home: 57.87785658389723,
+        //     distance_from_last_transaction: 0.3111400080477545,
+        //     id: '1714303033',
+        //     online_order: 0.0,
+        //     predict:
+        //       "{'decisiontreeclassifier': 0.0, 'kneighborsclassifier': 0.0, 'randomforestclassifier': 0.0}",
+        //     processed: false,
+        //     processed_at: null,
+        //     ratio_to_median_purchase_price: 1.9459399775518593,
+        //     repeat_retailer: 1.0,
+        //     used_chip: 1.0,
+        //     used_pin_number: 0.0,
+        //   },
+        //   {
+        //     created: 'Sat, 11 May 2024 11:00:54 GMT',
+        //     distance_from_home: 10.829942699255545,
+        //     distance_from_last_transaction: 0.17559150228166587,
+        //     id: '1715400054',
+        //     online_order: 0.0,
+        //     predict:
+        //       "{'decisiontreeclassifier': 0.0, 'kneighborsclassifier': 0.0, 'randomforestclassifier': 0.0}",
+        //     processed: false,
+        //     processed_at: null,
+        //     ratio_to_median_purchase_price: 1.2942188106198573,
+        //     repeat_retailer: 1.0,
+        //     used_chip: 0.0,
+        //     used_pin_number: 0.0,
+        //   },
+        //   {
+        //     created: 'Sat, 11 May 2024 11:00:54 GMT',
+        //     distance_from_home: 5.091079490616996,
+        //     distance_from_last_transaction: 0.8051525945853258,
+        //     id: '1715400054',
+        //     online_order: 0.0,
+        //     predict:
+        //       "{'decisiontreeclassifier': 0.0, 'kneighborsclassifier': 0.0, 'randomforestclassifier': 0.0}",
+        //     processed: false,
+        //     processed_at: null,
+        //     ratio_to_median_purchase_price: 0.42771456119427587,
+        //     repeat_retailer: 1.0,
+        //     used_chip: 0.0,
+        //     used_pin_number: 0.0,
+        //   },
+        //   {
+        //     created: 'Sat, 11 May 2024 11:00:54 GMT',
+        //     distance_from_home: 2.2475643282963613,
+        //     distance_from_last_transaction: 5.60004354707232,
+        //     id: '1715400054',
+        //     online_order: 0.0,
+        //     predict:
+        //       "{'decisiontreeclassifier': 0.0, 'kneighborsclassifier': 0.0, 'randomforestclassifier': 0.0}",
+        //     processed: false,
+        //     processed_at: null,
+        //     ratio_to_median_purchase_price: 0.36266257805709584,
+        //     repeat_retailer: 1.0,
+        //     used_chip: 0.0,
+        //     used_pin_number: 0.0,
+        //   },
+        //   {
+        //     created: 'Sat, 11 May 2024 11:00:54 GMT',
+        //     distance_from_home: 44.19093600261837,
+        //     distance_from_last_transaction: 0.5664862680583477,
+        //     id: '1715400054',
+        //     online_order: 0.0,
+        //     predict:
+        //       "{'decisiontreeclassifier': 0.0, 'kneighborsclassifier': 0.0, 'randomforestclassifier': 0.0}",
+        //     processed: false,
+        //     processed_at: null,
+        //     ratio_to_median_purchase_price: 2.2227672978404707,
+        //     repeat_retailer: 1.0,
+        //     used_chip: 0.0,
+        //     used_pin_number: 0.0,
+        //   },
+        //   {
+        //     created: 'Sat, 11 May 2024 11:00:54 GMT',
+        //     distance_from_home: 5.586407674186407,
+        //     distance_from_last_transaction: 13.261073268058121,
+        //     id: '1715400054',
+        //     online_order: 0.0,
+        //     predict:
+        //       "{'decisiontreeclassifier': 0.0, 'kneighborsclassifier': 0.0, 'randomforestclassifier': 0.0}",
+        //     processed: false,
+        //     processed_at: null,
+        //     ratio_to_median_purchase_price: 0.06476846537046335,
+        //     repeat_retailer: 1.0,
+        //     used_chip: 0.0,
+        //     used_pin_number: 0.0,
+        //   },
+        // ]
         for (var i = 0; i < data.length; i++) {
           var temp = JSON.parse(data[i]['predict'].replace(/'/g, '"'))
           data[i]['result'] =
@@ -312,27 +404,28 @@ const Transaction = () => {
                   <CRow>
                     <CCol />
                     <CCol className="mt-2">
-                      <Filter
-                        params={listCreditCardParams}
-                        data={tableData}
-                        setFilteredData={setFilteredData}
-                      />
+                      <CIcon icon={cilPlus} size="lg" onClick={() => setVisibleCreate(true)} />
+                      {/* <Filter
+                          params={listCreditCardParams}
+                          data={tableData}
+                          setFilteredData={setFilteredData}
+                        /> */}
                     </CCol>
-                    <CCol>
+                    {/* <CCol>
                       {!loadingButton ? (
                         <CButton
                           color="primary"
                           onClick={() => {
                             setLoadingButton(true)
                           }}
-                          className="ms-4"
+                          className="ms-2"
                         >
                           Fetch
                         </CButton>
                       ) : (
                         <CSpinner className="ms-4 me-4" />
                       )}
-                    </CCol>
+                    </CCol> */}
                   </CRow>
                 </div>
               </div>
@@ -455,7 +548,7 @@ const Transaction = () => {
                     <CCardBody>
                       <CCol>
                         {listCreditCardParams.map((params, index) => (
-                          <CRow className="mb-1">
+                          <CRow className="mb-3">
                             <CCol xs={9}>
                               <CContainer>
                                 <CTooltip placement="left" content={params[1]}>
@@ -472,7 +565,7 @@ const Transaction = () => {
 
                       <h5 className="text-center mb-2 bold-text">Result of Models</h5>
                       <CCol className="ms-2">
-                        <CRow className="mb-2">
+                        <CRow className="mb-3">
                           <CCol
                             xs={8}
                             style={{
@@ -494,7 +587,7 @@ const Transaction = () => {
                             {predictResult['decisiontreeclassifier'] == 0 ? 'Safe' : 'Unsafe'}
                           </CCol>
                         </CRow>
-                        <CRow className="mb-2">
+                        <CRow className="mb-3">
                           <CCol
                             xs={8}
                             style={{
@@ -517,7 +610,7 @@ const Transaction = () => {
                             {predictResult['kneighborsclassifier'] == 0 ? 'Safe' : 'Unsafe'}
                           </CCol>
                         </CRow>
-                        <CRow className="mb-2">
+                        <CRow className="mb-3">
                           <CCol
                             xs={8}
                             style={{
@@ -546,11 +639,11 @@ const Transaction = () => {
               <CRow>
                 {changeApp && (
                   <div>
-                    <Voting
+                    {/* <Voting
                       applicationId={appData['id']}
                       checkFetchVote={checkFetchVote}
                       setCheckFetchVote={setCheckFetchVote}
-                    />
+                    /> */}
                   </div>
                 )}
               </CRow>
@@ -561,7 +654,7 @@ const Transaction = () => {
         </COffcanvasBody>
         <CFooter>
           <div></div>
-          <div>
+          {/* <div>
             <CButton
               color="danger"
               className="me-2"
@@ -583,7 +676,7 @@ const Transaction = () => {
             >
               Accept
             </CButton>
-          </div>
+          </div> */}
         </CFooter>
       </COffcanvas>
       <CModal

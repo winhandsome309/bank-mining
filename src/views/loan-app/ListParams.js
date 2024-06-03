@@ -1,5 +1,5 @@
 const listLoanParams = [
-  ['customer_id', 'ID of customer who submitted this application.', 'normal'],
+  // ['customer_id', 'ID of customer who submitted this application.', 'normal'],
   [
     'credit_policy',
     '1 if the customer meets the credit underwriting criteria; 0 otherwise.',

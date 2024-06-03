@@ -40,6 +40,7 @@ import {
   CContainer,
   CFooter,
   CForm,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -113,11 +114,13 @@ const Processed = () => {
   const [msgRecheck, setMsgRecheck] = useState('')
   const [idSearch, setIdSearch] = useState('')
   const [searched, setSearched] = useState('')
+  const [loadingFetch, setLoadingFetch] = useState(true)
 
   const fetchApplication = async () => {
     client
       .get(process.env.REACT_APP_API_ENDPOINT + '/api/loan_application/processed-list')
       .then((res) => {
+        setLoadingFetch(false)
         setTableData(res.data)
       })
   }
@@ -143,6 +146,7 @@ const Processed = () => {
   }
 
   useEffect(() => {
+    setLoadingFetch(true)
     fetchApplication()
   }, [])
 
@@ -186,7 +190,9 @@ const Processed = () => {
               </div>
             </CCardHeader>
             <CCardBody>
-              {tableData.length == 0 ? (
+              {loadingFetch == true ? (
+                <CSpinner />
+              ) : tableData.length == 0 ? (
                 <div>There is nothing to show</div>
               ) : searched == 'NF' ? (
                 <div>Not found</div>

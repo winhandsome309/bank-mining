@@ -40,6 +40,7 @@ import {
   CContainer,
   CFooter,
   CForm,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -218,6 +219,7 @@ const OldCustomer = () => {
   const [msgRecheck, setMsgRecheck] = useState('')
   const [idSearch, setIdSearch] = useState('')
   const [searched, setSearched] = useState('')
+  const [loadingFetch, setLoadingFetch] = useState(true)
 
   const fetchApplication = async () => {
     client.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/history_data').then((res) => {
@@ -228,6 +230,7 @@ const OldCustomer = () => {
         temp.push(p)
       }
       setTableData(temp)
+      setLoadingFetch(false)
     })
   }
 
@@ -252,6 +255,7 @@ const OldCustomer = () => {
   }
 
   useEffect(() => {
+    setLoadingFetch(true)
     fetchApplication()
   }, [])
 
@@ -295,7 +299,9 @@ const OldCustomer = () => {
               </div>
             </CCardHeader>
             <CCardBody>
-              {tableData.length == 0 ? (
+              {loadingFetch == true ? (
+                <CSpinner />
+              ) : tableData.length == 0 ? (
                 <div>There is nothing to show</div>
               ) : searched == 'NF' ? (
                 <div>Not found</div>

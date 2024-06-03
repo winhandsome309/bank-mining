@@ -12,6 +12,7 @@ from flask_app.helper import worker as wk
 from flask_security import roles_accepted
 import pandas
 import time
+import ast
 
 model_info = wk.ModelInfo.create("Marketing Campaign")
 worker = wk.MarketingWorker(model_info)
@@ -40,14 +41,28 @@ def marketing_history_data():
     endpoint="marketing_client",
 )
 @utils.server_return_500_if_errors
-@roles_accepted("Maintainer", "Admin")
+@roles_accepted("Maintainer", "Admin", "Moderator")
 def marketing_client():
     if request.method == "GET":
         stmt = select(MarketingClient)
         res = db_session.execute(stmt).all()
+
+        ans = utils.parse_output(res)
+        for app in ans:
+            stmt = select(PredictResult).where(PredictResult.id == app["id"])
+            resPredictResult = db_session.execute(stmt).all()
+            temp = utils.parse_output(resPredictResult)
+
+            count = 0
+            for modelName, modelPredict in ast.literal_eval(temp[0]["predict"]).items():
+                if modelPredict == "yes" and modelName != "votingclassifier":
+                    count += 1
+
+            app["num_model_accept"] = count
+
         db_session.commit()
 
-        return utils.parse_output(res)
+        return ans
     if request.method == "POST":
         form = request.form
         age = form.get("age")

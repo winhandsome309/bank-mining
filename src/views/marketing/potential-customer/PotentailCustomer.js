@@ -42,6 +42,8 @@ import {
   CFormSelect,
   CDropdown,
   CNavLink,
+  CBadge,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCheck, cilX, cilPlus, cilUserPlus } from '@coreui/icons'
@@ -188,9 +190,11 @@ const PotentialCustomer = (props) => {
   const [changeApp, setChangeApp] = useState(false)
   const [loadingMultipleCreation, setLoadingMultipleCreation] = useState(false)
   const isMounted = useRef(false)
+  const [loadingFetch, setLoadingFetch] = useState(true)
 
   const fetchCustomer = async () => {
     client.get(process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client').then((res) => {
+      setLoadingFetch(false)
       setTableData(res.data)
     })
   }
@@ -259,7 +263,7 @@ const PotentialCustomer = (props) => {
   const acceptCustomer = async (id) => {
     client
       .post(
-        process.env.REACT_APP_API_ENDPOINT + '/api/marketing/history_data',
+        process.env.REACT_APP_API_ENDPOINT + '/api/marketing/client',
         {},
         {
           params: {
@@ -316,6 +320,7 @@ const PotentialCustomer = (props) => {
   }
 
   useEffect(() => {
+    setLoadingFetch(true)
     fetchCustomer()
   }, [])
 
@@ -379,7 +384,9 @@ const PotentialCustomer = (props) => {
               </div>
             </CCardHeader>
             <CCardBody>
-              {tableData.length == 0 || filteredData == -1 ? (
+              {loadingFetch == true ? (
+                <CSpinner />
+              ) : tableData.length == 0 || filteredData == -1 ? (
                 <div>There is nothing to show</div>
               ) : (
                 <CTable align="middle" className="mb-0 border" hover responsive>
@@ -435,7 +442,13 @@ const PotentialCustomer = (props) => {
                           <div>...</div>
                         </CTableDataCell>
                         <CTableDataCell className="text-center space-between">
-                          <CIcon
+                          <CBadge
+                            color={item.num_model_accept >= 2 ? 'success' : 'danger'}
+                            shape="rounded-pill"
+                          >
+                            {item.num_model_accept + ' / 3'}
+                          </CBadge>
+                          {/* <CIcon
                             icon={cilCheck}
                             className="text-success"
                             onClick={(e) => {
@@ -455,7 +468,7 @@ const PotentialCustomer = (props) => {
                               setMsgRecheck('REJECT')
                               setVisibleRecheck(true)
                             }}
-                          />
+                          /> */}
                         </CTableDataCell>
                       </CTableRow>
                     ))}
@@ -543,7 +556,7 @@ const PotentialCustomer = (props) => {
                               color: predictResult['gaussiannb'] == 'yes' ? 'green' : 'red',
                             }}
                           >
-                            {predictResult['gaussiannb'] == 'yes' ? 'Safe' : 'Unsafe'}
+                            {predictResult['gaussiannb'] == 'yes' ? 'Yes' : 'No'}
                           </CCol>
                         </CRow>
                         <CRow className="mb-2">
@@ -570,9 +583,7 @@ const PotentialCustomer = (props) => {
                                   : 'red',
                             }}
                           >
-                            {predictResult['gradientboostingclassifier'] == 'yes'
-                              ? 'Safe'
-                              : 'Unsafe'}
+                            {predictResult['gradientboostingclassifier'] == 'yes' ? 'Yes' : 'No'}
                           </CCol>
                         </CRow>
                         <CRow>
@@ -593,7 +604,7 @@ const PotentialCustomer = (props) => {
                               color: predictResult['mlpclassifier'] == 'yes' ? 'green' : 'red',
                             }}
                           >
-                            {predictResult['mlpclassifier'] == 'yes' ? 'Safe' : 'Unsafe'}
+                            {predictResult['mlpclassifier'] == 'yes' ? 'Yes' : 'No'}
                           </CCol>
                         </CRow>
                       </CCol>
@@ -603,7 +614,7 @@ const PotentialCustomer = (props) => {
               </CRow>
               <CRow>
                 <div>
-                  <Voting />
+                  <Voting appData={appData} changeApp={changeApp} />
                 </div>
               </CRow>
             </CCol>
@@ -653,12 +664,15 @@ const PotentialCustomer = (props) => {
         onClose={() => setVisibleRecheck(false)}
       >
         <CModalHeader>
-          <CModalTitle>Add Customer</CModalTitle>
+          <CModalTitle>Voting Customer</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <span>Are you sure to want to </span>
-          <span style={{ color: msgRecheck === 'ACCEPT' ? 'green' : 'red' }}>
-            {props.role == 'admin' ? msgRecheck : msgRecheck == 'ACCEPT' ? 'LIKE' : 'DISLIKE'}
+          <span
+            style={{ color: msgRecheck === 'ACCEPT' || msgRecheck === 'LIKE' ? 'green' : 'red' }}
+          >
+            {/* {props.role == 'admin' ? msgRecheck : msgRecheck == 'ACCEPT' ? 'LIKE' : 'DISLIKE'} */}
+            {msgRecheck}
           </span>
           <span>?</span>
         </CModalBody>
@@ -669,7 +683,7 @@ const PotentialCustomer = (props) => {
           <CButton
             color="primary"
             onClick={() => {
-              if (msgRecheck == 'ACCEPT') {
+              if (msgRecheck == 'ACCEPT' || msgRecheck == 'LIKE') {
                 if (props.role == 'admin') {
                   acceptCustomer(appData.id)
                 } else {

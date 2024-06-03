@@ -81,8 +81,7 @@ class Application(Base):
 class HistoryMarketingClients(Base):
     __tablename__ = 'history_marketing_clients'
     
-    id: Mapped[int]         = mapped_column(autoincrement=True, primary_key=True)
-    age: Mapped[int]        = mapped_column(nullable=True)
+    age: Mapped[int]        = mapped_column(nullable=True, primary_key=True)
     job: Mapped[str]        = mapped_column(nullable=True)
     marital: Mapped[str]    = mapped_column(nullable=True)
     education: Mapped[str]  = mapped_column(nullable=True)
@@ -301,8 +300,8 @@ class Vote(Base):
     __tablename__ = 'vote'
 
     id:             Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id:        Mapped[int] = mapped_column(ForeignKey('user.id'))
-    application_id:  Mapped[str] = mapped_column(ForeignKey('loan_application.id'))
+    user_id:        Mapped[int]
+    object_id:  Mapped[str]
     status:         Mapped[str]
     
     def as_dict(self): 

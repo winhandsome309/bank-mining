@@ -7,6 +7,7 @@ from flask_app.models import ModelInfo
 from flask_app.models import PredictResult
 from flask_app.models import Staff, Customer, Vote, User, Role, RolesUsers, Application, CustomersApplications
 from flask_security import roles_required, current_user, roles_accepted
+import time
 
 @app.route("/api/predict-result", methods=["GET", "POST"], endpoint='get_predict_result')
 @utils.server_return_500_if_errors
@@ -109,7 +110,7 @@ def get_all_customer():
 def get_vote():
     if request.method == "GET":
         id = request.args.get("id")
-        stmt = select(Vote).where(Vote.application_id == id)
+        stmt = select(Vote).where(Vote.object_id == id)
         res = db_session.execute(stmt).all()
         db_session.commit()
 
@@ -121,4 +122,18 @@ def get_vote():
         return make_response({"like": like, "dislike": dislike}, 200)
 
     elif request.method == "POST":
-        pass
+        appId = request.args.get("id")
+        status = request.args.get("status")
+        id = str(int(time.time()))
+
+        newVoting = Vote(id=id, 
+                         user_id="1",
+                         object_id=appId, 
+                         status=status)
+
+        try:
+            db_session.add(newVoting)
+            db_session.commit()
+            return make_response("SUCCESS", 200)
+        except Exception as e:
+            return make_response("FAIL", 400)
